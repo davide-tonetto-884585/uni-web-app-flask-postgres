@@ -2,7 +2,12 @@ from flask_login import UserMixin
 from . import db
 
 class Utente(db.Model, UserMixin):
-    __tablename__ = 'utenti'
+    __table__ = db.Model.metadata.tables['utenti']
     
-    id = db.Column(db.Integer, primary_key=True)
+class Studente(db.Model):
+    __table__ = db.Model.metadata.tables['studenti']
+
+class Docente(db.Model):
+    __table__ = db.Model.metadata.tables['docenti']
+    
     
