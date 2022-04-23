@@ -1,7 +1,6 @@
-from flask_login import UserMixin
 from . import db
 
-class Utente(db.Model, UserMixin):
+class Utente(db.Model):
     __table__ = db.Model.metadata.tables['utenti']
     
 class Studente(db.Model):
@@ -10,4 +9,5 @@ class Studente(db.Model):
 class Docente(db.Model):
     __table__ = db.Model.metadata.tables['docenti']
     
-    
+class Amministratore(db.Model):
+    __table__ = db.Model.metadata.tables['amministratori']

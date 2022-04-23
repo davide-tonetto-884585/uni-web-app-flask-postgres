@@ -10,9 +10,13 @@
 #
 # ------------------------------------------------------------------------------------
 
+import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+
+load_dotenv()
 
 # inizializzo SQLAlchemy
 db = SQLAlchemy()
@@ -21,8 +25,9 @@ mail = Mail()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'provaChiaveSegreta'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:toor@localhost:5432/orientamento_dais'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # TODO: set to true
     
     db.init_app(app)
 
