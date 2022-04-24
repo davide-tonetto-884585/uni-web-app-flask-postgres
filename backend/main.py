@@ -5,7 +5,7 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    return jsonify({ "api_version": "1.0", "endpoints": ["/users", "/login"] })
+    return jsonify({ "api_version": "1.0", "endpoints": ["/studenti", "/docenti", "/login"] })
 
 @main.route('/profile')
 def profile():

@@ -2,9 +2,13 @@
 #
 #     /                  -                  GET         Returns the version and a list of available endpoints
 #
-#     /students             -               GET         List all users
-#     /students             -               POST        Add a new student
-#     /students/:id         -               POST        Complete student registration
+#     /studenti             -               GET         List all students
+#     /studenti             -               POST        Add a new student
+#     /studenti/:id         -               POST        Complete student registration
+#     /docenti             -                GET         List all teachers
+#     /docenti             -                POST        Add a new teacher
+#     /docenti/:id         -                POST        Complete teacher registration
+#     /amministratori/:id  -                POST        Add a new administrator
 #     /login             -                  POST        login an existing user, returning a JWT
 #
 #
@@ -22,13 +26,17 @@ load_dotenv()
 db = SQLAlchemy()
 mail = Mail()
 
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # TODO: set to true
-    
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'SQLALCHEMY_DATABASE_URI')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # TODO: set to true
+    app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER')
+
     db.init_app(app)
 
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -37,7 +45,7 @@ def create_app():
     app.config['MAIL_PASSWORD'] = 'Chatta_Con_Piccioni'
     app.config['MAIL_USE_TLS'] = False
     app.config['MAIL_USE_SSL'] = True
-    
+
     mail.init_app(app)
 
     with app.app_context():

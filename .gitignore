@@ -1,0 +1,4 @@
+/backend/venv
+/backend/__pycache__
+.env
+/frontend/orientamento_dais/.vscode

@@ -3,47 +3,58 @@ import string
 import hmac
 import hashlib
 import jwt
+import os
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, jsonify, request, current_app
+from werkzeug.utils import secure_filename
 
 from .models import Utente, Studente, Docente, Amministratore
-from .mail import send_mail
+from .utils import allowed_file
 from . import db
 
 auth = Blueprint('auth', __name__)
 
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        # jwt is passed in the request header
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-        # return 401 if token is not passed
-        if not token:
-            return jsonify({'error': True, 'errormessage': 'Token mancante'}), 401
+def token_required(restrict_to_roles=[]):
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = None
+            # jwt is passed in the request header
+            auth_header = request.headers.get('Authorization')
+            if auth_header:
+                token = auth_header.split(" ")[1]
 
-        try:
-            # decoding the payload to fetch the stored details
-            data = jwt.decode(token, current_app.config['SECRET_KEY'])
-            current_user = Utente.query\
-                .filter(Utente.id == data['id'])\
-                .first()
-        except:
-            return jsonify({
-                'error': True,
-                'errormessage': 'Token invalido'
-            }), 401
-        # returns the current logged in users contex to the routes
-        return f(current_user, *args, **kwargs)
+            # return 401 if token is not passed
+            if not token:
+                return jsonify({'error': True, 'errormessage': 'Token mancante'}), 401
 
-    return decorated
+            try:
+                # decoding the payload to fetch the stored details
+                user_data = jwt.decode(
+                    token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+                #current_user = Utente.query.filter(Utente.id == user_data['id']).first()
+
+                # se sono stati passati ruoli allora controllo che l'utente soddisfi i requisiti
+                for allowed_role in restrict_to_roles:
+                    if not allowed_role in user_data['roles']:
+                        return jsonify({'error': True, 'errormessage': 'accesso non consentito'}), 401
+            except Exception as e:
+                return jsonify({
+                    'error': True,
+                    'errormessage': 'Token invalido: ' + str(e)
+                }), 401
+            # returns the current logged in users contex to the routes
+            return f(user_data, *args, **kwargs)
+
+        return decorated
+
+    return decorator
 
 
-@auth.route('/students', methods=['POST'])
-def signup():
+@auth.route('/studenti', methods=['POST'])
+def signup_student():
     if request.form.get('email') is None or\
             request.form.get('password') is None or\
             request.form.get('nome') is None or\
@@ -74,17 +85,15 @@ def signup():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': False, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
+        return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
 
-    # send_mail([request.form.get('email')],
-    #          'Verifica indirizzo mail',
-    #          'Accedi al seguente <a href="">link</a> per verificare la mail e completare il tuo account')
+    activation_link = '%s/studenti/%d' % (request.host, new_user.id)
 
-    return jsonify({'error': False, 'errormessage': ''}), 200
+    return jsonify({'error': False, 'errormessage': '', 'activation_link': activation_link, 'token_verifica': new_user.token_verifica}), 200
 
 
-@auth.route('/students/<id>', methods=['POST'])
-def complete_signup(id):
+@auth.route('/studenti/<id>', methods=['POST'])
+def complete_signup_student(id):
     if request.form.get('token_verifica') is None or\
             request.form.get('nome_istituto') is None or\
             request.form.get('indirizzo_istituto') is None or\
@@ -106,7 +115,7 @@ def complete_signup(id):
                                    indirizzo_di_studio=request.form.get(
                                        'indirizzo_di_studio'),
                                    citta=request.form.get('citta'))
-            
+
             user.verificato = True
 
             try:
@@ -119,6 +128,105 @@ def complete_signup(id):
             return jsonify({'error': False, 'errormessage': ''}), 200
 
     return jsonify({'error': True, 'errormessage': 'impossibile completare creazione studente'}), 404
+
+
+@auth.route('/docenti', methods=['POST'])
+@token_required(restrict_to_roles=['amministratore'])
+def signup_teacher(user):
+    if request.form.get('email') is None or\
+            request.form.get('nome') is None or\
+            request.form.get('cognome') is None or\
+            request.form.get('data_nascita') is None:
+        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare il docente'}), 404
+
+    if Utente.query.filter(Utente.email == request.form.get('email')).first():
+        return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 404
+
+    salt = ''.join(random.choice(string.printable) for i in range(16))
+    token_salt = ''.join(random.choice(string.printable) for i in range(16))
+    token = hmac.new(salt.encode(), token_salt.encode(),
+                     hashlib.sha512).hexdigest()
+
+    new_user = Utente(email=request.form.get('email'),
+                      salt=salt,
+                      nome=request.form.get('nome'),
+                      cognome=request.form.get('cognome'),
+                      data_nascita=request.form.get('data_nascita'),
+                      token_verifica=token)
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
+
+    activation_link = '%s/docenti/%d' % (request.host, new_user.id)
+
+    return jsonify({'error': False, 'errormessage': '', 'activation_link': activation_link, 'token_verifica': new_user.token_verifica}), 200
+
+
+@auth.route('/docenti/<id>', methods=['POST'])
+def complete_signup_teacher(id):
+    if request.form.get('token_verifica') is None or\
+            request.form.get('password') is None:
+        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione del docente'}), 404
+
+    if Docente.query.filter(Docente.id == id).first():
+        return jsonify({'error': True, 'errormessage': 'docente gia\' esistente'}), 404
+
+    user = Utente.query.filter(Utente.id == id).first()
+    if user:
+        if user.token_verifica == request.form.get('token_verifica'):
+            digest = hmac.new(user.salt.encode(), request.form.get(
+                'password').encode(), hashlib.sha512).hexdigest()
+            user.digest = digest
+            
+            path_to_immagine_profilo = None
+            if 'immagine_profilo' in request.files:
+                file = request.files['immagine_profilo']
+                if file and file.filename != '' and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    path_to_immagine_profilo = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                    file.save(path_to_immagine_profilo)
+
+            new_teacher = Docente(id=id,
+                                  descrizione_docente=request.form.get(
+                                      'descrizione_docente'),
+                                  immagine_profilo=path_to_immagine_profilo,
+                                  link_pagina_docente=request.form.get(
+                                      'link_pagina_docente'))
+
+            user.verificato = True
+
+            try:
+                db.session.add(new_teacher)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': True, 'errormessage': 'Errore inserimento docente: ' + str(e)}), 500
+
+            return jsonify({'error': False, 'errormessage': ''}), 200
+
+    return jsonify({'error': True, 'errormessage': 'impossibile completare creazione docente'}), 404
+
+
+@auth.route('/amministratori/<id>', methods=['POST'])
+@token_required(restrict_to_roles=['amministratore'])
+def add_administrator(user, id):
+    if Docente.query.filter(Docente.id == id).first():
+        new_administrator = Amministratore(id=id)
+
+        try:
+            db.session.add(new_administrator)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': True, 'errormessage': 'Errore inserimento amministratore: ' + str(e)}), 404
+
+        return jsonify({'error': False, 'errormessage': ''}), 200
+
+    return jsonify({'error': True, 'errormessage': 'Docente inesistente'})
 
 
 @auth.route('/login', methods=['POST'])
@@ -138,7 +246,7 @@ def login():
         'data_nascita': user.data_nascita.strftime('%m/%d/%Y'),
         'exp': datetime.utcnow() + timedelta(minutes=60)
     }
-    
+
     studente = Studente.query.filter(Studente.id == user.id).first()
     docente = Docente.query.filter(Docente.id == user.id).first()
     roles = []
@@ -153,13 +261,14 @@ def login():
         token_data['immagine_profilo'] = docente.immagine_profilo
         token_data['link_pagina_docente'] = docente.link_pagina_docente
         roles.append('docente')
-        
-    amministratore = Amministratore.query.filter(Amministratore.id == user.id).first()
+
+    amministratore = Amministratore.query.filter(
+        Amministratore.id == user.id).first()
     if amministratore:
         roles.append('amministratore')
-        
+
     token_data['roles'] = roles
-    
+
     if hmac.new(user.salt.encode(), password.encode(), hashlib.sha512).hexdigest() == user.digest:
         token = jwt.encode(token_data, current_app.config['SECRET_KEY'])
 
