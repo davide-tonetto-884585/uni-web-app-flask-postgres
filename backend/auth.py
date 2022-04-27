@@ -2,7 +2,7 @@ import random
 import string
 import hmac
 import hashlib
-import jwt
+import jwt # PyJWT
 import os
 from datetime import datetime, timedelta
 from functools import wraps
@@ -66,12 +66,13 @@ def signup_student():
         return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 404
 
     salt = ''.join(random.choice(string.printable) for i in range(16))
-    digest = hmac.new(salt.encode(), request.form.get(
+    digest = hmac.new(salt.encode(), request.form.get(                                                                                       
         'password').encode(), hashlib.sha512).hexdigest()
 
     token_salt = ''.join(random.choice(string.printable) for i in range(16))
     token = hmac.new(salt.encode(), token_salt.encode(),
                      hashlib.sha512).hexdigest()
+    
     new_user = Utente(email=request.form.get('email'),
                       salt=salt,
                       digest=digest,
@@ -87,7 +88,7 @@ def signup_student():
         db.session.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
 
-    activation_link = '%s/studenti/%d' % (request.host, new_user.id)
+    activation_link = '%s/studenti/%d' % (request.host, new_user.id)    # printf("%s/studenti/%d", request.host, new_user.id)
 
     return jsonify({'error': False, 'errormessage': '', 'activation_link': activation_link, 'token_verifica': new_user.token_verifica}), 200
 
@@ -229,14 +230,18 @@ def add_administrator(user, id):
     return jsonify({'error': True, 'errormessage': 'Docente inesistente'})
 
 
-@auth.route('/login', methods=['POST'])
+@auth.route('/login', methods=['GET'])
 def login():
-    email = request.authorization["username"]
-    password = request.authorization["password"]
+    auth = request.authorization
+    if not auth or not auth.username or not auth.password:
+        return jsonify({'error': True, 'errormessage': 'Autenticazione richiesta'}), 401
+    
+    email = auth.username
+    password = auth.password
 
     user = Utente.query.filter(Utente.email == email).first()
     if not user or user.abilitato == False or user.verificato == False:
-        return jsonify({'error': True, 'errormessage': 'Autenticaione fallita 1'}), 401
+        return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
 
     token_data = {
         'id': user.id,
@@ -262,8 +267,7 @@ def login():
         token_data['link_pagina_docente'] = docente.link_pagina_docente
         roles.append('docente')
 
-    amministratore = Amministratore.query.filter(
-        Amministratore.id == user.id).first()
+    amministratore = Amministratore.query.filter(Amministratore.id == user.id).first()
     if amministratore:
         roles.append('amministratore')
 

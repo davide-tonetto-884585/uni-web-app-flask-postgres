@@ -1,16 +1,14 @@
-#  Endpoints          Attributes          Method        Description
+#  Endpoints            Attributes         Method        Description
 #
-#     /                  -                  GET         Returns the version and a list of available endpoints
-#
-#     /studenti             -               GET         List all students
-#     /studenti             -               POST        Add a new student
-#     /studenti/:id         -               POST        Complete student registration
-#     /docenti             -                GET         List all teachers
-#     /docenti             -                POST        Add a new teacher
-#     /docenti/:id         -                POST        Complete teacher registration
-#     /amministratori/:id  -                POST        Add a new administrator
-#     /login             -                  POST        login an existing user, returning a JWT
-#
+#  /                    -                  GET           Returns the version and a list of available endpoint
+#  /studenti            -                  GET           List all students
+#  /studenti/           -                  POST          Add a new student
+#  /studenti/:id        -                  POST          Complete student registration
+#  /docenti             -                  GET           List all teachers
+#  /docenti             -                  POST          Add a new teacher
+#  /docenti/:id         -                  POST          Complete teacher registration
+#  /amministratori/:id  -                  POST          Add a new administrator
+#  /login               -                  GET           Login an existing user, returning a JWT
 #
 # ------------------------------------------------------------------------------------
 
@@ -19,6 +17,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -31,6 +30,7 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 def create_app():
     app = Flask(__name__)
+    
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
         'SQLALCHEMY_DATABASE_URI')
@@ -47,6 +47,10 @@ def create_app():
     app.config['MAIL_USE_SSL'] = True
 
     mail.init_app(app)
+    
+    app.config['CORS_HEADERS'] = 'Content-Type'
+    
+    CORS(app)
 
     with app.app_context():
         db.Model.metadata.reflect(db.engine)
