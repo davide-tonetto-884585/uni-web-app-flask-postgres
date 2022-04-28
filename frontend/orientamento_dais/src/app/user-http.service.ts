@@ -4,6 +4,7 @@ import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import * as jwtdecode from 'jwt-decode';
 
+import { Router } from '@angular/router';
 import { User } from './models';
 
 @Injectable({
@@ -12,8 +13,9 @@ import { User } from './models';
 export class UserHttpService {
   private token: string;
   public readonly BACKEND_URL = 'http://localhost:5000';
+  public readonly FRONTEND_URL = 'http://localhost:4200';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.token = localStorage.getItem('token') ?? '';
     if (this.token.length < 1) {
       this.token = ""
@@ -44,16 +46,31 @@ export class UserHttpService {
     localStorage.setItem('token', this.token);
   }
 
-  register_student(user: User): Observable<any> {
-    const options = {
-      headers: new HttpHeaders({
-        'cache-control': 'no-cache',
-        'Content-Type': 'application/json',
-      })
-    };
+  register_student(user: User | any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(user).forEach((key) => {
+      form_data.append(key, user[key]);
+    });
 
-    return this.http.post(this.BACKEND_URL + '/studenti', user, options).pipe(
-      tap((data) => {
+    form_data.append('frontend_activation_link', `${this.FRONTEND_URL}/activate`);
+
+    return this.http.post(this.BACKEND_URL + '/studenti', form_data).pipe(
+      tap((data: any) => {
+        console.log(JSON.stringify(data));
+      })
+    );
+  }
+
+  complete_registration(id: number, token: string, informations: any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(informations).forEach((key) => {
+      form_data.append(key, informations[key]);
+    });
+
+    form_data.append('token_verifica', token);
+
+    return this.http.post(this.BACKEND_URL + '/studenti/' + id, form_data).pipe(
+      tap((data: any) => {
         console.log(JSON.stringify(data));
       })
     );

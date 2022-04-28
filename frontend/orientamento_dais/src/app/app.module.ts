@@ -9,12 +9,14 @@ import { UserLoginComponent } from './user-login/user-login.component';
 import { StudentSignupComponent } from './student-signup/student-signup.component';
 
 import { UserHttpService } from './user-http.service';
+import { ActivateProfileComponent } from './activate-profile/activate-profile.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserLoginComponent,
-    StudentSignupComponent
+    StudentSignupComponent,
+    ActivateProfileComponent
   ],
   imports: [
     FormsModule, 

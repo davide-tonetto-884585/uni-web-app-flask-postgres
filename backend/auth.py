@@ -1,8 +1,9 @@
+from pydoc import Doc
 import random
 import string
 import hmac
 import hashlib
-import jwt # PyJWT
+import jwt  # PyJWT
 import os
 from datetime import datetime, timedelta
 from functools import wraps
@@ -10,7 +11,7 @@ from flask import Blueprint, jsonify, request, current_app
 from werkzeug.utils import secure_filename
 
 from .models import Utente, Studente, Docente, Amministratore
-from .utils import allowed_file
+from .utils import allowed_file, send_mail
 from . import db
 
 auth = Blueprint('auth', __name__)
@@ -66,13 +67,13 @@ def signup_student():
         return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 404
 
     salt = ''.join(random.choice(string.printable) for i in range(16))
-    digest = hmac.new(salt.encode(), request.form.get(                                                                                       
+    digest = hmac.new(salt.encode(), request.form.get(
         'password').encode(), hashlib.sha512).hexdigest()
 
     token_salt = ''.join(random.choice(string.printable) for i in range(16))
     token = hmac.new(salt.encode(), token_salt.encode(),
                      hashlib.sha512).hexdigest()
-    
+
     new_user = Utente(email=request.form.get('email'),
                       salt=salt,
                       digest=digest,
@@ -87,9 +88,21 @@ def signup_student():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
+    
+    # invio mail per verifica validità indirizzo se richiesta
+    if request.form.get('frontend_activation_link') is not None:
+        send_mail(
+            [new_user.email],
+            'Confirm your email',
+            'To verify your email please press this button: <a href="%s/%s/%d">Confirm your email</a>' %
+            (request.form.get('frontend_activation_link'),
+             new_user.token_verifica, new_user.id)
+        )
 
-    activation_link = '%s/studenti/%d' % (request.host, new_user.id)    # printf("%s/studenti/%d", request.host, new_user.id)
+    # printf("%s/studenti/%d", request.host, new_user.id)
+    activation_link = '%s/studenti/%d' % (request.host, new_user.id)
 
+    # TODO: capire se ha senso restiuire il token..
     return jsonify({'error': False, 'errormessage': '', 'activation_link': activation_link, 'token_verifica': new_user.token_verifica}), 200
 
 
@@ -155,8 +168,10 @@ def signup_teacher(user):
                       data_nascita=request.form.get('data_nascita'),
                       token_verifica=token)
 
+    new_teacher = Docente(id=new_user.id)
+
     try:
-        db.session.add(new_user)
+        db.session.add_all([new_user, new_teacher])
         db.session.commit()
     except Exception as e:
         db.session.rollback()
@@ -182,26 +197,27 @@ def complete_signup_teacher(id):
             digest = hmac.new(user.salt.encode(), request.form.get(
                 'password').encode(), hashlib.sha512).hexdigest()
             user.digest = digest
-            
+
             path_to_immagine_profilo = None
             if 'immagine_profilo' in request.files:
                 file = request.files['immagine_profilo']
                 if file and file.filename != '' and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    path_to_immagine_profilo = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                    path_to_immagine_profilo = os.path.join(
+                        current_app.config['UPLOAD_FOLDER'], filename)
                     file.save(path_to_immagine_profilo)
 
-            new_teacher = Docente(id=id,
-                                  descrizione_docente=request.form.get(
-                                      'descrizione_docente'),
-                                  immagine_profilo=path_to_immagine_profilo,
-                                  link_pagina_docente=request.form.get(
-                                      'link_pagina_docente'))
+            teacher = Docente.query.filter(Docente.id == id).first()
+            teacher.descrizione_docente = request.form.get(
+                'descrizione_docente')
+            teacher.immagine_profilo = path_to_immagine_profilo
+            teacher.link_pagina_docente = request.form.get(
+                'link_pagina_docente')
 
             user.verificato = True
 
             try:
-                db.session.add(new_teacher)
+                db.session.add(teacher)
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
@@ -235,7 +251,7 @@ def login():
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
         return jsonify({'error': True, 'errormessage': 'Autenticazione richiesta'}), 401
-    
+
     email = auth.username
     password = auth.password
 
@@ -267,7 +283,8 @@ def login():
         token_data['link_pagina_docente'] = docente.link_pagina_docente
         roles.append('docente')
 
-    amministratore = Amministratore.query.filter(Amministratore.id == user.id).first()
+    amministratore = Amministratore.query.filter(
+        Amministratore.id == user.id).first()
     if amministratore:
         roles.append('amministratore')
 

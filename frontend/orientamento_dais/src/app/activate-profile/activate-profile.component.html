@@ -1,0 +1,62 @@
+<div id="form-activation-div" class="container">
+
+    <form class="form-signin text-center">
+
+        <div class="text-center">
+            <i class="fas fa-envelope loginlogo"></i>
+            <h1 class="h3 mb-3 font-weight-normal">Account activation</h1>
+        </div>
+
+        <div class="mb-3">
+            <label for="nome_istituto" class="sr-only">Nome istituto</label>
+            <input type="text" #nome_istituto="ngModel" required name="nome" [(ngModel)]="user_data.nome_istituto" class="form-control"
+                id="nome_istituto" placeholder="Enter name">
+        </div>
+
+        <div [hidden]="nome_istituto.valid || nome_istituto.pristine" class="alert alert-danger">
+            Nome istituto is required
+        </div>
+
+        <div class="mb-3">
+            <label for="indirizzo_istituto" class="sr-only">Indirizzo istituto</label>
+            <input type="text" #indirizzo_istituto="ngModel" required name="surname" [(ngModel)]="user_data.indirizzo_istituto"
+                class="form-control" id="indirizzo_istituto" placeholder="Enter indirizzo">
+        </div>
+
+        <div [hidden]="indirizzo_istituto.valid || indirizzo_istituto.pristine" class="alert alert-danger">
+            Indirizzo is required
+        </div>
+
+        <div class="mb-3">
+            <label for="citta" class="sr-only">Città</label>
+            <input type="text" #citta="ngModel" required name="birthdate" [(ngModel)]="user_data.citta"
+                class="form-control" id="citta" placeholder="Enter citta">
+        </div>
+
+        <div [hidden]="citta.valid || citta.pristine" class="alert alert-danger">
+            citta is required
+        </div>
+
+        <div class="mb-3">
+            <label for="indirizzo_di_studio" class="sr-only">Indirizzo di studio</label>
+            <input type="text" #indirizzo_di_studio="ngModel" required name="birthdate" [(ngModel)]="user_data.indirizzo_di_studio"
+                class="form-control" id="indirizzo_di_studio" placeholder="Enter Indirizzo di studio">
+        </div>
+
+        <div [hidden]="indirizzo_di_studio.valid || indirizzo_di_studio.pristine" class="alert alert-danger">
+            Indirizzo di studio is required
+        </div>
+
+        <div *ngIf="errormessage" class="alert alert-danger" role="alert">
+            Activation error: {{errormessage}}
+        </div>
+
+        <button type="button" class="btn btn-lg btn-primary btn-block"
+            [disabled]="!nome_istituto.valid || !indirizzo_istituto.valid || !citta.valid || !indirizzo_di_studio.valid"
+            (click)="complete_registration();">
+            Complete registration
+        </button>
+
+        <p class="mt-5 mb-3 text-muted">&copy; 2022</p>
+    </form>
+</div>
