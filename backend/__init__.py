@@ -1,22 +1,31 @@
-#  Endpoints            Attributes         Method        Description
+#  Endpoints            Attributes                 Description              Method        Description
 #
-#  /                    -                  GET           Returns the version and a list of available endpoint
+#  /                    -                                                   GET           Returns the version and a list of available endpoint
 #
 #  BLUEPRINT auth:
-#  /studenti            ...                GET           List all students
-#  /studenti/           -                  POST          Add a new student
-#  /studenti/:id        -                  POST          Complete student registration
-#  /docenti             ...                GET           List all teachers
-#  /docenti             -                  POST          Add a new teacher
-#  /docenti/:id         -                  POST          Complete teacher registration
-#  /amministratori/:id  -                  POST          Add a new administrator
-#  /login               -                  GET           Login an existing user, returning a JWT
+#  /studenti            ...                                                 GET           List all students
+#  /studenti/           -                                                   POST          Add a new student
+#  /studenti/:id        -                                                   POST          Complete student registration
+#  /docenti             ...                                                 GET           List all teachers
+#  /docenti             -                                                   POST          Add a new teacher
+#  /docenti/:id         -                                                   POST          Complete teacher registration
+#  /amministratori/:id  -                                                   POST          Add a new administrator
+#  /login               -                                                   GET           Login an existing user, returning a JWT
 #
 #  DA IMPLEMENTARE:
-#  /corsi               ...                GET           List all courses
-#  /corsi               -                  POST          Insert new course
-#  /studenti            ...                GET           List all students
-#  /docenti             ...                GET           List all teachers
+#  /corsi               ... (pensare a possibili filtri)                    GET           List all courses
+#                       ?skip=n                    salta i primi n corsi
+#                       ?limit=m                   restituisce m corsi
+#  
+#  /corsi               -                                                   POST          Insert new course
+#  
+#  /studenti            ... (pensare a possibili filtri)                    GET           List all students
+#                       ?skip=n                    salta i primi n stud
+#                       ?limit=m                   restituisce m stud                             
+#  
+#  /docenti             ... (pensare a possibili filtri)                    GET           List all teachers
+#                       ?skip=n                    salta i primi n doc
+#                       ?limit=m                   restituisce m doc                              
 #  
 # ------------------------------------------------------------------------------------
 
