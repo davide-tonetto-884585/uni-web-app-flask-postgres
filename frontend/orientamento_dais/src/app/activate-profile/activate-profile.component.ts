@@ -11,7 +11,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class ActivateProfileComponent implements OnInit {
   private activation_token: any;
   private user_id: any;
-  user_data = {nome_istituto: '', indirizzo_istituto: '', citta: '', indirizzo_di_studio: ''};
+  category: any;
+  user_data: any;
   errormessage: string | undefined;
 
   constructor(private user_http: UserHttpService, private router: Router, private activatedRoute: ActivatedRoute) { }
@@ -19,9 +20,8 @@ export class ActivateProfileComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(params => {
       this.activation_token = params.get('token');
-      console.log(this.activation_token);
       this.user_id = params.get('user_id');
-      console.log(this.user_id);
+      this.category = params.get('category');
     });
   }
 
@@ -29,7 +29,7 @@ export class ActivateProfileComponent implements OnInit {
     this.user_http.complete_registration(this.user_id, this.activation_token, this.user_data).subscribe({
       next: (d) => {
         this.router.navigate(['/login']);
-      }, 
+      },
       error: (err) => {
         console.log('Activation error: ' + JSON.stringify(err));
         this.errormessage = err.error.errormessage;

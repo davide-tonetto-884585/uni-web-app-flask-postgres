@@ -1,6 +1,6 @@
 <div id="form-activation-div" class="container">
 
-    <form class="form-signin text-center">
+    <form *ngIf="category == 'studente'" class="form-signin text-center">
 
         <div class="text-center">
             <i class="fas fa-envelope loginlogo"></i>
@@ -8,43 +8,46 @@
         </div>
 
         <div class="mb-3">
-            <label for="nome_istituto" class="sr-only">Nome istituto</label>
-            <input type="text" #nome_istituto="ngModel" required name="nome" [(ngModel)]="user_data.nome_istituto" class="form-control"
-                id="nome_istituto" placeholder="Enter name">
+            <label for="nome_istituto" class="form-label">High school name</label>
+            <input type="text" #nome_istituto="ngModel" required name="nome_istituto"
+                [(ngModel)]="user_data['nome_istituto']" class="form-control" id="nome_istituto"
+                placeholder="Enter high school name">
         </div>
 
         <div [hidden]="nome_istituto.valid || nome_istituto.pristine" class="alert alert-danger">
-            Nome istituto is required
+            High school name is required
         </div>
 
         <div class="mb-3">
-            <label for="indirizzo_istituto" class="sr-only">Indirizzo istituto</label>
-            <input type="text" #indirizzo_istituto="ngModel" required name="surname" [(ngModel)]="user_data.indirizzo_istituto"
-                class="form-control" id="indirizzo_istituto" placeholder="Enter indirizzo">
+            <label for="indirizzo_istituto" class="form-label">High school address</label>
+            <input type="text" #indirizzo_istituto="ngModel" required name="indirizzo_istituto"
+                [(ngModel)]="user_data['indirizzo_istituto']" class="form-control" id="indirizzo_istituto"
+                placeholder="Enter high school address">
         </div>
 
         <div [hidden]="indirizzo_istituto.valid || indirizzo_istituto.pristine" class="alert alert-danger">
-            Indirizzo is required
+            High school address is required
         </div>
 
         <div class="mb-3">
-            <label for="citta" class="sr-only">Città</label>
-            <input type="text" #citta="ngModel" required name="birthdate" [(ngModel)]="user_data.citta"
-                class="form-control" id="citta" placeholder="Enter citta">
+            <label for="citta" class="form-label">City</label>
+            <input type="text" #citta="ngModel" required name="citta" [(ngModel)]="user_data['citta']"
+                class="form-control" id="citta" placeholder="Enter city name">
         </div>
 
         <div [hidden]="citta.valid || citta.pristine" class="alert alert-danger">
-            citta is required
+            City is required
         </div>
 
         <div class="mb-3">
-            <label for="indirizzo_di_studio" class="sr-only">Indirizzo di studio</label>
-            <input type="text" #indirizzo_di_studio="ngModel" required name="birthdate" [(ngModel)]="user_data.indirizzo_di_studio"
-                class="form-control" id="indirizzo_di_studio" placeholder="Enter Indirizzo di studio">
+            <label for="indirizzo_di_studio" class="sr-only">Field of study</label>
+            <input type="text" #indirizzo_di_studio="ngModel" required name="indirizzo_di_studio"
+                [(ngModel)]="user_data['indirizzo_di_studio']" class="form-control" id="indirizzo_di_studio"
+                placeholder="Enter field of study">
         </div>
 
         <div [hidden]="indirizzo_di_studio.valid || indirizzo_di_studio.pristine" class="alert alert-danger">
-            Indirizzo di studio is required
+            Field of study is required
         </div>
 
         <div *ngIf="errormessage" class="alert alert-danger" role="alert">
@@ -59,4 +62,53 @@
 
         <p class="mt-5 mb-3 text-muted">&copy; 2022</p>
     </form>
+
+    <form *ngIf="category == 'docente'" class="form-signin text-center">
+
+        <div class="text-center">
+            <i class="fas fa-envelope loginlogo"></i>
+            <h1 class="h3 mb-3 font-weight-normal">Account activation</h1>
+        </div>
+
+        <div class="mb-3">
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" #password="ngModel" required name="password" [(ngModel)]="user_data['password']"
+                class="form-control" id="inputPassword" placeholder="Password">
+        </div>
+
+        <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
+            Password is required
+        </div>
+
+        <div class="mb-3">
+            <label for="descrizione_docente" class="form-label">Description</label>
+            <textarea #descrizione_docente="ngModel" name="descrizione_docente"
+                [(ngModel)]="user_data['descrizione_docente']" class="form-control" id="descrizione_docente"
+                placeholder="Enter description..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="link_pagina_docente" class="form-label">Lecturer page link</label>
+            <input type="text" #citta="ngModel" required name="link_pagina_docente" [(ngModel)]="user_data['link_pagina_docente']"
+                class="form-control" id="link_pagina_docente" placeholder="Enter link">
+        </div>
+
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Profile image</label>
+            <input class="form-control" type="file" id="formFile">
+        </div>
+
+        <div *ngIf="errormessage" class="alert alert-danger" role="alert">
+            Activation error: {{errormessage}}
+        </div>
+
+        <button type="button" class="btn btn-lg btn-primary btn-block"
+            [disabled]="!password.valid"
+            (click)="complete_registration();">
+            Complete registration
+        </button>
+
+        <p class="mt-5 mb-3 text-muted">&copy; 2022</p>
+    </form>
+
 </div>

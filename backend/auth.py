@@ -94,8 +94,8 @@ def signup_student():
         send_mail(
             [new_user.email],
             'Confirm your email',
-            'To verify your email please press this button: <a href="%s/%s/%d">Confirm your email</a>' %
-            (request.form.get('frontend_activation_link'),
+            'To verify your email please press this button: <a href="%s/%s/%s/%d">Confirm your email</a>' %
+            (request.form.get('frontend_activation_link'), 'studente',
              new_user.token_verifica, new_user.id)
         )
 
@@ -176,6 +176,16 @@ def signup_teacher(user):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
+    
+    # invio mail per verifica validità indirizzo se richiesta
+    if request.form.get('frontend_activation_link') is not None:
+        send_mail(
+            [new_user.email],
+            'Confirm your email',
+            'To verify your email please press this button: <a href="%s/%s/%s/%d">Confirm your email</a>' %
+            (request.form.get('frontend_activation_link'), 'docente',
+             new_user.token_verifica, new_user.id)
+        )
 
     activation_link = '%s/docenti/%d' % (request.host, new_user.id)
 
