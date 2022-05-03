@@ -16,30 +16,59 @@
 #  /corsi               ... (pensare a possibili filtri)                    GET           List all courses
 #                       ?skip=n                    salta i primi n corsi
 #                       ?limit=m                   restituisce m corsi
-#  
+#
 #  /corsi               -                                                   POST          Insert new course
-#  
+#
 #  /studenti            ... (pensare a possibili filtri)                    GET           List all students
 #                       ?skip=n                    salta i primi n stud
-#                       ?limit=m                   restituisce m stud                             
-#  
+#                       ?limit=m                   restituisce m stud
+#
 #  /docenti             ... (pensare a possibili filtri)                    GET           List all teachers
 #                       ?skip=n                    salta i primi n doc
-#                       ?limit=m                   restituisce m doc                              
-#  
+#                       ?limit=m                   restituisce m doc
+#
 # ------------------------------------------------------------------------------------
 
 import os
 from dotenv import load_dotenv
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import *
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from flask_mail import Mail
 from flask_cors import CORS
 
+# inizalizzo la libreria dotenv
 load_dotenv()
 
 # inizializzo SQLAlchemy
-db = SQLAlchemy()
+Base = declarative_base()
+
+root_engine = create_engine(
+    os.environ.get('SQLALCHEMY_DATABASE_URI'),
+)
+RootSession = sessionmaker(bind=root_engine)
+
+preLogin_engine = create_engine(
+    os.environ.get('SQLALCHEMY_DATABASE_URI_PRELOGIN'),
+)
+PreLoginSession = sessionmaker(bind=preLogin_engine)
+
+engine_amministratori = create_engine(
+    os.environ.get('SQLALCHEMY_DATABASE_URI_AMMINISTRATORI'),
+)
+SessionAmministratori = sessionmaker(bind=engine_amministratori)
+
+engine_docenti = create_engine(
+    os.environ.get('SQLALCHEMY_DATABASE_URI_DOCENTI'),
+)
+SessionDocenti = sessionmaker(bind=engine_docenti)
+
+engine_studenti = create_engine(
+    os.environ.get('SQLALCHEMY_DATABASE_URI_STUDENTI'),
+)
+SessionStudenti = sessionmaker(bind=engine_studenti)
+
 # inizializzo flask_mail
 mail = Mail()
 
@@ -49,14 +78,9 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 def create_app():
     app = Flask(__name__)
-    
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        'SQLALCHEMY_DATABASE_URI')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # TODO: set to true
-    app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER')
 
-    db.init_app(app)
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+    app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER')
 
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 465
@@ -66,14 +90,13 @@ def create_app():
     app.config['MAIL_USE_SSL'] = True
 
     mail.init_app(app)
-    
+
     app.config['CORS_HEADERS'] = 'Content-Type'
-    
+
     CORS(app)
 
     # faccio reperire informazioni sul db da sqlalchemy
-    with app.app_context():
-        db.Model.metadata.reflect(db.engine)
+    Base.metadata.reflect(root_engine)
 
     # blueprint che gestisce la registrazione e autenticazione degli utenti
     from .auth import auth as auth_blueprint

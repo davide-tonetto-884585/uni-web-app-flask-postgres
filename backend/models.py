@@ -1,13 +1,13 @@
-from . import db
+from . import Base
 
-class Utente(db.Model):
-    __table__ = db.Model.metadata.tables['utenti']
+class Utente(Base):
+    __table__ = Base.metadata.tables['utenti']
     
-class Studente(db.Model):
-    __table__ = db.Model.metadata.tables['studenti']
+class Studente(Base):
+    __table__ = Base.metadata.tables['studenti']
 
-class Docente(db.Model):
-    __table__ = db.Model.metadata.tables['docenti']
+class Docente(Base):
+    __table__ = Base.metadata.tables['docenti']
     
-class Amministratore(db.Model):
-    __table__ = db.Model.metadata.tables['amministratori']
+class Amministratore(Base):
+    __table__ = Base.metadata.tables['amministratori']

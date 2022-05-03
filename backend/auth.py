@@ -12,7 +12,10 @@ from werkzeug.utils import secure_filename
 
 from .models import Utente, Studente, Docente, Amministratore
 from .utils import allowed_file, send_mail
-from . import db
+from . import PreLoginSession, SessionAmministratori
+
+preLoginSession = PreLoginSession()
+sessionAmministratori = SessionAmministratori()
 
 auth = Blueprint('auth', __name__)
 
@@ -66,7 +69,7 @@ def signup_student():
         return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare lo studente'}), 404
 
     # controlle che non esista già un utente con la stessa email
-    if Utente.query.filter(Utente.email == request.form.get('email')).first():
+    if preLoginSession.query(Utente).filter(Utente.email == request.form.get('email')).first():
         return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 404
 
     # genero un salt randomico per rendere la password illeggibile da database
@@ -91,10 +94,10 @@ def signup_student():
 
     # inserisco i dati nel database
     try:
-        db.session.add(new_user)
-        db.session.commit()
+        preLoginSession.add(new_user)
+        preLoginSession.commit()
     except Exception as e:
-        db.session.rollback()
+        preLoginSession.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
     
     # invio mail per verifica validità indirizzo se richiesta, il frontend passerà un link che sarà mostrato nella mail completato
@@ -127,11 +130,11 @@ def complete_signup_student(id):
         return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione dello studente'}), 404
 
     # controllo che non esista già uno studente con lo stesso id
-    if Studente.query.filter(Studente.id == id).first():
+    if preLoginSession.query(Studente).filter(Studente.id == id).first():
         return jsonify({'error': True, 'errormessage': 'studente gia\' esistente'}), 404
 
     # controllo se esiste un utente con l'id passato
-    user = Utente.query.filter(Utente.id == id).first()
+    user = preLoginSession.query(Utente).filter(Utente.id == id).first()
     if user:
         # controllo che il token di verifica della mail sia corretto
         if user.token_verifica == request.form.get('token_verifica'):
@@ -150,10 +153,10 @@ def complete_signup_student(id):
 
             # rendo effettive le modifiche sul db
             try:
-                db.session.add(new_student)
-                db.session.commit()
+                preLoginSession.add(new_student)
+                preLoginSession.commit()
             except Exception as e:
-                db.session.rollback()
+                preLoginSession.rollback()
                 return jsonify({'error': True, 'errormessage': 'Errore inserimento studente: ' + str(e)}), 500
 
             return jsonify({'error': False, 'errormessage': ''}), 200
@@ -174,7 +177,7 @@ def signup_teacher(user):
         return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare il docente'}), 404
 
     # controllo che non esista già un utente con la stessa mail
-    if Utente.query.filter(Utente.email == request.form.get('email')).first():
+    if sessionAmministratori.query(Utente).filter(Utente.email == request.form.get('email')).first():
         return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 404
 
     # genero il token per la verifica della mail
@@ -195,10 +198,10 @@ def signup_teacher(user):
     new_teacher = Docente(id=new_user.id)
 
     try:
-        db.session.add_all([new_user, new_teacher])
-        db.session.commit()
+        sessionAmministratori.add_all([new_user, new_teacher])
+        sessionAmministratori.commit()
     except Exception as e:
-        db.session.rollback()
+        sessionAmministratori.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
     
     # invio mail per verifica validità indirizzo se richiesta
@@ -225,9 +228,9 @@ def complete_signup_teacher(id):
         return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione del docente'}), 404
 
     # controllo che esista l'utente
-    user = Utente.query.filter(Utente.id == id).first()
+    user = preLoginSession.query(Utente).filter(Utente.id == id).first()
     # controllo che esista il docente
-    teacher = Docente.query.filter(Docente.id == id).first()
+    teacher = preLoginSession.query(Docente).filter(Docente.id == id).first()
     
     if user and teacher:
         if user.token_verifica == request.form.get('token_verifica'):
@@ -257,10 +260,10 @@ def complete_signup_teacher(id):
             user.verificato = True
 
             try:
-                db.session.add(teacher)
-                db.session.commit()
+                preLoginSession.add(teacher)
+                preLoginSession.commit()
             except Exception as e:
-                db.session.rollback()
+                preLoginSession.rollback()
                 return jsonify({'error': True, 'errormessage': 'Errore inserimento docente: ' + str(e)}), 500
 
             return jsonify({'error': False, 'errormessage': ''}), 200
@@ -274,15 +277,15 @@ def complete_signup_teacher(id):
 @token_required(restrict_to_roles=['amministratore'])
 def add_administrator(user, id):
     # controllo che esista un docente con l'id passato
-    if Docente.query.filter(Docente.id == id).first():
+    if sessionAmministratori.query(Docente).filter(Docente.id == id).first():
         # creo il nuovo amministratore
         new_administrator = Amministratore(id=id)
 
         try:
-            db.session.add(new_administrator)
-            db.session.commit()
+            sessionAmministratori.add(new_administrator)
+            sessionAmministratori.commit()
         except Exception as e:
-            db.session.rollback()
+            sessionAmministratori.rollback()
             return jsonify({'error': True, 'errormessage': 'Errore inserimento amministratore: ' + str(e)}), 404
 
         return jsonify({'error': False, 'errormessage': ''}), 200
@@ -302,7 +305,7 @@ def login():
     password = auth.password
 
     # reperisco l'utente
-    user = Utente.query.filter(Utente.email == email).first()
+    user = preLoginSession.query(Utente).filter(Utente.email == email).first()
     if not user or user.abilitato == False or user.verificato == False:
         return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
 
@@ -316,8 +319,8 @@ def login():
         'exp': datetime.utcnow() + timedelta(minutes=60)
     }
 
-    studente = Studente.query.filter(Studente.id == user.id).first()
-    docente = Docente.query.filter(Docente.id == user.id).first()
+    studente = preLoginSession.query(Studente).filter(Studente.id == user.id).first()
+    docente = preLoginSession.query(Docente).filter(Docente.id == user.id).first()
     roles = []
     if studente:
         token_data['nome_istituto'] = studente.nome_istituto
@@ -331,7 +334,7 @@ def login():
         token_data['link_pagina_docente'] = docente.link_pagina_docente
         roles.append('docente')
 
-    amministratore = Amministratore.query.filter(
+    amministratore = preLoginSession.query(Amministratore).filter(
         Amministratore.id == user.id).first()
     if amministratore:
         roles.append('amministratore')
