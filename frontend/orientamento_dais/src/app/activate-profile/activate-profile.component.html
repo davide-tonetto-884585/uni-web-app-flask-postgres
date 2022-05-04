@@ -8,42 +8,35 @@
         </div>
 
         <div class="mb-3">
-            <label for="nome_istituto" class="form-label">High school name</label>
-            <input type="text" #nome_istituto="ngModel" required name="nome_istituto"
-                [(ngModel)]="user_data['nome_istituto']" class="form-control" id="nome_istituto"
-                placeholder="Enter high school name">
+            <input list="datalistOptions" type="text" #id_scuola="ngModel" required name="denominazione_scuola"
+                [(ngModel)]="school_input" class="form-control" id="id_acuola" placeholder="Select school name"
+                (ngModelChange)="filter_schools()" autocomplete="false">
+
+            <datalist id="datalistOptions">
+                <option *ngFor="let school of schools" (value)="school.id">
+                    {{ school.denominazione }}</option>
+            </datalist>
         </div>
 
-        <div [hidden]="nome_istituto.valid || nome_istituto.pristine" class="alert alert-danger">
-            High school name is required
-        </div>
-
-        <div class="mb-3">
-            <label for="indirizzo_istituto" class="form-label">High school address</label>
-            <input type="text" #indirizzo_istituto="ngModel" required name="indirizzo_istituto"
-                [(ngModel)]="user_data['indirizzo_istituto']" class="form-control" id="indirizzo_istituto"
-                placeholder="Enter high school address">
-        </div>
-
-        <div [hidden]="indirizzo_istituto.valid || indirizzo_istituto.pristine" class="alert alert-danger">
-            High school address is required
-        </div>
-
-        <div class="mb-3">
-            <label for="citta" class="form-label">City</label>
-            <input type="text" #citta="ngModel" required name="citta" [(ngModel)]="user_data['citta']"
-                class="form-control" id="citta" placeholder="Enter city name">
-        </div>
-
-        <div [hidden]="citta.valid || citta.pristine" class="alert alert-danger">
-            City is required
+        <div [hidden]="id_scuola.valid || id_scuola.pristine" class="alert alert-danger">
+            School is required
         </div>
 
         <div class="mb-3">
             <label for="indirizzo_di_studio" class="sr-only">Field of study</label>
-            <input type="text" #indirizzo_di_studio="ngModel" required name="indirizzo_di_studio"
-                [(ngModel)]="user_data['indirizzo_di_studio']" class="form-control" id="indirizzo_di_studio"
-                placeholder="Enter field of study">
+
+            <select class="form-select" #indirizzo_di_studio="ngModel" required name="indirizzo_di_studio"
+                [(ngModel)]="user_data['indirizzo_di_studio']" id="indirizzo_di_studio"
+                placeholder="Select field of study">
+                <option value="informatico">Computer science</option>
+                <option value="elettronica">Electronics</option>
+                <option value="elettrotecnica">Electrotechnics</option>
+                <option value="meccatronica">Mechatronics</option>
+                <option value="altro indirizzo tecnico">Another technical address</option>
+                <option value="scientifico tradizionale">Science high school</option>
+                <option value="scientifico scienze applicate">Applied sciences high school</option>
+                <option value="altro indirizzo liceale">Another high school address</option>
+            </select>
         </div>
 
         <div [hidden]="indirizzo_di_studio.valid || indirizzo_di_studio.pristine" class="alert alert-danger">
@@ -55,8 +48,7 @@
         </div>
 
         <button type="button" class="btn btn-lg btn-primary btn-block"
-            [disabled]="!nome_istituto.valid || !indirizzo_istituto.valid || !citta.valid || !indirizzo_di_studio.valid"
-            (click)="complete_registration();">
+            [disabled]="!id_scuola.valid || !indirizzo_di_studio.valid" (click)="complete_registration();">
             Complete registration
         </button>
 
@@ -89,8 +81,9 @@
 
         <div class="mb-3">
             <label for="link_pagina_docente" class="form-label">Lecturer page link</label>
-            <input type="text" #citta="ngModel" required name="link_pagina_docente" [(ngModel)]="user_data['link_pagina_docente']"
-                class="form-control" id="link_pagina_docente" placeholder="Enter link">
+            <input type="text" #citta="ngModel" required name="link_pagina_docente"
+                [(ngModel)]="user_data['link_pagina_docente']" class="form-control" id="link_pagina_docente"
+                placeholder="Enter link">
         </div>
 
         <div class="mb-3">
@@ -102,8 +95,7 @@
             Activation error: {{errormessage}}
         </div>
 
-        <button type="button" class="btn btn-lg btn-primary btn-block"
-            [disabled]="!password.valid"
+        <button type="button" class="btn btn-lg btn-primary btn-block" [disabled]="!password.valid"
             (click)="complete_registration();">
             Complete registration
         </button>

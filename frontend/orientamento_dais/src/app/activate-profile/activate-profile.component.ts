@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
 import { UserHttpService } from '../user-http.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -12,10 +13,17 @@ export class ActivateProfileComponent implements OnInit {
   private activation_token: any;
   private user_id: any;
   category: any;
-  user_data: any;
+  user_data: any = {};
   errormessage: string | undefined;
+  schools: any = [];
+  school_input: string = "";
 
-  constructor(private user_http: UserHttpService, private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(
+    private user_http: UserHttpService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private http: HttpClient
+  ) { }
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -26,13 +34,26 @@ export class ActivateProfileComponent implements OnInit {
   }
 
   complete_registration(): void {
-    this.user_http.complete_registration(this.user_id, this.activation_token, this.user_data).subscribe({
+    if (this.schools.length == 1) {
+      this.user_data['id_scuola'] = this.schools[0].id;
+      this.user_http.complete_registration(this.user_id, this.activation_token, this.user_data).subscribe({
+        next: (d) => {
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.log('Activation error: ' + JSON.stringify(err));
+          this.errormessage = err.error.errormessage;
+        }
+      })
+    } else {
+      this.errormessage = "Select a valid school";
+    }
+  }
+
+  filter_schools() {
+    this.http.get(this.user_http.BACKEND_URL + `/scuole?nome=${this.school_input.toUpperCase()}&limit=100`).subscribe({
       next: (d) => {
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.log('Activation error: ' + JSON.stringify(err));
-        this.errormessage = err.error.errormessage;
+        this.schools = d;
       }
     })
   }

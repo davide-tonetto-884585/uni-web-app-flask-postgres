@@ -51,7 +51,7 @@
         <div class="mb-3">
             <label for="inputBirthdate" class="sr-only">Birthdate</label>
             <input type="text" #data_nascita="ngModel" required name="birthdate" [(ngModel)]="user.data_nascita"
-                class="form-control" id="inputBirthdate" placeholder="Enter birthdate">
+                class="form-control" id="inputBirthdate" placeholder="Enter birthdate (gg/mm/yyyy)">
         </div>
 
         <div [hidden]="data_nascita.valid || data_nascita.pristine" class="alert alert-danger">
