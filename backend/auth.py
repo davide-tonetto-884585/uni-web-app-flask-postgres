@@ -1,17 +1,14 @@
-from pydoc import Doc
 import random
 import string
 import hmac
 import hashlib
 import jwt  # PyJWT
-import os
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, jsonify, request, current_app
-from werkzeug.utils import secure_filename
 
 from .models import Utente, Studente, Docente, Amministratore
-from .utils import allowed_file, send_mail
+from .utils import send_mail, load_file
 from . import PreLoginSession, SessionAmministratori
 
 preLoginSession = PreLoginSession()
@@ -42,14 +39,20 @@ def token_required(restrict_to_roles=[]):
                 #current_user = Utente.query.filter(Utente.id == user_data['id']).first()
 
                 # se sono stati passati ruoli allora controllo che l'utente soddisfi i requisiti
+                satisfied = False
                 for allowed_role in restrict_to_roles:
-                    if not allowed_role in user_data['roles']:
-                        return jsonify({'error': True, 'errormessage': 'accesso non consentito'}), 401
+                    if allowed_role in user_data['roles']:
+                        satisfied = True
+                        break
+                        
+                if not satisfied:
+                    return jsonify({'error': True, 'errormessage': 'accesso non consentito'}), 401
             except Exception as e:
                 return jsonify({
                     'error': True,
                     'errormessage': 'Token invalido: ' + str(e)
                 }), 401
+                
             # returns the current logged in users contex to the routes
             return f(user_data, *args, **kwargs)
 
@@ -123,10 +126,8 @@ def signup_student():
 def complete_signup_student(id):
     # controllo che la richiesta contenga tutte le informazioni obbligatorie
     if request.form.get('token_verifica') is None or\
-            request.form.get('nome_istituto') is None or\
-            request.form.get('indirizzo_istituto') is None or\
             request.form.get('indirizzo_di_studio') is None or\
-            request.form.get('citta') is None:
+            request.form.get('id_scuola') is None:
         return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione dello studente'}), 404
 
     # controllo che non esista già uno studente con lo stesso id
@@ -140,13 +141,9 @@ def complete_signup_student(id):
         if user.token_verifica == request.form.get('token_verifica'):
             # creo nuovo studente
             new_student = Studente(id=id,
-                                   nome_istituto=request.form.get(
-                                       'nome_istituto'),
-                                   indirizzo_istituto=request.form.get(
-                                       'indirizzo_istituto'),
+                                   id_scuola=request.form.get('id_scuola'),
                                    indirizzo_di_studio=request.form.get(
-                                       'indirizzo_di_studio'),
-                                   citta=request.form.get('citta'))
+                                       'indirizzo_di_studio'))
 
             # setto come verificato l'account utente
             user.verificato = True
@@ -240,15 +237,7 @@ def complete_signup_teacher(id):
             user.digest = digest
 
             # salvo file immagine_profilo se caricato
-            path_to_immagine_profilo = None
-            if 'immagine_profilo' in request.files:
-                file = request.files['immagine_profilo']
-                # controllo se il file è valido
-                if file and file.filename != '' and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    path_to_immagine_profilo = os.path.join(
-                        current_app.config['UPLOAD_FOLDER'], filename)
-                    file.save(path_to_immagine_profilo)
+            path_to_immagine_profilo = load_file('immagine_profilo')
             
             # aggiorno i dati del docente
             teacher.descrizione_docente = request.form.get(

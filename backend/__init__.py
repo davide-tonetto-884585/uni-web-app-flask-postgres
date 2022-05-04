@@ -1,33 +1,74 @@
-#  Endpoints            Attributes                 Description              Method        Description
-#
-#  /                    -                                                   GET           Returns the version and a list of available endpoint
-#
-#  BLUEPRINT auth:
-#  /studenti            ...                                                 GET           List all students
-#  /studenti/           -                                                   POST          Add a new student
-#  /studenti/:id        -                                                   POST          Complete student registration
-#  /docenti             ...                                                 GET           List all teachers
-#  /docenti             -                                                   POST          Add a new teacher
-#  /docenti/:id         -                                                   POST          Complete teacher registration
-#  /amministratori/:id  -                                                   POST          Add a new administrator
-#  /login               -                                                   GET           Login an existing user, returning a JWT
-#
-#  DA IMPLEMENTARE:
-#  /corsi               ... (pensare a possibili filtri)                    GET           List all courses
-#                       ?skip=n                    salta i primi n corsi
-#                       ?limit=m                   restituisce m corsi
-#
-#  /corsi               -                                                   POST          Insert new course
-#
-#  /studenti            ... (pensare a possibili filtri)                    GET           List all students
-#                       ?skip=n                    salta i primi n stud
-#                       ?limit=m                   restituisce m stud
-#
-#  /docenti             ... (pensare a possibili filtri)                    GET           List all teachers
-#                       ?skip=n                    salta i primi n doc
-#                       ?limit=m                   restituisce m doc
-#
-# ------------------------------------------------------------------------------------
+"""
+    Endpoints            Attributes                 Description              Method        Description
+    -------------------------------------------------------------------------------------------------------------------------------
+    BLUEPRINT auth:
+    /studenti            ...                                                 GET           List all students
+    /studenti/           -                                                   POST          Add a new student
+    /studenti/:id        -                                                   POST          Complete student registration
+    /docenti             ...                                                 GET           List all teachers
+    /docenti             -                                                   POST          Add a new teacher
+    /docenti/:id         -                                                   POST          Complete teacher registration
+    /amministratori/:id  -                                                   POST          Add a new administrator
+    /login               -                                                   GET           Login an existing user, returning a JWT
+
+    -------------------------------------------------------------------------------------------------------------------------------
+    BLUEPRINT main:
+    /                    -                                                   GET           Returns the version and a list of 
+                                                                                           available endpoint
+    
+    /scuole              ?nome                      filtra per nome          GET           List all schools
+                         ?skip=n                    salta i primi n ris
+                         ?limit=m                   restituisce m ris
+   
+    ------------------------------------------------------------------------------------------------------------------------------
+    BLUEPRINT corsi:
+    /corsi               ?lingua                                             GET           List all courses
+                         ?name=nome                  prende i corsi per nome
+                         ?skip=n                     salta i primi n corsi
+                         ?limit=m                    restituisce m corsi
+    /corsi/:id            -                                                  GET           Get course by id
+    /corsi               -                                                   POST          Insert new course
+   
+    ------------------------------------------------------------------------------------------------------------------------------
+    DA IMPLEMENTARE:
+    /studenti            ... (pensare a possibili filtri)                    GET           List all students
+                         ?skip=n                    salta i primi n stud
+                         ?limit=m                   restituisce m stud
+    /stuenti/:id                                                             GET           Get student by id
+    
+    /docenti             ... (pensare a possibili filtri)                    GET           List all teachers
+                         ?skip=n                    salta i primi n doc
+                         ?limit=m                   restituisce m doc
+    /docenti/:id                                                             GET           Get docente by id
+    
+    /utenti              ... (pensare a possibili filtri)                    GET           List all users
+                         ?skip=n                    salta i primi n doc
+                         ?limit=m                   restituisce m doc
+    /utenti/:id                                                              GET           Get user by id
+    
+    /corsi/:id                                                               PUT           Modify course
+    
+    /corsi/:id/docenti                                                       GET           Get docenti del corso
+    /corsi/:id/docenti                                                       POST          add docente al corso
+    /corsi/:id/docenti                                                       DELETE        remove docente from course
+    
+    /corsi/:id/domande   ... (pensare a possibili filtri)                    GET           Get domande corso
+                         ?skip=n                    salta i primi n doc
+                         ?limit=m                   restituisce m doc
+    /corsi/:id/domande                                                       POST          Add domanda corso
+    /corsi/:id/domande                                                       DELETE        remove domanda corso
+    
+    /corsi/:id/domande/:id/like                                              GET           Get number of like of the question
+    /corsi/:id/domande/:id/like                                              POST          Add like to question
+    /corsi/:id/domande/:id/like                                              DELETE        Remove like from question  
+    
+    /corsi/:id/risorse                                                       GET           Get risorse del corso
+    /corsi/:id/risorse                                                       POST          Add risorsa del corso
+    /corsi/:id/risorse/:id                                                   DELETE        Remove risorsa del corso
+    /corsi/:id/risorse/:id                                                   PUT           Modify risorsa del corso
+                           
+   -------------------------------------------------------------------------------------------------------------------------------
+"""
 
 import os
 from dotenv import load_dotenv
@@ -105,5 +146,9 @@ def create_app():
     # blueprint for non-auth parts of app
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    # blueprint per i corsi
+    from .corsi import corsi as corsi_blueprint
+    app.register_blueprint(corsi_blueprint)
 
     return app
