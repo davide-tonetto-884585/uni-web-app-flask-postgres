@@ -11,6 +11,7 @@ import { StudentSignupComponent } from './student-signup/student-signup.componen
 import { UserHttpService } from './user-http.service';
 import { ActivateProfileComponent } from './activate-profile/activate-profile.component';
 import { HomeComponent } from './home/home.component';
+import { TopBarComponent } from './top-bar/top-bar.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { HomeComponent } from './home/home.component';
     UserLoginComponent,
     StudentSignupComponent,
     ActivateProfileComponent,
-    HomeComponent
+    HomeComponent,
+    TopBarComponent
   ],
   imports: [
     FormsModule, 

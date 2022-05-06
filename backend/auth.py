@@ -312,10 +312,8 @@ def login():
     docente = preLoginSession.query(Docente).filter(Docente.id == user.id).first()
     roles = []
     if studente:
-        token_data['nome_istituto'] = studente.nome_istituto
-        token_data['indirizzo_istituto'] = studente.indirizzo_istituto
+        token_data['id_scuola'] = studente.id_scuola
         token_data['indirizzo_di_studio'] = studente.indirizzo_di_studio
-        token_data['citta'] = studente.citta
         roles.append('studente')
     else:
         token_data['descrizione_docente'] = docente.descrizione_docente

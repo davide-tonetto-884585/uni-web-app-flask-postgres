@@ -2,23 +2,26 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
-import * as jwtdecode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 
 import { Router } from '@angular/router';
-import { User } from './models';
+import { User, UserData } from './models';
+import { BACKEND_URL, FRONTEND_URL } from './globals';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserHttpService {
   private token: string;
-  public readonly BACKEND_URL = 'http://localhost:5000';
-  public readonly FRONTEND_URL = 'http://localhost:4200';
+  private user_data: UserData | null;
 
   constructor(private http: HttpClient, private router: Router) {
     this.token = localStorage.getItem('token') ?? '';
     if (this.token.length < 1) {
       this.token = ""
+      this.user_data = null;
+    } else {
+      this.user_data = jwt_decode<UserData>(this.token);
     }
   }
 
@@ -31,10 +34,10 @@ export class UserHttpService {
       })
     };
 
-    return this.http.get(this.BACKEND_URL + '/login', options).pipe(
+    return this.http.get(BACKEND_URL + '/login', options).pipe(
       tap((data: any) => {
-        console.log(JSON.stringify(data));
         this.token = data.token;
+        this.user_data = jwt_decode<UserData>(this.token);
         if (remember) {
           localStorage.setItem('token', this.token);
         }
@@ -43,25 +46,26 @@ export class UserHttpService {
 
   logout() {
     this.token = '';
+    this.user_data = null;
     localStorage.setItem('token', this.token);
   }
 
-  register_student(user: User | any): Observable<any> {
+  registerStudent(user: User | any): Observable<any> {
     const form_data = new FormData();
     Object.keys(user).forEach((key) => {
       form_data.append(key, user[key]);
     });
 
-    form_data.append('frontend_activation_link', `${this.FRONTEND_URL}/activate`);
+    form_data.append('frontend_activation_link', `${FRONTEND_URL}/activate`);
 
-    return this.http.post(this.BACKEND_URL + '/studenti', form_data).pipe(
+    return this.http.post(BACKEND_URL + '/studenti', form_data).pipe(
       tap((data: any) => {
         console.log(JSON.stringify(data));
       })
     );
   }
 
-  complete_registration(id: number, token: string, informations: any): Observable<any> {
+  completeRegistration(id: number, token: string, informations: any): Observable<any> {
     const form_data = new FormData();
     Object.keys(informations).forEach((key) => {
       form_data.append(key, informations[key]);
@@ -69,14 +73,26 @@ export class UserHttpService {
 
     form_data.append('token_verifica', token);
 
-    return this.http.post(this.BACKEND_URL + '/studenti/' + id, form_data).pipe(
+    return this.http.post(BACKEND_URL + '/studenti/' + id, form_data).pipe(
       tap((data: any) => {
         console.log(JSON.stringify(data));
       })
     );
   }
 
-  get_token(): string {
-    return this.token;
+  isLogged() : boolean {
+    return this.user_data ? true : false;
+  }
+
+  isAdmin(): boolean {
+    if (this.user_data) {
+      return this.user_data.roles.includes('amministratore');
+    }
+
+    return false;
+  }
+
+  getName(): string | boolean {
+    return this.user_data?.nome ?? false;
   }
 }

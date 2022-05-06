@@ -20,7 +20,7 @@ export class StudentSignupComponent implements OnInit {
   }
 
   signup(): void {
-    this.user_http.register_student(this.user).subscribe({
+    this.user_http.registerStudent(this.user).subscribe({
       next: (d) => {
         console.log('Registration ok: ' + JSON.stringify(d));
         this.errmessage = undefined;

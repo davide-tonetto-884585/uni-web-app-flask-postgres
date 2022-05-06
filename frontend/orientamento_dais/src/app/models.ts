@@ -5,3 +5,19 @@ export interface User {
     cognome: string;
     data_nascita: string;
 }
+
+export interface UserData {
+    id: number;
+    email: string;
+    password: string;
+    nome: string;
+    cognome: string;
+    data_nascita: string;
+    exp: string;
+    id_scuola: string | null;
+    indirizzo_di_studio: string | null;
+    descrizione_docente: string | null;
+    immagine_profilo: string | null;
+    link_pagina_docente: string | null;
+    roles: string[];
+}

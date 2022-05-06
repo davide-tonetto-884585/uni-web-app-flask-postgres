@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { UserHttpService } from '../user-http.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { BACKEND_URL } from '../globals';
 
 @Component({
   selector: 'app-activate-profile',
@@ -36,7 +37,7 @@ export class ActivateProfileComponent implements OnInit {
   complete_registration(): void {
     if (this.schools.length == 1) {
       this.user_data['id_scuola'] = this.schools[0].id;
-      this.user_http.complete_registration(this.user_id, this.activation_token, this.user_data).subscribe({
+      this.user_http.completeRegistration(this.user_id, this.activation_token, this.user_data).subscribe({
         next: (d) => {
           this.router.navigate(['/login']);
         },
@@ -51,7 +52,7 @@ export class ActivateProfileComponent implements OnInit {
   }
 
   filter_schools() {
-    this.http.get(this.user_http.BACKEND_URL + `/scuole?nome=${this.school_input.toUpperCase()}&limit=100`).subscribe({
+    this.http.get(`${BACKEND_URL}/scuole?nome=${this.school_input.toUpperCase()}&limit=100`).subscribe({
       next: (d) => {
         this.schools = d;
       }
