@@ -24,4 +24,15 @@ export class TopBarComponent implements OnInit {
     return this.user_http.getName();
   }
 
+  logout(): void {
+    this.user_http.logout();
+  }
+
+  isStudent(): boolean {
+    return this.user_http.isStudent();
+  }
+
+  isTeacher(): boolean {
+    return this.user_http.isTeacher();
+  }
 }

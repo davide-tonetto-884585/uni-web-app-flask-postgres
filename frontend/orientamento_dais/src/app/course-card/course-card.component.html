@@ -1,0 +1,14 @@
+<div class="card mb-3" style="max-width: 540px;">
+    <div class="row g-0">
+        <div *ngIf="course?.immagine_copertina" class="col-md-4">
+            <img [src]="course?.immagine_copertina" class="img-fluid rounded-start" alt="...">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ course?.titolo }}</h5>
+                <p class="card-text">{{ course?.descrizione }}</p>
+                <p class="card-text"><small class="text-muted">Language: {{ course?.lingua }}</small></p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,6 +12,7 @@ import { UserHttpService } from './user-http.service';
 import { ActivateProfileComponent } from './activate-profile/activate-profile.component';
 import { HomeComponent } from './home/home.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
+import { CourseCardComponent } from './course-card/course-card.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TopBarComponent } from './top-bar/top-bar.component';
     StudentSignupComponent,
     ActivateProfileComponent,
     HomeComponent,
-    TopBarComponent
+    TopBarComponent,
+    CourseCardComponent
   ],
   imports: [
     FormsModule, 

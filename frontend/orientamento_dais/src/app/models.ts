@@ -21,3 +21,13 @@ export interface UserData {
     link_pagina_docente: string | null;
     roles: string[];
 }
+
+export interface Course {
+    id: number;
+    titolo: string;
+    descrizione: string | null;
+    lingua: string | null;
+    immagine_copertina: string | null;
+    file_certificato: string | null;
+    abilitato: boolean;
+}

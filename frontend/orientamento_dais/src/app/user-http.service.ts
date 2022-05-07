@@ -92,6 +92,22 @@ export class UserHttpService {
     return false;
   }
 
+  isStudent(): boolean {
+    if (this.user_data) {
+      return this.user_data.roles.includes('studente');
+    }
+
+    return false;
+  }
+
+  isTeacher(): boolean {
+    if (this.user_data) {
+      return this.user_data.roles.includes('docente');
+    }
+
+    return false;
+  }
+
   getName(): string | boolean {
     return this.user_data?.nome ?? false;
   }

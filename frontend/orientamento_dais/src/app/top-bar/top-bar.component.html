@@ -1,6 +1,21 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container">
-        <a class="navbar-brand" href="#">Ca Foscari</a>
+        <a class="navbar-brand" href="#">
+            <div class="row">
+                <div class="col d-flex align-content-center flex-wrap">
+                    <img src="/assets/images/logo.png" alt="" width="50" height="50"
+                        class="d-inline-block align-text-top">
+                </div>
+                <figure class="col">
+                    <blockquote class="blockquote">
+                        <p>Ca'Foscari</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        <cite>Orientamento</cite>
+                    </figcaption>
+                </figure>
+            </div>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -11,50 +26,40 @@
                     <a class="nav-link active" aria-current="page" routerLink="/home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" href="#">Courses</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About us</a>
                 </li>
             </ul>
 
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            </form>
-
-            <div *ngIf="!isLogged()">
-                <button type="button" class="btn btn-outline-success" routerLink="/login">Login</button>
-                <button type="button" class="btn btn-outline-primary" routerLink="/signup">Signup</button>
-            </div>
-
-            <div *ngIf="isLogged()">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <form class="d-flex" id="searchForm">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    </form>
+                </li>
+                <li *ngIf="isLogged()" class="nav-item  dropstart">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-user"></i>
                         {{ getName() }}
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li *ngIf="isTeacher()"><a class="dropdown-item" href="#">My courses</a></li>
+                        <li *ngIf="isStudent()"><a class="dropdown-item" href="#">My inscriptions</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#">Separated link</a></li>
+                        <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
                     </ul>
-                </div>
-            </div>
+                </li>
+                <li *ngIf="!isLogged()" class="nav-item">
+                    <button type="button" class="btn btn-outline-success" routerLink="/login">Login</button>
+                    <button type="button" class="btn btn-outline-primary" routerLink="/signup">Signup</button>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>
