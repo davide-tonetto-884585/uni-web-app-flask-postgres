@@ -27,7 +27,7 @@
                          ?skip=n                     salta i primi n corsi
                          ?limit=m                    restituisce m corsi
     /corsi/:id            -                                                  GET           Get course by id
-    /corsi               -                                                   POST          Insert new course
+    /corsi                -                                                  POST          Insert new course
    
     ------------------------------------------------------------------------------------------------------------------------------
     DA IMPLEMENTARE:
@@ -46,12 +46,17 @@
                          ?limit=m                   restituisce m doc
     /utenti/:id                                                              GET           Get user by id
     
+    ################################################ DA CONTROLLARE #############################################################
     /corsi/:id                                                               PUT           Modify course
+    #############################################################################################################################
     
     /corsi/:id/docenti                                                       GET           Get docenti del corso
     /corsi/:id/docenti                                                       POST          add docente al corso
     /corsi/:id/docenti                                                       DELETE        remove docente from course
     
+
+    #################################################### DOMANDE ################################################################
+
     /corsi/:id/domande   ... (pensare a possibili filtri)                    GET           Get domande corso
                          ?skip=n                    salta i primi n doc
                          ?limit=m                   restituisce m doc
@@ -62,6 +67,8 @@
     /corsi/:id/domande/:id/like                                              POST          Add like to question
     /corsi/:id/domande/:id/like                                              DELETE        Remove like from question  
     
+    #############################################################################################################################
+
     /corsi/:id/risorse                                                       GET           Get risorse del corso
     /corsi/:id/risorse                                                       POST          Add risorsa del corso
     /corsi/:id/risorse/:id                                                   DELETE        Remove risorsa del corso
