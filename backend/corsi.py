@@ -134,3 +134,9 @@ def get_docenti_corsi(id):
         return jsonify({'error': True, 'errormessage': 'Corso senza docenti attualmente assegnati'}), 404
     else:
         return jsonify(docenti_schemas.dump(docenti)), 200
+
+
+@corsi.route('/corsi/<id>/docenti', methods=['POST'])
+@token_required(restrict_to_roles=['amministratore'])
+def modify_corso(id, user):
+    #TODO
