@@ -4,12 +4,17 @@
         <div class="bg-image"></div>
 
         <div class="bg-text">
-            <h1>Orientamento Ca'Foscari</h1>
-            <p>Corsi di orientamento per studenti</p>
+            <h1>Educational guidance Ca'Foscari</h1>
+            <p>Educational guidance courses for students</p>
         </div>
     </div>
 
-    <div class="contaier">
-        
-    </div>
+    <app-carousel [title]="'Some courses...'" [exploreLink]="'/courses'">
+        <app-carousel-item [active]="true" *ngFor="let in of counter(courses.length / 3 | ceil), let i = index">
+            <app-course-card *ngIf="courses[i]" [course]="courses[i]"></app-course-card>
+            <app-course-card *ngIf="courses[i + 1]" [course]="courses[i + 1]"></app-course-card>
+            <app-course-card *ngIf="courses[i + 2]" [course]="courses[i + 2]"></app-course-card>
+        </app-carousel-item>
+    </app-carousel>
+    
 </div>

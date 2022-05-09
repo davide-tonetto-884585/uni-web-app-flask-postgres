@@ -61,7 +61,7 @@ def token_required(restrict_to_roles=[]):
     return decorator
 
 # route usata per aggiungere un nuovo studente 
-@auth.route('/studenti', methods=['POST'])
+@auth.route('/utenti/studenti', methods=['POST'])
 def signup_student():
     # controllo che la richiesta contenga tutte le informazioni obbligatorie
     if request.form.get('email') is None or\
@@ -122,7 +122,7 @@ def signup_student():
 
 
 # route usata per completare la registrazione di uno studente
-@auth.route('/studenti/<id>', methods=['POST'])
+@auth.route('/utenti/studenti/<id>', methods=['POST'])
 def complete_signup_student(id):
     # controllo che la richiesta contenga tutte le informazioni obbligatorie
     if request.form.get('token_verifica') is None or\
@@ -162,7 +162,7 @@ def complete_signup_student(id):
 
 
 # route usata per inserire un nuovo docente 
-@auth.route('/docenti', methods=['POST'])
+@auth.route('/utenti/docenti', methods=['POST'])
 # blocco la route agli utenti loggati con ruolo amministratore
 @token_required(restrict_to_roles=['amministratore'])
 def signup_teacher(user):
@@ -217,7 +217,7 @@ def signup_teacher(user):
 
 
 # route usata per completare la registrazione di un nuovo docente
-@auth.route('/docenti/<id>', methods=['POST'])
+@auth.route('/utenti/docenti/<id>', methods=['POST'])
 def complete_signup_teacher(id):
     # controllo che la richiesta contenga tutte le informazioni obbligatorie
     if request.form.get('token_verifica') is None or\
@@ -261,7 +261,7 @@ def complete_signup_teacher(id):
 
 
 # route usata per inserire un nuovo amministratore
-@auth.route('/amministratori/<id>', methods=['POST'])
+@auth.route('/utenti/amministratori/<id>', methods=['POST'])
 # blocco la route agli utenti loggati con ruolo amministratore
 @token_required(restrict_to_roles=['amministratore'])
 def add_administrator(user, id):

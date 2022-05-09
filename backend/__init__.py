@@ -2,13 +2,13 @@
     Endpoints            Attributes                 Description              Method        Description
     -------------------------------------------------------------------------------------------------------------------------------
     BLUEPRINT auth:
-    /studenti            ...                                                 GET           List all students
-    /studenti/           -                                                   POST          Add a new student
-    /studenti/:id        -                                                   POST          Complete student registration
-    /docenti             ...                                                 GET           List all teachers
-    /docenti             -                                                   POST          Add a new teacher
-    /docenti/:id         -                                                   POST          Complete teacher registration
-    /amministratori/:id  -                                                   POST          Add a new administrator
+    /utenti/studenti            ...                                          GET           List all students
+    /utenti/studenti/           -                                            POST          Add a new student
+    /utenti/studenti/:id        -                                            POST          Complete student registration
+    /utenti/docenti             ...                                          GET           List all teachers
+    /utenti/docenti             -                                            POST          Add a new teacher
+    /utenti/docenti/:id         -                                            POST          Complete teacher registration
+    /utenti/amministratori/:id  -                                            POST          Add a new administrator
     /login               -                                                   GET           Login an existing user, returning a JWT
 
     -------------------------------------------------------------------------------------------------------------------------------
@@ -23,23 +23,23 @@
     ------------------------------------------------------------------------------------------------------------------------------
     BLUEPRINT corsi:
     /corsi               ?lingua                                             GET           List all courses
-                         ?name=nome                  prende i corsi per nome
-                         ?skip=n                     salta i primi n corsi
-                         ?limit=m                    restituisce m corsi
-    /corsi/:id            -                                                  GET           Get course by id
+                         ?name=nome                 prende i corsi per nome
+                         ?skip=n                    salta i primi n corsi
+                         ?limit=m                   restituisce m corsi
+    /corsi/:id           -                                                   GET           Get course by id
     /corsi               -                                                   POST          Insert new course
    
     ------------------------------------------------------------------------------------------------------------------------------
     DA IMPLEMENTARE:
-    /studenti            ... (pensare a possibili filtri)                    GET           List all students
+    /utenti/studenti     ... (pensare a possibili filtri)                    GET           List all students
                          ?skip=n                    salta i primi n stud
                          ?limit=m                   restituisce m stud
-    /stuenti/:id                                                             GET           Get student by id
+    /utenti/stuenti/:id                                                      GET           Get student by id
     
-    /docenti             ... (pensare a possibili filtri)                    GET           List all teachers
+    /utenti/docenti      ... (pensare a possibili filtri)                    GET           List all teachers
                          ?skip=n                    salta i primi n doc
                          ?limit=m                   restituisce m doc
-    /docenti/:id                                                             GET           Get docente by id
+    /utenti/docenti/:id                                                      GET           Get docente by id
     
     /utenti              ... (pensare a possibili filtri)                    GET           List all users
                          ?skip=n                    salta i primi n doc

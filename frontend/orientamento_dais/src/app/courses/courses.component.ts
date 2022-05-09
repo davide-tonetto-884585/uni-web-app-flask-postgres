@@ -5,14 +5,11 @@ import { Router } from '@angular/router';
 import { Course } from '../models';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
-  providers: [
-    { provide: CourseHttpService, useClass: CourseHttpService }
-  ]
+  selector: 'app-courses',
+  templateUrl: './courses.component.html',
+  styleUrls: ['./courses.component.css']
 })
-export class HomeComponent implements OnInit {
+export class CoursesComponent implements OnInit {
   private limit: number = 9;
   private skip: number = 0;
   courses: Course[] = [];
@@ -33,9 +30,5 @@ export class HomeComponent implements OnInit {
         this.courses = courses;
       }
     })
-  }
-
-  counter(i: number) {
-    return new Array(i);
   }
 }

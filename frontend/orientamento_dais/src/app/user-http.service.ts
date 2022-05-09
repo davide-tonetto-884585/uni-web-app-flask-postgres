@@ -4,7 +4,6 @@ import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import jwt_decode from 'jwt-decode';
 
-import { Router } from '@angular/router';
 import { User, UserData } from './models';
 import { BACKEND_URL, FRONTEND_URL } from './globals';
 
@@ -15,7 +14,7 @@ export class UserHttpService {
   private token: string;
   private user_data: UserData | null;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient) {
     this.token = localStorage.getItem('token') ?? '';
     if (this.token.length < 1) {
       this.token = ""
@@ -23,6 +22,10 @@ export class UserHttpService {
     } else {
       this.user_data = jwt_decode<UserData>(this.token);
     }
+  }
+
+  getToken(): string {
+    return this.token;
   }
 
   login(mail: string, password: string, remember: boolean): Observable<any> {
@@ -58,7 +61,7 @@ export class UserHttpService {
 
     form_data.append('frontend_activation_link', `${FRONTEND_URL}/activate`);
 
-    return this.http.post(BACKEND_URL + '/studenti', form_data).pipe(
+    return this.http.post(BACKEND_URL + '/utenti/studenti', form_data).pipe(
       tap((data: any) => {
         console.log(JSON.stringify(data));
       })
@@ -73,7 +76,7 @@ export class UserHttpService {
 
     form_data.append('token_verifica', token);
 
-    return this.http.post(BACKEND_URL + '/studenti/' + id, form_data).pipe(
+    return this.http.post(BACKEND_URL + '/utenti/studenti/' + id, form_data).pipe(
       tap((data: any) => {
         console.log(JSON.stringify(data));
       })

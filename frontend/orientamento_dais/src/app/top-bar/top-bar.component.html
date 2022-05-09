@@ -23,10 +23,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" routerLink="/home">Home</a>
+                    <a [class]="'nav-link ' + (getUrl() === '/home' ? 'active' : '')" aria-current="page" routerLink="/home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Courses</a>
+                    <a [class]="'nav-link ' + (getUrl() === '/courses' ? 'active' : '')" routerLink="/courses">Courses</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">About us</a>
@@ -36,7 +36,10 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <form class="d-flex" id="searchForm">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <div class="input-group">
+                            <input class="form-control" type="search" placeholder="Search" aria-label="Search" aria-describedby="button-search">
+                            <button class="btn btn-outline-danger" type="button" id="button-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
                     </form>
                 </li>
                 <li *ngIf="isLogged()" class="nav-item  dropstart">

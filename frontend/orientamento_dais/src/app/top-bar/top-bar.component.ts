@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { UserHttpService } from '../user-http.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-top-bar',
@@ -10,10 +11,15 @@ import { UserHttpService } from '../user-http.service';
 export class TopBarComponent implements OnInit {
 
   constructor(
-    private user_http: UserHttpService
+    private user_http: UserHttpService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
+  }
+
+  getUrl(): string {
+    return this.router.url;
   }
 
   isLogged(): boolean {

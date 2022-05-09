@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { NgCeilPipeModule } from 'angular-pipes';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,6 +14,9 @@ import { ActivateProfileComponent } from './activate-profile/activate-profile.co
 import { HomeComponent } from './home/home.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { CourseCardComponent } from './course-card/course-card.component';
+import { CarouselComponent } from './carousel/carousel.component';
+import { CarouselItemComponent } from './carousel-item/carousel-item.component';
+import { CoursesComponent } from './courses/courses.component';
 
 @NgModule({
   declarations: [
@@ -22,16 +26,20 @@ import { CourseCardComponent } from './course-card/course-card.component';
     ActivateProfileComponent,
     HomeComponent,
     TopBarComponent,
-    CourseCardComponent
+    CourseCardComponent,
+    CarouselComponent,
+    CarouselItemComponent,
+    CoursesComponent
   ],
   imports: [
-    FormsModule, 
+    FormsModule,
     HttpClientModule,
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgCeilPipeModule
   ],
   providers: [
-    {provide: UserHttpService, useClass: UserHttpService }
+    { provide: UserHttpService, useClass: UserHttpService }
   ],
   bootstrap: [AppComponent]
 })
