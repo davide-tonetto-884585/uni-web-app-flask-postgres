@@ -48,9 +48,9 @@
     
     ################################################ DA CONTROLLARE #############################################################
     /corsi/:id                                                               PUT           Modify course
+    /corsi/:id/docenti                                                       GET           Get docenti del corso
     #############################################################################################################################
     
-    /corsi/:id/docenti                                                       GET           Get docenti del corso
     /corsi/:id/docenti                                                       POST          add docente al corso
     /corsi/:id/docenti                                                       DELETE        remove docente from course
     
