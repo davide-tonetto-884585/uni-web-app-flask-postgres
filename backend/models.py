@@ -23,3 +23,6 @@ class Scuola(Base):
 
 class Corso(Base):
     __table__ = Base.metadata.tables['corsi']
+    
+class DocenteCorso(Base):
+    __table__ = Base.metadata.tables['docenti_corso']

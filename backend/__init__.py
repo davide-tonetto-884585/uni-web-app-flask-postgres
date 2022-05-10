@@ -28,8 +28,16 @@
                          ?limit=m                    restituisce m corsi
     /corsi/:id            -                                                  GET           Get course by id
     /corsi                -                                                  POST          Insert new course
+    /corsi/:id/docenti                                                       GET           Get docenti del corso
+    /corsi/:id                                                               PUT           Modify course
    
     ------------------------------------------------------------------------------------------------------------------------------
+    DA CONTROLLARE:
+    /corsi/:id                                                               PUT           Modify course
+    /corsi/:id/docenti                                                       POST          add docente al corso
+    
+    ------------------------------------------------------------------------------------------------------------------------------
+    
     DA IMPLEMENTARE:
     /utenti/studenti     ... (pensare a possibili filtri)                    GET           List all students
                          ?skip=n                    salta i primi n stud
@@ -45,15 +53,27 @@
                          ?skip=n                    salta i primi n doc
                          ?limit=m                   restituisce m doc
     /utenti/:id                                                              GET           Get user by id
-    
-    ################################################ DA CONTROLLARE #############################################################
-    /corsi/:id                                                               PUT           Modify course
-    /corsi/:id/docenti                                                       GET           Get docenti del corso
-    #############################################################################################################################
-    
-    /corsi/:id/docenti                                                       POST          add docente al corso
     /corsi/:id/docenti                                                       DELETE        remove docente from course
+    /corsi/:id                                                               DELETE        remove course
     
+    /aule                                                                    POST          add aula
+    /aule                                                                    GET     
+    /aule/:id                                                                GET    
+    
+    /corso/:id/programmazione_corso                                          POST          Add prog corso
+    /corso/:id/programmazione_corso/                                         GET
+    /corso/:id/programmazione_corso/:id                                      GET
+    
+    /corso/:id/programmazione_corso/lezioni                                  POST          add lezione
+    /corso/:id/programmazione_corso/lezioni                                  GET
+    /corso/:id/programmazione_corso/lezioni/:id                              GET
+    
+    /corso/:id/programmazione_corso/lezioni/:id/presenze                     GET
+    /corso/:id/programmazione_corso/lezioni/:id/presenze                     POST
+    
+    /corso/programmazione_corso/:id/iscrizioni                               POST
+    /corso/programmazione_corso/:id/iscrizioni                               GET
+    /corso/programmazione_corso/:id/iscrizioni/:id_studente                  DELETE
 
     #################################################### DOMANDE ################################################################
 

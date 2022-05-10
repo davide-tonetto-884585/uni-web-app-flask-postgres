@@ -23,10 +23,12 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a [class]="'nav-link ' + (getUrl() === '/home' ? 'active' : '')" aria-current="page" routerLink="/home">Home</a>
+                    <a [class]="'nav-link ' + (getUrl() === '/home' ? 'active' : '')" aria-current="page"
+                        routerLink="/home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a [class]="'nav-link ' + (getUrl() === '/courses' ? 'active' : '')" routerLink="/courses">Courses</a>
+                    <a [class]="'nav-link ' + (getUrl() === '/courses' ? 'active' : '')"
+                        routerLink="/courses">Courses</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">About us</a>
@@ -37,12 +39,14 @@
                 <li class="nav-item">
                     <form class="d-flex" id="searchForm">
                         <div class="input-group">
-                            <input class="form-control" type="search" placeholder="Search" aria-label="Search" aria-describedby="button-search">
-                            <button class="btn btn-outline-danger" type="button" id="button-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <input class="form-control" type="search" placeholder="Search" aria-label="Search"
+                                aria-describedby="button-search">
+                            <button class="btn btn-outline-danger" type="button" id="button-search"><i
+                                    class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
                 </li>
-                <li *ngIf="isLogged()" class="nav-item  dropstart">
+                <li *ngIf="isLogged()" class="nav-item dropstart">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa-solid fa-user"></i>
@@ -59,8 +63,10 @@
                     </ul>
                 </li>
                 <li *ngIf="!isLogged()" class="nav-item">
-                    <button type="button" class="btn btn-outline-success" routerLink="/login">Login</button>
-                    <button type="button" class="btn btn-outline-primary" routerLink="/signup">Signup</button>
+                    <div id="log_but" class="mx-auto">
+                        <button type="button" class="btn btn-outline-success mt-1" routerLink="/login">Login</button>
+                        <button type="button" class="btn btn-outline-primary mt-1" routerLink="/signup">Signup</button>
+                    </div>
                 </li>
             </ul>
         </div>

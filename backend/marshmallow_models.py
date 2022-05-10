@@ -8,6 +8,7 @@ from .models import Docente, Scuola, Corso
 class ScuolaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Scuola
+        include_fk = True
         include_relationships = True
         load_instance = True
 
@@ -15,11 +16,14 @@ class ScuolaSchema(SQLAlchemyAutoSchema):
 class CorsoSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Corso
+        include_fk = True
         include_relationships = True
         load_instance = True
+
 
 class DocenteSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Docente
+        include_fk = True
         include_relationships = True
         load_instance = True

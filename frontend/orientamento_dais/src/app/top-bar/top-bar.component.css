@@ -15,3 +15,7 @@ cite {
 #searchForm {
   margin-top: 3px;
 }
+
+#log_but {
+  width: fit-content;
+}
