@@ -3,18 +3,24 @@ import string
 import hmac
 import hashlib
 import jwt  # PyJWT
+import json
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, jsonify, request, current_app
 
+from .marshmallow_models import StudenteSchema
 from .models import Utente, Studente, Docente, Amministratore
 from .utils import send_mail, load_file
-from . import PreLoginSession, SessionAmministratori
+from . import PreLoginSession, SessionAmministratori, SessionDocenti, SessionStudenti
 
 preLoginSession = PreLoginSession()
 sessionAmministratori = SessionAmministratori()
+SessionDocenti = SessionDocenti()
 
 auth = Blueprint('auth', __name__)
+
+studenti_schema = StudenteSchema(many=True)
+studente_schema = StudenteSchema()
 
 # decoratore utilizzato per controllare che la richiesta contenga un token di autenticazione valido se richiesto
 # e inoltre per controllare se l'utente soddisfa i requisiti per accedere alla risorsa
@@ -336,3 +342,48 @@ def login():
         return jsonify({'error': False, 'errormessage': '', 'token': token}), 200
 
     return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
+
+
+@auth.route('/utenti/studenti', methods=['GET'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])
+def get_students(user):
+    skip = request.args('skip')
+    limit = request.args('limit')
+    name = request.args('name')
+    surname = request.args('surname')
+
+    # TODO: Ha senso joinare con Utente oppure è meglio cercare solo dentro Studenti?
+    # TODO: Aggiungere anche la scuola da cui proviene?
+    studenti = preLoginSession.\
+            query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio).\
+            join(Utente, Utente.id == Studente.id).order_by(Utente.cognome, Utente.nome)
+
+    if name is not None:
+        studenti = studenti.filter(Utente.nome.like('%' + name + '%'))
+    if surname is not None:
+        studenti = studenti.filter(Utente.cognome.like('%' + surname + '%'))
+    if skip is not None:
+        studenti = studenti.offset(skip)
+    if limit is not None:
+        studenti = studenti.limit(limit)
+
+    if studenti is None:
+        return jsonify({'error': True, 'errormessage': 'Nessun studente iscritto al corso'}), 404
+    else:
+        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
+
+
+@auth.route('/utenti/studenti/<id>', methods=['GET'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])
+def get_student(user, id):
+    studente = SessionDocenti.query(Studente).filter(Studente.id == id)
+
+    try:
+        studente = studente.first()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire lo studente: ' + str(e)}), 404
+
+    if studente is None:
+        return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 404
+    else:
+        return jsonify(studente_schema.dump(studente)), 200
