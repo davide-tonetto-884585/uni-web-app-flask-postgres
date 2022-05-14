@@ -146,7 +146,7 @@ def add_docente_corso(user, id):
 
 	try:
 		for id_docente in id_docenti_to_add:
-			sessionAmministratori.add(DocenteCorso(id_corso=id_docente, id_corso=id))
+			sessionAmministratori.add(DocenteCorso(id_docente=id_docente, id_corso=id))
 
 		sessionAmministratori.commit()
 	except Exception as e:
