@@ -49,20 +49,23 @@
 					?skip=n                     salta i primi n stud
 					?limit=m                    restituisce m stud
 	/utenti/stuenti/:id														GET           Get student by id
+	/utenti/docenti															GET           List all teachers
+						?name=nome                  cerca per nome
+						?surname=cognome            cerca per cognome
+						?skip=n                     salta i primi n utenti
+						?limit=m                    restituisce m utenti
+	/utenti/docenti/:id                                                     GET           Get docente by id
+	/utenti																	GET           List all users
+						?name=nome                  cerca per nome
+						?surname=cognome            cerca per cognome
+						?birthdate=birthdate		cerca per data di nascita (precisa)
+						?skip=n						salta i primi n utenti
+						?limit=m					restituisce m utenti
+	/utenti/:id                                                             GET           Get user by id
 	
 	------------------------------------------------------------------------------------------------------------------------------
 	
 	DA IMPLEMENTARE:
-	
-	/utenti/docenti      ... (pensare a possibili filtri)                    GET           List all teachers
-						 ?skip=n                    salta i primi n doc
-						 ?limit=m                   restituisce m doc
-	/utenti/docenti/:id                                                      GET           Get docente by id
-	
-	/utenti              ... (pensare a possibili filtri)                    GET           List all users
-						 ?skip=n                    salta i primi n doc
-						 ?limit=m                   restituisce m doc
-	/utenti/:id                                                              GET           Get user by id
 	/corsi/:id/docenti                                                       DELETE        remove docente from course
 	/corsi/:id                                                               DELETE        remove course
 	/corsi/:id/studenti                                                      GET           Get all students registred to course :id

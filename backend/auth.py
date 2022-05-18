@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, jsonify, request, current_app
 
-from .marshmallow_models import StudenteSchema, DocenteSchema
+from .marshmallow_models import StudenteSchema, DocenteSchema, UtenteSchema
 from .models import Utente, Studente, Docente, Amministratore
 from .utils import send_mail, load_file
 from . import PreLoginSession, SessionAmministratori, SessionDocenti
@@ -23,6 +23,8 @@ auth = Blueprint('auth', __name__)
 #studenti_schema = StudenteSchema(many=True)
 studente_schema = StudenteSchema()
 docente_schema = DocenteSchema()
+utenti_schema = UtenteSchema(many = True)
+utente_schema = UtenteSchema()
 
 # decoratore utilizzato per controllare che la richiesta contenga un token di autenticazione valido se richiesto
 # e inoltre per controllare se l'utente soddisfa i requisiti per accedere alla risorsa
@@ -428,3 +430,52 @@ def get_docente(id):
         return jsonify({'error': True, 'errormessage': 'Docente inesistente'}), 404
     else:
         return jsonify(docente_schema.dump(docente)), 200
+
+
+"""
+    /utenti              ... (pensare a possibili filtri)                    GET           List all users
+						 ?skip=n                    salta i primi n doc
+						 ?limit=m                   restituisce m doc
+	/utenti/:id                                                              GET           Get user by id
+"""
+@auth.route('/utenti', methods=['GET'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])
+def get_users(user):
+    skip = request.args('skip')
+    limit = request.args('limit')
+    name = request.args('name')
+    surname = request.args('surname')
+    birthdate = request.args('birthdate')
+
+    utenti = SessionDocenti.query(Studente).order_by(Utente.cognome, Utente.nome)
+
+    if name is not None:
+        utenti = utenti.filter(Utente.nome.like('%' + name + '%'))
+    if surname is not None:
+        utenti = utenti.filter(Utente.cognome.like('%' + surname + '%'))
+    if birthdate is not None:
+        utenti = utenti.filter(Utente.date_time == birthdate)
+    if skip is not None:
+        utenti = utenti.offset(skip)
+    if limit is not None:
+        utenti = utenti.limit(limit)
+
+    if utenti is None:
+        return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun utente'}), 404
+    else:
+        return jsonify(utenti_schema.dump(utenti.all())), 200
+
+
+@auth.route('/utenti/<id>', methods=['GET'])
+def get_docente(id):
+    utente = SessionDocenti.query(Utente).filter(Utente.id == id)
+
+    try:
+        utente = utente.first()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'utente: ' + str(e)}), 404
+
+    if utente is None:
+        return jsonify({'error': True, 'errormessage': 'Utente inesistente'}), 404
+    else:
+        return jsonify(utente_schema.dump(utente)), 200
