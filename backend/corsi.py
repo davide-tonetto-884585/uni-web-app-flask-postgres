@@ -144,11 +144,12 @@ def add_docente_corso(user, id):
     # è già un array?   (Assumiamo che lo sia)
     id_docenti_to_add = set(request.post.get('id_docenti'))
 
-	try:
-		for id_docente in id_docenti_to_add:
-			sessionAmministratori.add(DocenteCorso(id_docente=id_docente, id_corso=id))
+    try:
+        for id_docente in id_docenti_to_add:
+            sessionAmministratori.add(DocenteCorso(
+                id_docente=id_docente, id_corso=id))
 
-        sessionAmministratori.commit()
+            sessionAmministratori.commit()
     except Exception as e:
         sessionAmministratori.rollback()
         return jsonify({'error': True, 'errormessage': 'Impossibile aggiungere uno (o più) docenti al corso'}), 500
@@ -164,8 +165,9 @@ def get_corsi_docente(id):
             filter(DocenteCorso.id_docente == id).all()
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire corsi del docente: ' + str(e)}), 404
-    
+
     return jsonify(corsi_schemas.dump(corsi)), 200
+
 
 @corsi.route('/corsi/<id>/docenti', methods=['DELETE'])
 @token_required(restrict_to_roles=['amministratore'])
@@ -174,7 +176,8 @@ def remove_docente(user, id):
 
     try:
         for id_docente in id_docenti_to_remove:
-            sessionAmministratori.delete(DocenteCorso(id_docente = id_docente, id_corso = id))
+            sessionAmministratori.delete(DocenteCorso(
+                id_docente=id_docente, id_corso=id))
 
         sessionAmministratori.commit()
     except Exception as e:
@@ -186,9 +189,9 @@ def remove_docente(user, id):
 
 @corsi.route('/corsi/<id>', methods=['DELETE'])
 @token_required(restrict_to_roles=['amministratore'])
-def remove_docente(user, id):
+def remove_course(user, id):
     try:
-        sessionAmministratori.delete(Corso(id = id))
+        sessionAmministratori.delete(Corso(id=id))
         sessionAmministratori.commit()
     except Exception as e:
         sessionAmministratori.rollback()
@@ -197,9 +200,9 @@ def remove_docente(user, id):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-## TODO: CONTROLLARE CHE SIA GIUSTA DOPO IL COMMIT DI TONETTO
+# TODO: CONTROLLARE CHE SIA GIUSTA DOPO IL COMMIT DI TONETTO
 @corsi.route('/corsi/:id/studenti ', methods=['GET'])
-def remove_docente(id):
+def get_studenti_corso(id):
     try:
         studenti = preLoginSession.\
             query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio, Studente.id_scuola).\
@@ -207,7 +210,7 @@ def remove_docente(id):
             join(IscrizioniCorso, Studente.id == IscrizioniCorso.id_studente).\
             join(ProgrammazioneCorso, IscrizioniCorso.id_programmazione_corso == ProgrammazioneCorso.id).\
             filter(ProgrammazioneCorso.id_corso == id).all()
-            
+
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire docenti del corso: ' + str(e)}), 404
 
