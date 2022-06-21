@@ -23,9 +23,19 @@ class Scuola(Base):
 
 class Corso(Base):
     __table__ = Base.metadata.tables['corsi']
+
+
+class ProgrammazioneCorso(Base):
+    __table__ = Base.metadata.tables['programmazione_corso']
+
     
 class DocenteCorso(Base):
     __table__ = Base.metadata.tables['docenti_corso']
     
-class ProgrammazioneCorso(Base):
-    __table__ = Base.metadata.tables['programmazione_corso']
+
+class Aula(Base):
+    __table__ = Base.metadata.tables['aule']
+
+
+class IscrizioniCorso(Base):
+    __table__ = Base.metadata.tables['iscrizioni_corso']
