@@ -75,10 +75,7 @@
 	------------------------------------------------------------------------------------------------------------------------------
 	
 	DA IMPLEMENTARE:
-	/corsi/:id/docenti                                                       DELETE        remove docente from course
-	/corsi/:id                                                               DELETE        remove course
-	/corsi/:id/studenti                                                      GET           Get all students registred to course :id
-	
+
 	/corso/:id/programmazione_corso                                          POST          Add prog corso
 	/corso/:id/programmazione_corso/                                         GET
 	/corso/:id/programmazione_corso/:id                                      GET
@@ -196,5 +193,9 @@ def create_app():
 	# blueprint per i corsi
 	from .corsi import corsi as corsi_blueprint
 	app.register_blueprint(corsi_blueprint)
+
+	#blueprint per le aule
+	from .aule import aule as aule_blueprint
+	app.register_blueprint(aule_blueprint)
 
 	return app
