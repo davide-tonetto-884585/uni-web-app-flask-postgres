@@ -62,13 +62,14 @@
 						?skip=n						salta i primi n utenti
 						?limit=m					restituisce m utenti
 	/utenti/:id                                                             GET           Get user by id
-    /aule                                                                   POST          Add aula
-    /aule                                                                   GET           Get aula
-                    ?name=nome                  cerca per nome
-                    ?building=edificio          cerca per edificio
-                    ?campus=campus      		cerca per campus
-                    ?skip=n						salta le prime n aule
-                    ?limit=m					restituisce m aule
+  
+  /aule                                                                   POST          Add aula
+  /aule                                                                   GET           Get aula
+                  ?name=nome                  cerca per nome
+                  ?building=edificio          cerca per edificio
+                  ?campus=campus      		cerca per campus
+                  ?skip=n						salta le prime n aule
+                  ?limit=m					restituisce m aule
 	/aule/:id                                                               GET           Get aula by id
 	
 	------------------------------------------------------------------------------------------------------------------------------
