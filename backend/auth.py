@@ -432,12 +432,6 @@ def get_docente(id):
         return jsonify(docente_schema.dump(docente)), 200
 
 
-"""
-    /utenti              ... (pensare a possibili filtri)                    GET           List all users
-						 ?skip=n                    salta i primi n doc
-						 ?limit=m                   restituisce m doc
-	/utenti/:id                                                              GET           Get user by id
-"""
 @auth.route('/utenti', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def get_users(user):
@@ -467,7 +461,8 @@ def get_users(user):
 
 
 @auth.route('/utenti/<id>', methods=['GET'])
-def get_docente(id):
+@token_required(restrict_to_roles=['amministratore', 'docente'])
+def get_user(user, id):
     utente = SessionDocenti.query(Utente).filter(Utente.id == id)
 
     try:

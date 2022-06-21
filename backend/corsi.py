@@ -2,9 +2,9 @@ import json
 from flask import Blueprint, jsonify, request
 
 from . import PreLoginSession, SessionDocenti, SessionAmministratori
-from .marshmallow_models import CorsoSchema, DocenteSchema
+from .marshmallow_models import AulaSchema, CorsoSchema, DocenteSchema
 from .auth import token_required
-from .models import Corso, Docente, DocenteCorso, Utente
+from .models import Corso, Docente, DocenteCorso, Utente, Aula
 from .utils import load_file
 
 corsi = Blueprint('corsi', __name__)
@@ -17,6 +17,8 @@ sessionAmministratori = SessionAmministratori()
 corsi_schemas = CorsoSchema(many=True)
 corsi_schema = CorsoSchema()  # converte un singolo oggetto corso in json
 docenti_schemas = DocenteSchema(many=True)
+aule_schema = AulaSchema(many=True)
+aula_schema = AulaSchema()
 
 
 @corsi.route('/corsi', methods=['GET'])
@@ -154,3 +156,82 @@ def add_docente_corso(user, id):
 
 	return jsonify({'error': False, 'errormessage': ''}), 200
 
+
+"""
+	/aule                                                                    POST           add aula
+"""
+@corsi.route('/aule', methods=['GET'])
+def get_aule():
+    skip = request.args('skip')
+    limit = request.args('limit')
+    name = request.args('name')
+    building = request.args('building')
+    campus = request.args('campus')
+
+    aule = preLoginSession.query(Aula).order_by(Aula.campus, Aula.edificio, Aula.nome, Aula.capienza)
+
+    if name is not None:
+        aule = aule.filter(Aula.nome.like('%' + name + '%'))
+    if building is not None:
+        aule = aule.filter(Aula.building.like('%' + building + '%'))
+    if campus is not None:
+        aule = aule.filter(Aula.campus.like('%' + campus + '%'))
+    if skip is not None:
+        aule = aule.offset(skip)
+    if limit is not None:
+        aule = aule.limit(limit)
+
+    if aule is None:
+        return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun utente'}), 404
+    else:
+        return jsonify(aule_schema.dump(aule.all())), 200
+
+
+@corsi.route('/aule/<id>', methods=['GET'])
+def get_aula(id):
+    aula = preLoginSession.query(Aula).filter(Aula.id == id)
+
+    try:
+        aula = aula.first()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'aula: ' + str(e)}), 404
+
+    if aula is None:
+        return jsonify({'error': True, 'errormessage': 'Aula inesistente'}), 404
+    else:
+        return jsonify(aula_schema.dump(aula)), 200
+
+
+@corsi.route('/corsi', methods=['POST'])
+@token_required(restrict_to_roles=['amministratore'])
+def add_corso(user):
+    name = request.form.get('name')
+    building = request.form.get('building')
+    campus = request.form.get('campus')
+    capacity = request.form.get('capacity')
+
+    if name is None:
+        return jsonify({'error': True, 'errormessage': 'Nome mancante'}), 404
+
+    if building is None:
+        return jsonify({'error': True, 'errormessage': 'Edificio mancante'}), 404
+
+    if campus is None:
+        return jsonify({'error': True, 'errormessage': 'Campus mancante'}), 404
+
+    if capacity is None:
+        return jsonify({'error': True, 'errormessage': 'Capienza mancante'}), 404
+
+    if sessionAmministratori.query(Aula).filter(Aula.nome == name, Aula.campus == campus, Aula.edificio == building).first():
+        return jsonify({'error': True, 'errormessage': 'Aula gia\' esistente con le stesse informazioni'}), 404
+
+    new_aula = Aula(nome=name, edificio=building, campus=campus, capienza=capacity)
+
+    try:
+        sessionDocenti.add(new_aula)
+        sessionDocenti.commit()
+    except Exception as e:
+        sessionDocenti.rollback()
+        return jsonify({'error': True, 'errormessage': 'Errore inserimento aula' + str(e)}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
