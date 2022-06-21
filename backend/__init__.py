@@ -63,8 +63,8 @@
 						?limit=m					restituisce m utenti
 	/utenti/:id                                                             GET           Get user by id
   
-  /aule                                                                   POST          Add aula
-  /aule                                                                   GET           Get aula
+	/aule                                                                   POST          Add aula
+	/aule                                                                   GET           Get aula
                   ?name=nome                  cerca per nome
                   ?building=edificio          cerca per edificio
                   ?campus=campus      		cerca per campus
