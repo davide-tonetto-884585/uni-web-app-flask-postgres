@@ -2,9 +2,9 @@ import json
 from flask import Blueprint, jsonify, request
 
 from . import PreLoginSession, SessionDocenti, SessionAmministratori
-from .marshmallow_models import AulaSchema, CorsoSchema, DocenteSchema
+from .marshmallow_models import CorsoSchema, DocenteSchema
 from .auth import token_required
-from .models import Corso, Docente, DocenteCorso, Utente, Aula
+from .models import Corso, Docente, DocenteCorso, Studente, Utente, ProgrammazioneCorso, IscrizioniCorso
 from .utils import load_file
 
 corsi = Blueprint('corsi', __name__)
@@ -17,8 +17,6 @@ sessionAmministratori = SessionAmministratori()
 corsi_schemas = CorsoSchema(many=True)
 corsi_schema = CorsoSchema()  # converte un singolo oggetto corso in json
 docenti_schemas = DocenteSchema(many=True)
-aule_schema = AulaSchema(many=True)
-aula_schema = AulaSchema()
 
 
 @corsi.route('/corsi', methods=['GET'])
@@ -157,11 +155,51 @@ def add_docente_corso(user, id):
 	return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-"""
-    /corsi/:id/docenti                                                       DELETE        remove docente from course
-	/corsi/:id                                                               DELETE        remove course
-	/corsi/:id/studenti                                                      GET           Get all students registred to course :id
-"""
-
-@corsi.route('/corsi/<id>/docenti', methods=['POST'])
+@corsi.route('/corsi/<id>/docenti', methods=['DELETE'])
 @token_required(restrict_to_roles=['amministratore'])
+def remove_docente(user, id):
+    id_docenti_to_remove = set(request.post.get('id_docenti'))
+
+    try:
+        for id_docente in id_docenti_to_remove:
+            sessionAmministratori.delete(DocenteCorso(id_docente = id_docente, id_corso = id))
+
+        sessionAmministratori.commit()
+    except Exception as e:
+        sessionAmministratori.rollback()
+        return jsonify({'error': True, 'errormessage': 'Impossibile eliminare uno (o più) docenti dal corso'}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+@corsi.route('/corsi/<id>', methods=['DELETE'])
+@token_required(restrict_to_roles=['amministratore'])
+def remove_docente(user, id):
+    try:
+        sessionAmministratori.delete(Corso(id = id))
+        sessionAmministratori.commit()
+    except Exception as e:
+        sessionAmministratori.rollback()
+        return jsonify({'error': True, 'errormessage': 'Impossibile eliminare uno (o più) corsi'}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+## TODO: CONTROLLARE CHE SIA GIUSTA DOPO IL COMMIT DI TONETTO
+@corsi.route('/corsi/:id/studenti ', methods=['GET'])
+def remove_docente(id):
+    try:
+        studenti = preLoginSession.\
+            query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio, Studente.id_scuola).\
+            join(Utente, Utente.id == Studente.id).\
+            join(IscrizioniCorso, Studente.id == IscrizioniCorso.id_studente).\
+            join(ProgrammazioneCorso, IscrizioniCorso.id_programmazione_corso == ProgrammazioneCorso.id).\
+            filter(ProgrammazioneCorso.id_corso == id).all()
+            
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire docenti del corso: ' + str(e)}), 404
+
+    if studenti is None:
+        return jsonify({'error': True, 'errormessage': 'Corso senza studenti registrati'}), 404
+    else:
+        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
