@@ -17,6 +17,7 @@ import { CourseCardComponent } from './course-card/course-card.component';
 import { CarouselComponent } from './carousel/carousel.component';
 import { CarouselItemComponent } from './carousel-item/carousel-item.component';
 import { CoursesComponent } from './courses/courses.component';
+import { CourseDetailComponent } from './course-detail/course-detail.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { CoursesComponent } from './courses/courses.component';
     CourseCardComponent,
     CarouselComponent,
     CarouselItemComponent,
-    CoursesComponent
+    CoursesComponent,
+    CourseDetailComponent
   ],
   imports: [
     FormsModule,

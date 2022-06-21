@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
-import jwt_decode from 'jwt-decode';
 
 import { Course } from './models';
 import { BACKEND_URL, FRONTEND_URL } from './globals';
@@ -51,4 +50,9 @@ export class CourseHttpService {
     ).pipe(catchError(this.handleError));
   }
 
+  getCourse(id: any): Observable<Course> {
+    return this.http.get<Course>(
+      `${BACKEND_URL}/corsi/${id}`
+    ).pipe(catchError(this.handleError));
+  }
 }

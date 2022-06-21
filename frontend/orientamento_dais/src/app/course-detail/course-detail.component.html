@@ -1,0 +1,20 @@
+<app-top-bar></app-top-bar>
+<div id="main-div">
+    <br>
+    <div class="container">
+        <div class="constainer row">
+            <div class="col">
+                <h1>{{ this.course?.titolo }}</h1>
+                <h3>{{ this.course?.descrizione }}</h3>
+                <p>Language: <strong>{{ this.course?.lingua }}</strong></p>
+            </div>
+            <div *ngIf="this.course?.immagine_copertina" class="col">
+                <img src="{{ this.course?.immagine_copertina }}">
+            </div>
+        </div>
+    </div>
+    <div class="col text-center">
+        <button type="button" class="btn btn-danger">Enroll</button>
+    </div>
+    <br>
+</div>

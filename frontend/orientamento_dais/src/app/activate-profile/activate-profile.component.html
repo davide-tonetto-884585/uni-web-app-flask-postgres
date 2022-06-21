@@ -87,8 +87,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="formFile" class="form-label">Profile image</label>
-            <input class="form-control" type="file" id="formFile">
+            <label for="formFile" class="form-label">Default file input example</label>
+            <input class="form-control" type="file" id="formFile" name="immagine_profilo" (change)="onFileSelected($event)">
         </div>
 
         <div *ngIf="errormessage" class="alert alert-danger" role="alert">

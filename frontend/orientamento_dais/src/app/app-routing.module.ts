@@ -6,6 +6,7 @@ import { StudentSignupComponent } from './student-signup/student-signup.componen
 import { ActivateProfileComponent } from './activate-profile/activate-profile.component';
 import { HomeComponent } from './home/home.component';
 import { CoursesComponent } from './courses/courses.component';
+import { CourseDetailComponent } from './course-detail/course-detail.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'login', component: UserLoginComponent },
   { path: 'signup', component: StudentSignupComponent },
   { path: 'activate/:category/:token/:user_id', component: ActivateProfileComponent },
-  { path: 'courses', component: CoursesComponent }
+  { path: 'courses', component: CoursesComponent },
+  { path: 'course/:id', component: CourseDetailComponent }
 ];
 
 @NgModule({

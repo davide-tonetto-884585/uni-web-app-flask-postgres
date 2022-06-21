@@ -30,6 +30,7 @@
     /corsi                -                                                  POST          Insert new course
     /corsi/:id/docenti                                                       GET           Get docenti del corso
     /corsi/:id                                                               PUT           Modify course
+    /utenti/docenti/:id/corsi                                                GET           get corsi docente
    
     ------------------------------------------------------------------------------------------------------------------------------
     DA CONTROLLARE:
@@ -53,7 +54,7 @@
                          ?skip=n                    salta i primi n doc
                          ?limit=m                   restituisce m doc
     /utenti/:id                                                              GET           Get user by id
-    /corsi/:id/docenti                                                       DELETE        remove docente from course
+    /corsi/:id/docenti/:id_docente                                           DELETE        remove docente from course
     /corsi/:id                                                               DELETE        remove course
     
     /aule                                                                    POST          add aula
@@ -177,5 +178,9 @@ def create_app():
     # blueprint per i corsi
     from .corsi import corsi as corsi_blueprint
     app.register_blueprint(corsi_blueprint)
+    
+    # blueprint per programmazione corsi e lezioni 
+    from .programmazione_corsi import prog_corsi as prog_corsi_blueprint
+    app.register_blueprint(prog_corsi_blueprint)
 
     return app

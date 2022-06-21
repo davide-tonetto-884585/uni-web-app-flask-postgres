@@ -142,16 +142,29 @@ def get_docenti_corsi(id):
 @corsi.route('/corsi/<id>/docenti', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore'])
 def add_docente_corso(user, id):
-	id_docenti_to_add = set(request.post.get('id_docenti'))		# è già un array?   (Assumiamo che lo sia)
+    # è già un array?   (Assumiamo che lo sia)
+    id_docenti_to_add = set(request.post.get('id_docenti'))
 
-	try:
-		for id_docente in id_docenti_to_add:
-			sessionAmministratori.add(DocenteCorso(id_corso=id_docente, id_corso=id))
+    try:
+        for id_docente in id_docenti_to_add:
+            sessionAmministratori.add(DocenteCorso(
+                id_docente=id_docente, id_corso=id))
 
-		sessionAmministratori.commit()
-	except Exception as e:
-		sessionAmministratori.rollback()
-		return jsonify({'error': True, 'errormessage': 'Impossibile aggiungere uno (o più) docenti al corso'}), 500
+        sessionAmministratori.commit()
+    except Exception as e:
+        sessionAmministratori.rollback()
+        return jsonify({'error': True, 'errormessage': 'Impossibile aggiungere uno (o più) docenti al corso'}), 500
 
-	return jsonify({'error': False, 'errormessage': ''}), 200
+    return jsonify({'error': False, 'errormessage': ''}), 200
 
+
+@corsi.route('/utenti/docenti/<id>/corsi', methods=['GET'])
+def get_corsi_docente(id):
+    try:
+        corsi = preLoginSession.query(Corso).\
+            join(DocenteCorso, DocenteCorso.id_corso == Corso.id).\
+            filter(DocenteCorso.id_docente == id).all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire corsi del docente: ' + str(e)}), 404
+    
+    return jsonify(corsi_schemas.dump(corsi)), 200

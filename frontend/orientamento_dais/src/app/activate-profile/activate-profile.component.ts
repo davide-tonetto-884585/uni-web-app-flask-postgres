@@ -51,11 +51,19 @@ export class ActivateProfileComponent implements OnInit {
     }
   }
 
-  filter_schools() {
+  filter_schools(): void {
     this.http.get(`${BACKEND_URL}/scuole?nome=${this.school_input.toUpperCase()}&limit=100`).subscribe({
       next: (d) => {
         this.schools = d;
       }
     })
+  }
+
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+
+    if (file) {
+      this.user_data.immagine_profilo = file.name;
+    }
   }
 }
