@@ -71,6 +71,10 @@
                   ?skip=n						salta le prime n aule
                   ?limit=m					restituisce m aule
 	/aule/:id                                                               GET           Get aula by id
+
+	/corsi/:id/docenti                                                       DELETE        remove docente from course
+	/corsi/:id                                                               DELETE        remove course
+	/corsi/:id/studenti                                                      GET           Get all students registred to course :id
 	
 	------------------------------------------------------------------------------------------------------------------------------
 	
