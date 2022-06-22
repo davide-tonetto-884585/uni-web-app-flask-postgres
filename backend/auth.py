@@ -441,7 +441,7 @@ def get_users(user):
     surname = request.args('surname')
     birthdate = request.args('birthdate')
 
-    utenti = SessionDocenti.query(Studente).order_by(Utente.cognome, Utente.nome)
+    utenti = SessionDocenti.query(Utente).order_by(Utente.cognome, Utente.nome)
 
     if name is not None:
         utenti = utenti.filter(Utente.nome.like('%' + name + '%'))

@@ -43,3 +43,7 @@ class IscrizioniCorso(Base):
 
 class ProgrammazioneLezioni(Base):
     __table__ = Base.metadata.tables['programmazione_lezioni']
+
+
+class PresenzeLezione(Base):
+    __table__ = Base.metadata.tables['presenze_lezione']

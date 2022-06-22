@@ -80,20 +80,27 @@
 	/corso/:id/programmazione_corso/                                         GET
 	/corso/:id/programmazione_corso/:id                                      GET
 
-	/corso/:id/programmazione_corso/lezioni                                  POST          add lezione
-	/corso/:id/programmazione_corso/lezioni                                  GET
-	/corso/:id/programmazione_corso/lezioni/:id                              GET
+	/corso/:id/programmazione_corso/:id/lezioni                              POST          add lezione
+	/corso/:id/programmazione_corso/:id/lezioni                              GET
+	/corso/:id/programmazione_corso/:id/lezioni/:id                          GET
+
+	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 GET
 
 	------------------------------------------------------------------------------------------------------------------------------
 
 	DA IMPLEMENTARE:
 
-	/corso/:id/programmazione_corso/lezioni/:id/presenze                     GET
-	/corso/:id/programmazione_corso/lezioni/:id/presenze                     POST
+	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 POST
 
 	/corso/programmazione_corso/:id/iscrizioni                               POST
 	/corso/programmazione_corso/:id/iscrizioni                               GET
 	/corso/programmazione_corso/:id/iscrizioni/:id_studente                  DELETE
+
+	/corsi/:id/risorse                                                       GET           Get risorse del corso
+	/corsi/:id/risorse                                                       POST          Add risorsa del corso
+	/corsi/:id/risorse/:id                                                   DELETE        Remove risorsa del corso
+	/corsi/:id/risorse/:id                                                   PUT           Modify risorsa del corso
+
 
 	#################################################### DOMANDE ################################################################
 
@@ -108,11 +115,6 @@
 	/corsi/:id/domande/:id/like                                              DELETE        Remove like from question
 
 	#############################################################################################################################
-
-	/corsi/:id/risorse                                                       GET           Get risorse del corso
-	/corsi/:id/risorse                                                       POST          Add risorsa del corso
-	/corsi/:id/risorse/:id                                                   DELETE        Remove risorsa del corso
-	/corsi/:id/risorse/:id                                                   PUT           Modify risorsa del corso
 
    -------------------------------------------------------------------------------------------------------------------------------
 """

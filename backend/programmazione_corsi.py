@@ -3,10 +3,9 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import Date, Time, cast
 
 from . import PreLoginSession, SessionDocenti, SessionAmministratori
-from .marshmallow_models import CorsoSchema, DocenteSchema, ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema
+from .marshmallow_models import ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema
 from .auth import token_required
-from .models import Corso, Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni
-from .utils import load_file
+from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione
 
 prog_corsi = Blueprint('programmazione_corsi', __name__)
 
@@ -137,7 +136,7 @@ def get_prog_corso(id_corso, id_prog, id_lezione):
 
 
 # aggiunge una nuova lezione
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['POST'])
+@prog_corsi.route('/corso/<id_corso>/programmazione_corso/lezioni', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def get_progs_corso(user, id_corso, id_prog):
     date = request.form.get('date')
@@ -188,7 +187,7 @@ def get_progs_corso(user, id_corso, id_prog):
     if sessionAmministratori.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.data == date, ProgrammazioneCorso.orario_inizio == start_time, ProgrammazioneCorso.orario_fine == finish_time, ProgrammazioneCorso.link_stanza_virtuale == link_virtual_class, ProgrammazioneCorso.passcode_stanza_virtuale == passcode_virtual_class, ProgrammazioneCorso.codice_verifica_presenza == presence_code).first():
         return jsonify({'error': True, 'errormessage': 'Lezione gia\' esistente con le stesse informazioni'}), 404
 
-    new_lezione = ProgrammazioneCorso(data=date, orario_inizio=start_time, orario_fine=finish_time, link_stanza_virtuale=link_virtual_class, passcode_stanza_virtuale=passcode_virtual_class, codice_verifica_presenza=presence_code)
+    new_lezione = ProgrammazioneCorso(data=date, orario_inizio=start_time, orario_fine=finish_time, link_stanza_virtuale=link_virtual_class, passcode_stanza_virtuale=passcode_virtual_class, codice_verifica_presenza=presence_code, id_corso=id_corso)
 
     try:
         sessionAmministratori.add(new_lezione)
@@ -198,3 +197,30 @@ def get_progs_corso(user, id_corso, id_prog):
         return jsonify({'error': True, 'errormessage': 'Errore inserimento lezione' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+"""
+	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 POST
+"""
+@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['GET'])
+def get_presenze_lezione(id_corso, id_prog, id_lezione):
+    skip = request.args('skip')
+    limit = request.args('limit')
+    name = request.args('name')
+    lastname = request.args('lastname')
+
+    presenze = preLoginSession.query(Utente.id, Utente.nome, Utente.cognome).filter(Utente.id == PresenzeLezione.id_studente, PresenzeLezione.id_programmazione_lezioni == id_lezione)
+
+    if name is not None:
+        presenze = presenze.filter(Utente.nome.like('%' + name + '%'))
+    if lastname is not None:
+        presenze = presenze.filter(Utente.cognome.like('%' + lastname + '%'))
+    if skip is not None:
+        presenze = presenze.offset(skip)
+    if limit is not None:
+        presenze = presenze.limit(limit)
+
+    if presenze is None:
+        return jsonify({'error': True, 'errormessage': 'Nessuna presenza per quella lezione'}), 404
+    else:
+        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
