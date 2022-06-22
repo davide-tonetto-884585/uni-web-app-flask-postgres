@@ -201,7 +201,6 @@ def remove_course(user, id):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-# TODO: CONTROLLARE CHE SIA GIUSTA DOPO IL COMMIT DI TONETTO
 @corsi.route('/corsi/:id/studenti ', methods=['GET'])
 def get_studenti_corso(id):
     try:
