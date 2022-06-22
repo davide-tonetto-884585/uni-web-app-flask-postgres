@@ -76,10 +76,6 @@
 	/corsi/:id                                                               DELETE        remove course
 	/corsi/:id/studenti                                                      GET           Get all students registred to course :id
 
-	------------------------------------------------------------------------------------------------------------------------------
-
-	DA IMPLEMENTARE:
-
 	/corso/:id/programmazione_corso                                          POST          Add prog corso
 	/corso/:id/programmazione_corso/                                         GET
 	/corso/:id/programmazione_corso/:id                                      GET
@@ -87,6 +83,10 @@
 	/corso/:id/programmazione_corso/lezioni                                  POST          add lezione
 	/corso/:id/programmazione_corso/lezioni                                  GET
 	/corso/:id/programmazione_corso/lezioni/:id                              GET
+
+	------------------------------------------------------------------------------------------------------------------------------
+
+	DA IMPLEMENTARE:
 
 	/corso/:id/programmazione_corso/lezioni/:id/presenze                     GET
 	/corso/:id/programmazione_corso/lezioni/:id/presenze                     POST

@@ -80,10 +80,8 @@ def get_aule():
 
 @aule.route('/aule/<id>', methods=['GET'])
 def get_aula(id):
-    aula = preLoginSession.query(Aula).filter(Aula.id == id)
-
     try:
-        aula = aula.first()
+        aula = preLoginSession.query(Aula).filter(Aula.id == id).first()
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'aula: ' + str(e)}), 404
 

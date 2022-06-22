@@ -85,6 +85,7 @@ def add_corso(user):  # su tutte token_required bisogna mettere user (per reperi
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
+# TODO: CONTROLLARE CHE IL DOCENTE (user) POSSIEDA IL CORSO
 @corsi.route('/corsi/<id>', methods=['PUT'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def modify_corso(user, id):  # invertire
