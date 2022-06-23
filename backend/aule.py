@@ -73,7 +73,7 @@ def get_aule():
         aule = aule.limit(limit)
 
     if aule is None:
-        return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun utente'}), 404
+        return jsonify({'error': True, 'errormessage': 'Impossibile recuperare aula'}), 404
     else:
         return jsonify(aule_schema.dump(aule.all())), 200
 

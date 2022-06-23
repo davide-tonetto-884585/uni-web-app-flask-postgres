@@ -2,16 +2,17 @@ import json
 from flask import Blueprint, jsonify, request
 from sqlalchemy import Date, Time, cast
 
-from . import PreLoginSession, SessionDocenti, SessionAmministratori
+from . import PreLoginSession, SessionDocenti, SessionAmministratori, SessionStudenti
 from .marshmallow_models import ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema
 from .auth import token_required
-from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione
+from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso
 
 prog_corsi = Blueprint('programmazione_corsi', __name__)
 
 preLoginSession = PreLoginSession()
 sessionDocenti = SessionDocenti()
 sessionAmministratori = SessionAmministratori()
+sessionStudenti = SessionStudenti()
 
 programmazione_corsi_schema = ProgrammazioneCorsoSchema(many=True)
 programmazione_corso_schema = ProgrammazioneCorsoSchema()
@@ -63,11 +64,8 @@ def get_progs_corso(id):
 
     progs_corso = preLoginSession.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.id_corso == id)
 
-
-    # TODO: COME SI DEVE CONTROLLARE UN CAMPO ENUM? SI DEVE FARE UNA QUERY SULL'ENUM? DEVO CREARLO SUL SERVER?
     if modality is not None:
-        progs_corso = progs_corso.filter(ProgrammazioneCorso.modalità.like('%' + modality + '%'))     # Accentato ?
-
+        progs_corso = progs_corso.filter(ProgrammazioneCorso.modalità == modality)  
 
     if subscriptions_limit is not None:
         progs_corso = progs_corso.filter(ProgrammazioneCorso.limite_iscrizioni == subscriptions_limit)
@@ -96,7 +94,7 @@ def get_prog_corso(id_corso, id_prog):
 
 
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['GET'])
-def get_progs_corso(id_corso, id_prog):
+def get_lezioni_progs_corso(id_corso, id_prog):
     skip = request.args('skip')
     limit = request.args('limit')
     date = request.args('date')
@@ -123,7 +121,7 @@ def get_progs_corso(id_corso, id_prog):
 
 
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>', methods=['GET'])
-def get_prog_corso(id_corso, id_prog, id_lezione):
+def get_lezione_prog_corso(id_corso, id_prog, id_lezione):
     try:
         progs_lezione = preLoginSession.query(ProgrammazioneLezioni).filter(ProgrammazioneLezioni.id_programmazione_corso == id_prog, ProgrammazioneLezioni.id == id_lezione).first()
     except Exception as e:
@@ -136,9 +134,9 @@ def get_prog_corso(id_corso, id_prog, id_lezione):
 
 
 # aggiunge una nuova lezione
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/lezioni', methods=['POST'])
+@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
-def get_progs_corso(user, id_corso, id_prog):
+def add_lezione_prog_corso(user, id_corso, id_prog):
     date = request.form.get('date')
     start_time = request.form.get('start_time')
     finish_time = request.form.get('finish_time')
@@ -168,26 +166,30 @@ def get_progs_corso(user, id_corso, id_prog):
     if finish_time is None:
         return jsonify({'error': True, 'errormessage': 'Orario fine mancante'}), 404
 
+    prog_corso = preLoginSession.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.id == id_prog).first()
+    if prog_corso.modalità == 'online' or prog_corso.modalità == 'duale':
+        if link_virtual_class is None:
+            return jsonify({'error': True, 'errormessage': 'Link stanza virtuale mancante'}), 404
 
-
-    # TODO: CONTROLLARE DALL'ENUM DI PROGRAMMAZIONE CORSO SE SI TRATTA DI DUALE OPPURE ONLINE (però stesso problema di prima)
-    if link_virtual_class is None:
-        return jsonify({'error': True, 'errormessage': 'Link stanza virtuale mancante'}), 404
-
-    if passcode_virtual_class is None:
-        return jsonify({'error': True, 'errormessage': 'Passcode stanza virtuale mancante'}), 404
-
-
+        if passcode_virtual_class is None:
+            return jsonify({'error': True, 'errormessage': 'Passcode stanza virtuale mancante'}), 404
 
     if presence_code is None:
         return jsonify({'error': True, 'errormessage': 'Codice verifica presenza mancante'}), 404
 
+    # TODO: Volevate controllare questo?
+    if sessionAmministratori.\
+        query(ProgrammazioneLezioni).\
+        join(ProgrammazioneCorso, ProgrammazioneLezioni.id_programmazione_corso == ProgrammazioneCorso.id).\
+        filter(
+            ProgrammazioneLezioni.data == date, 
+            ProgrammazioneLezioni.orario_inizio >= start_time, 
+            ProgrammazioneLezioni.orario_inizio <= finish_time, 
+            ProgrammazioneCorso.id == id_prog
+        ).first():
+        return jsonify({'error': True, 'errormessage': 'Lezione sovrapposta ad un\'altra'}), 404
 
-    # TODO: MODIFICARE OPPURTUNATAMENTE ANCHE QUESTO NEL CASO SIANO IN PRESENZA (filtrerebbe su valore Null altrimenti) E LA CREAZIONE DELL'OGGETTO
-    if sessionAmministratori.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.data == date, ProgrammazioneCorso.orario_inizio == start_time, ProgrammazioneCorso.orario_fine == finish_time, ProgrammazioneCorso.link_stanza_virtuale == link_virtual_class, ProgrammazioneCorso.passcode_stanza_virtuale == passcode_virtual_class, ProgrammazioneCorso.codice_verifica_presenza == presence_code).first():
-        return jsonify({'error': True, 'errormessage': 'Lezione gia\' esistente con le stesse informazioni'}), 404
-
-    new_lezione = ProgrammazioneCorso(data=date, orario_inizio=start_time, orario_fine=finish_time, link_stanza_virtuale=link_virtual_class, passcode_stanza_virtuale=passcode_virtual_class, codice_verifica_presenza=presence_code, id_corso=id_corso)
+    new_lezione = ProgrammazioneLezioni(data=date, orario_inizio=start_time, orario_fine=finish_time, link_stanza_virtuale=link_virtual_class, passcode_stanza_virtuale=passcode_virtual_class, codice_verifica_presenza=presence_code, id_corso=id_corso)
 
     try:
         sessionAmministratori.add(new_lezione)
@@ -224,3 +226,35 @@ def get_presenze_lezione(id_corso, id_prog, id_lezione):
         return jsonify({'error': True, 'errormessage': 'Nessuna presenza per quella lezione'}), 404
     else:
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
+    
+# /corso/:id/programmazione_corso/:id/lezioni/:id/presenze
+@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['POST'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
+def add_presenza(user, id_corso, id_prog, id_lezione):
+    if request.form.get('id_studente') is None or request.form.get('codice_verifica_presenza') is None:
+        return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 404
+    
+    studente = sessionStudenti.query(Studente).filter(studente.id == request.form.get('id_studente')).first()
+    if studente is None:
+        return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 401
+    
+    if sessionStudenti.query(IscrizioniCorso).\
+        join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
+        filter(IscrizioniCorso.id_studente == studente.id and ProgrammazioneCorso.id == id_prog).count() == 0:
+        return jsonify({'error': True, 'errormessage': 'Studente non iscritto al corso'}), 401
+    
+    lezione = sessionStudenti.query(ProgrammazioneLezioni).filter(ProgrammazioneLezioni.id == id_lezione).first()
+    if lezione.codice_verifica_presenza != request.form.get('codice_verifica_presenza'):
+        return jsonify({'error': True, 'errormessage': 'Codice verifica non valido'}), 401
+
+    new_presenza = PresenzeLezione(id_studente=studente.id,
+                                   id_lezione=id_lezione)
+    
+    try:
+        sessionStudenti.add(new_presenza)
+        sessionStudenti.commit()
+    except Exception as e:
+        sessionStudenti.rollback()
+        return jsonify({'error': True, 'errormessage': 'Errore inserimento lezione' + str(e)}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
