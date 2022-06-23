@@ -5,7 +5,7 @@ from sqlalchemy import Date, Time, cast
 from . import PreLoginSession, SessionDocenti, SessionAmministratori, SessionStudenti
 from .marshmallow_models import ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema
 from .auth import token_required
-from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso
+from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso, Aula
 
 prog_corsi = Blueprint('programmazione_corsi', __name__)
 
@@ -205,7 +205,8 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
 	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 POST
 """
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['GET'])
-def get_presenze_lezione(id_corso, id_prog, id_lezione):
+@token_required(restrict_to_roles=['amministratore', 'docente'])
+def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
     skip = request.args('skip')
     limit = request.args('limit')
     name = request.args('name')
@@ -256,5 +257,55 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
     except Exception as e:
         sessionStudenti.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento lezione' + str(e)}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+# /corso/:id/programmazione_corso/:id/iscrizioni                           POST
+@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/iscrizioni', methods=['POST'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
+def add_iscrizione(user, id_corso, id_prog):
+    if request.form.get('id_studente') is None:
+        return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 404
+    
+    studente = sessionStudenti.query(Studente).filter(studente.id == request.form.get('id_studente')).first()
+    if studente is None:
+        return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 401
+    
+    if sessionStudenti.query(IscrizioniCorso).\
+        join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
+        filter(IscrizioniCorso.id_studente == studente.id and ProgrammazioneCorso.id == id_prog).count() != 0:
+        return jsonify({'error': True, 'errormessage': 'Studente già iscritto al corso'}), 401
+    
+    prog_corso = sessionStudenti.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.id == id_prog).first() 
+    in_presenza = None
+    if prog_corso.modalità == 'duale':
+        if request.form.get('inPresenza') is not None:
+            in_presenza = request.form.get('inPresenza')
+        else: 
+            in_presenza = True
+    elif prog_corso.modalità == 'presenza':
+        in_presenza = True
+        
+    num_iscritti = sessionStudenti.query(IscrizioniCorso).filter(IscrizioniCorso.id_programmazione_corso == id_prog).count()
+    capienza_aula_piu_piccola = sessionStudenti.query(Aula.capienza).\
+        join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
+        filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
+        order_by(Aula.capienza).limit(1).first()
+    if prog_corso.modalità == 'duale' or prog_corso.modalità == 'presenza':
+        if (prog_corso.limite_iscrizioni is not None and num_iscritti >= prog_corso.limite_iscrizioni) \
+            or (num_iscritti >= capienza_aula_piu_piccola):
+            return jsonify({'error': True, 'errormessage': 'Limite iscrizioni raggiunto.'}), 401
+    
+    new_iscrizione = IscrizioniCorso(id_studente=studente.id,
+                                     id_programmazione_corso=prog_corso.id,
+                                     inPresenza=in_presenza)
+    
+    try:
+        sessionStudenti.add(new_iscrizione)
+        sessionStudenti.commit()
+    except Exception as e:
+        sessionStudenti.rollback()
+        return jsonify({'error': True, 'errormessage': 'Errore inserimento iscrizione' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200

@@ -86,13 +86,12 @@
 
 	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 GET
 	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 POST
+ 	/corso/:id/programmazione_corso/:id/iscrizioni                           POST
 
 	------------------------------------------------------------------------------------------------------------------------------
 
 	DA IMPLEMENTARE:
 
-	
-	/corso/:id/programmazione_corso/:id/iscrizioni                           POST
 	/corso/:id/programmazione_corso/:id/iscrizioni                           GET
 	/corso/:id/programmazione_corso/:id/iscrizioni/:id_studente              DELETE
 
