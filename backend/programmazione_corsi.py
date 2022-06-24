@@ -66,7 +66,6 @@ def get_progs_corso(id):
 
     if modality is not None:
         progs_corso = progs_corso.filter(ProgrammazioneCorso.modalità == modality)  
-
     if subscriptions_limit is not None:
         progs_corso = progs_corso.filter(ProgrammazioneCorso.limite_iscrizioni == subscriptions_limit)
     if skip is not None:
@@ -177,7 +176,7 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
     if presence_code is None:
         return jsonify({'error': True, 'errormessage': 'Codice verifica presenza mancante'}), 404
 
-    # TODO: Volevate controllare questo?
+    # Controlla che la lezione non vada a sovrapporsi ad un'altra
     if sessionAmministratori.\
         query(ProgrammazioneLezioni).\
         join(ProgrammazioneCorso, ProgrammazioneLezioni.id_programmazione_corso == ProgrammazioneCorso.id).\
@@ -201,9 +200,7 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-"""
-	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 POST
-"""
+# Reperisce le presenze della lezione del corso
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
@@ -212,7 +209,7 @@ def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
     name = request.args('name')
     lastname = request.args('lastname')
 
-    presenze = preLoginSession.query(Utente.id, Utente.nome, Utente.cognome).filter(Utente.id == PresenzeLezione.id_studente, PresenzeLezione.id_programmazione_lezioni == id_lezione)
+    presenze = sessionDocenti.query(Utente.id, Utente.nome, Utente.cognome).filter(Utente.id == PresenzeLezione.id_studente, PresenzeLezione.id_programmazione_lezioni == id_lezione)
 
     if name is not None:
         presenze = presenze.filter(Utente.nome.like('%' + name + '%'))
@@ -228,7 +225,8 @@ def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
     else:
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
     
-# /corso/:id/programmazione_corso/:id/lezioni/:id/presenze
+
+# Inserisce la presenza
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def add_presenza(user, id_corso, id_prog, id_lezione):
@@ -238,7 +236,7 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
     studente = sessionStudenti.query(Studente).filter(studente.id == request.form.get('id_studente')).first()
     if studente is None:
         return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 401
-    
+
     if sessionStudenti.query(IscrizioniCorso).\
         join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
         filter(IscrizioniCorso.id_studente == studente.id and ProgrammazioneCorso.id == id_prog).count() == 0:
@@ -248,8 +246,7 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
     if lezione.codice_verifica_presenza != request.form.get('codice_verifica_presenza'):
         return jsonify({'error': True, 'errormessage': 'Codice verifica non valido'}), 401
 
-    new_presenza = PresenzeLezione(id_studente=studente.id,
-                                   id_lezione=id_lezione)
+    new_presenza = PresenzeLezione(id_studente=studente.id, id_lezione=id_lezione)
     
     try:
         sessionStudenti.add(new_presenza)
@@ -261,7 +258,7 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-# /corso/:id/programmazione_corso/:id/iscrizioni                           POST
+# Agguinge l'iscrizione
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/iscrizioni', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def add_iscrizione(user, id_corso, id_prog):
@@ -279,6 +276,8 @@ def add_iscrizione(user, id_corso, id_prog):
     
     prog_corso = sessionStudenti.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.id == id_prog).first() 
     in_presenza = None
+
+    #e' dello studente questo, setta la variabile in base alla scelta, se duale e non sceglie nulla lo mette di default in presenza
     if prog_corso.modalità == 'duale':
         if request.form.get('inPresenza') is not None:
             in_presenza = request.form.get('inPresenza')
@@ -292,6 +291,9 @@ def add_iscrizione(user, id_corso, id_prog):
         join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
         filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
         order_by(Aula.capienza).limit(1).first()
+        
+    #si puo' indicare un limite di iscrizioni, se non e' indicato viene scelto come limite la capienza dell'aula piu' piccola
+    #nota: ogni lezione ha una sola aula
     if prog_corso.modalità == 'duale' or prog_corso.modalità == 'presenza':
         if (prog_corso.limite_iscrizioni is not None and num_iscritti >= prog_corso.limite_iscrizioni) \
             or (num_iscritti >= capienza_aula_piu_piccola):
@@ -307,5 +309,53 @@ def add_iscrizione(user, id_corso, id_prog):
     except Exception as e:
         sessionStudenti.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento iscrizione' + str(e)}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/iscrizioni', methods=['GET'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])
+def get_iscrizioni(user, id_corso, id_prog):
+    skip = request.args('skip')
+    limit = request.args('limit')
+    inPresenza = request.args('inPresenza')
+    name = request.args('nome')
+    lastname = request.args('cognome')
+
+    iscrizioni = sessionDocenti.query(Utente.id, Utente.nome, Utente.cognome, IscrizioniCorso.inPresenza).\
+        join(Studente, Utente.id == Studente.id).\
+        join(IscrizioniCorso, Studente.id == IscrizioniCorso.id).\
+        filter(IscrizioniCorso.id_programmazione_corso == id_prog).\
+        order_by(Utente.cognome, Utente.nome)
+
+    if inPresenza is not None:
+        iscrizioni = iscrizioni.filter(IscrizioniCorso.inPresenza == inPresenza)
+    if name is not None:
+        iscrizioni = iscrizioni.filter(Utente.nome.like('%' + name + '%'))
+    if lastname is not None:
+        iscrizioni = iscrizioni.filter(Utente.cognome.like('%' + lastname + '%'))
+    if skip is not None:
+        iscrizioni = iscrizioni.offset(skip)
+    if limit is not None:
+        iscrizioni = iscrizioni.limit(limit)
+
+    if iscrizioni is None:
+        return jsonify({'error': True, 'errormessage': 'Nessuno studente si è iscritto a quel programma del corso'}), 404
+    else:
+        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in iscrizioni]))), 200
+
+
+# TODO: è corretto lasciare l'id dello studente nella route, visto che poi verrà utilizzato per eliminarlo?
+# Esempio: potrei accedere come studente e poi inserire degli id di studenti per cancellarli da un corso, semplicemente
+# cambiando l'id dalla route.   Sembrerebbe non essere così tanto sicuro (stesso vale per la delete in corsi.py)
+@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/iscrizioni/<id_studente>', methods=['DELETE'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
+def remove_subscription(user, id_corso, id_prog, id_studente):
+    try:
+        sessionStudenti.delete(IscrizioniCorso(id_studente = id_studente, id_programmazione_corso = id_prog))
+        sessionStudenti.commit()
+    except Exception as e:
+        sessionStudenti.rollback()
+        return jsonify({'error': True, 'errormessage': 'Impossibile eliminare l\'iscrizione'}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
