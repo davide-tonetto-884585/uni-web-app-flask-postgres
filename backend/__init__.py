@@ -100,6 +100,9 @@
 	/corsi/:id/risorse/:id                                                   PUT           Modify risorsa del corso
 
 
+	TODO: Ha senso aggiungere delle route per le scuole?
+
+
 	#################################################### DOMANDE ################################################################
 
 	/corsi/:id/domande   ... (pensare a possibili filtri)                    GET           Get domande corso
