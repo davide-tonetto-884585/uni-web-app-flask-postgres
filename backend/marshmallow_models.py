@@ -1,7 +1,7 @@
 from xml.etree.ElementInclude import include
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
-from .models import Docente, ProgrammazioneCorso, Scuola, Corso, Aula, IscrizioniCorso, Studente, ProgrammazioneLezioni, PresenzeLezione
+from .models import Docente, ProgrammazioneCorso, Scuola, Corso, Aula, IscrizioniCorso, Studente, ProgrammazioneLezioni, PresenzeLezione, RisorseCorso 
 
 # QUESTE CLASSI SERVONO PER CONVERTIRE LE CLASSI DI MODELS.PY IN JSON OBJECT
 
@@ -70,6 +70,13 @@ class StudenteSchema(SQLAlchemyAutoSchema):
         load_instance = True
 
 class PresenzeLezioneSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = PresenzeLezione
+        include_fk = True
+        include_relationships = True
+        load_instance = True
+
+class RisorseCorsoSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = PresenzeLezione
         include_fk = True
