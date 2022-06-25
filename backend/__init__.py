@@ -87,18 +87,21 @@
 	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 GET
 	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 POST
  	/corso/:id/programmazione_corso/:id/iscrizioni                           POST
-
-	------------------------------------------------------------------------------------------------------------------------------
-
-	DA IMPLEMENTARE:
-
 	/corso/:id/programmazione_corso/:id/iscrizioni                           GET
 	/corso/:id/programmazione_corso/:id/iscrizioni/:id_studente              DELETE
 
 	/corsi/:id/risorse                                                       GET           Get risorse del corso
 	/corsi/:id/risorse                                                       POST          Add risorsa del corso
+
+	------------------------------------------------------------------------------------------------------------------------------
+
+	DA IMPLEMENTARE:
+
 	/corsi/:id/risorse/:id                                                   DELETE        Remove risorsa del corso
 	/corsi/:id/risorse/:id                                                   PUT           Modify risorsa del corso
+
+
+	TODO: Ha senso aggiungere delle route per le scuole?
 
 
 	#################################################### DOMANDE ################################################################
