@@ -53,11 +53,11 @@ def add_aule(user):
 
 @aule.route('/aule', methods=['GET'])
 def get_aule():
-    skip = request.args('skip')
-    limit = request.args('limit')
-    name = request.args('name')
-    building = request.args('building')
-    campus = request.args('campus')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('name')
+    building = request.args.get('building')
+    campus = request.args.get('campus')
 
     aule = preLoginSession.query(Aula).order_by(Aula.campus, Aula.edificio, Aula.nome, Aula.capienza)
 
@@ -81,7 +81,7 @@ def get_aule():
 @aule.route('/aule/<id>', methods=['GET'])
 def get_aula(id):
     try:
-        aula = preLoginSession.query(Aula).filter(Aula.id == id).first()
+        aula = preLoginSession.query(Aula).filter(Aula.id == id).one()
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'aula: ' + str(e)}), 404
 

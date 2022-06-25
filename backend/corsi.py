@@ -154,7 +154,7 @@ def add_docente_corso(user, id):
     except Exception as e:
         sessionAmministratori.rollback()
         return jsonify({'error': True, 'errormessage': 'Impossibile aggiungere uno (o più) docenti al corso'}), 500
-
+    
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 

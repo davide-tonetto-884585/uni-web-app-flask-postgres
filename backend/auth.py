@@ -351,10 +351,10 @@ def login():
 @auth.route('/utenti/studenti', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def get_students(user):
-    skip = request.args('skip')
-    limit = request.args('limit')
-    name = request.args('name')
-    surname = request.args('surname')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('name')
+    surname = request.args.get('surname')
 
     studenti = SessionDocenti.\
             query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio).\
@@ -393,10 +393,10 @@ def get_student(user, id):
 
 @auth.route('/utenti/docenti', methods=['GET'])
 def get_docenti():
-    skip = request.args('skip')
-    limit = request.args('limit')
-    name = request.args('name')
-    surname = request.args('surname')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('name')
+    surname = request.args.get('surname')
 
     docenti = preLoginSession.\
             query(Utente.id, Utente.nome, Utente.cognome, Docente.descrizione_docente, Docente.immagine_profilo, Docente.link_pagina_docente).\
@@ -435,11 +435,11 @@ def get_docente(id):
 @auth.route('/utenti', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def get_users(user):
-    skip = request.args('skip')
-    limit = request.args('limit')
-    name = request.args('name')
-    surname = request.args('surname')
-    birthdate = request.args('birthdate')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('name')
+    surname = request.args.get('surname')
+    birthdate = request.args.get('birthdate')
 
     utenti = SessionDocenti.query(Utente).order_by(Utente.cognome, Utente.nome)
 

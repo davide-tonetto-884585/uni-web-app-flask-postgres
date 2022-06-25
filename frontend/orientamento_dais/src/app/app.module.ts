@@ -18,6 +18,8 @@ import { CarouselComponent } from './carousel/carousel.component';
 import { CarouselItemComponent } from './carousel-item/carousel-item.component';
 import { CoursesComponent } from './courses/courses.component';
 import { CourseDetailComponent } from './course-detail/course-detail.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { CourseDetailComponent } from './course-detail/course-detail.component';
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
-    NgCeilPipeModule
+    NgCeilPipeModule,
+    BrowserAnimationsModule,
+    MatTabsModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService }

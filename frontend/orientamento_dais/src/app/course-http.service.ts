@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 
-import { Course } from './models';
+import { Course, Lesson, ProgCourse, Aula } from './models';
 import { BACKEND_URL, FRONTEND_URL } from './globals';
 import { UserHttpService } from './user-http.service';
 
@@ -50,9 +50,39 @@ export class CourseHttpService {
     ).pipe(catchError(this.handleError));
   }
 
-  getCourse(id: any): Observable<Course> {
+  getCourse(id: number): Observable<Course> {
     return this.http.get<Course>(
       `${BACKEND_URL}/corsi/${id}`
+    ).pipe(catchError(this.handleError));
+  }
+
+  getDocentiCorso(id: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${BACKEND_URL}/corsi/${id}/docenti`
+    ).pipe(catchError(this.handleError));
+  }
+
+  getIscrittiProgCorso(id_corso: number, id_prog_corso: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/iscrizioni`
+    ).pipe(catchError(this.handleError));
+  }
+
+  getLezioniProgCorso(id_corso: number, id_prog_corso: number): Observable<Lesson[]> {
+    return this.http.get<Lesson[]>(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/lezioni`
+    ).pipe(catchError(this.handleError));
+  }
+
+  getProgrammazioniCorso(id: number): Observable<ProgCourse[]> {
+    return this.http.get<ProgCourse[]>(
+      `${BACKEND_URL}/corsi/${id}/programmazione_corso`
+    ).pipe(catchError(this.handleError));
+  }
+
+  getAula(id_aula: number): Observable<Aula> {
+    return this.http.get<Aula>(
+      `${BACKEND_URL}/aule/${id_aula}`
     ).pipe(catchError(this.handleError));
   }
 }
