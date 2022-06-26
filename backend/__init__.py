@@ -205,4 +205,8 @@ def create_app():
     from .aule import aule as aule_blueprint
     app.register_blueprint(aule_blueprint)
 
+	# blueprint per le risorse del corso
+    from .risorse import risorse_corso as risorse_corso_blueprint
+    app.register_blueprint(risorse_corso_blueprint)
+
     return app

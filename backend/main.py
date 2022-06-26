@@ -16,13 +16,14 @@ scuola_schemas = ScuolaSchema(many=True) #istanzia un oggetto che è scuola_sche
 def index():
     return jsonify({"api_version": "1.0", "endpoints": ["/studenti", "/docenti", "/login"]}), 200
 
+
 # http://localhost:5000/scuole?limit=10?skip=10?nome=levi
 # Accedere da utenti loggati oppure no?  Quali ruoli possono accedervi (da loggati)?
 @main.route('/scuole', methods=['GET'])
 def get_scuole():
 
     # Campi del form
-    name = request.args.get('nome')
+    name = request.args.get('name')
     skip = request.args.get('skip')
     limit = request.args.get('limit')
     

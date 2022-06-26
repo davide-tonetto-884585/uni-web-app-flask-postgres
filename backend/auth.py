@@ -1,4 +1,4 @@
-from pydoc import Doc, doc
+# from pydoc import Doc, doc
 import random
 import string
 import hmac
@@ -79,11 +79,11 @@ def signup_student():
             request.form.get('nome') is None or\
             request.form.get('cognome') is None or\
             request.form.get('data_nascita') is None:
-        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare lo studente'}), 404
+        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare lo studente'}), 400
 
     # controlle che non esista già un utente con la stessa email
     if preLoginSession.query(Utente).filter(Utente.email == request.form.get('email')).first():
-        return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 404
+        return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 409
 
     # genero un salt randomico per rendere la password illeggibile da database
     salt = ''.join(random.choice(string.printable) for i in range(16))
@@ -111,7 +111,7 @@ def signup_student():
         preLoginSession.commit()
     except Exception as e:
         preLoginSession.rollback()
-        return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
+        return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 500
     
     # invio mail per verifica validità indirizzo se richiesta, il frontend passerà un link che sarà mostrato nella mail completato
     # con tipologia utente, token e id utente
@@ -142,7 +142,7 @@ def complete_signup_student(id):
 
     # controllo che non esista già uno studente con lo stesso id
     if preLoginSession.query(Studente).filter(Studente.id == id).first():
-        return jsonify({'error': True, 'errormessage': 'studente gia\' esistente'}), 404
+        return jsonify({'error': True, 'errormessage': 'studente gia\' esistente'}), 409
 
     # controllo se esiste un utente con l'id passato
     user = preLoginSession.query(Utente).filter(Utente.id == id).first()
@@ -168,7 +168,7 @@ def complete_signup_student(id):
 
             return jsonify({'error': False, 'errormessage': ''}), 200
 
-    return jsonify({'error': True, 'errormessage': 'impossibile completare creazione studente'}), 404
+    return jsonify({'error': True, 'errormessage': 'Impossibile completare creazione studente'}), 400
 
 
 # route usata per inserire un nuovo docente 
@@ -181,11 +181,11 @@ def signup_teacher(user):
             request.form.get('nome') is None or\
             request.form.get('cognome') is None or\
             request.form.get('data_nascita') is None:
-        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare il docente'}), 404
+        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare il docente'}), 400
 
     # controllo che non esista già un utente con la stessa mail
     if sessionAmministratori.query(Utente).filter(Utente.email == request.form.get('email')).first():
-        return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 404
+        return jsonify({'error': True, 'errormessage': 'Utente gia\' esistente'}), 409
 
     # genero il token per la verifica della mail
     salt = ''.join(random.choice(string.printable) for i in range(16))
@@ -209,7 +209,7 @@ def signup_teacher(user):
         sessionAmministratori.commit()
     except Exception as e:
         sessionAmministratori.rollback()
-        return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 404
+        return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 500
     
     # invio mail per verifica validità indirizzo se richiesta
     if request.form.get('frontend_activation_link') is not None:
@@ -232,7 +232,7 @@ def complete_signup_teacher(id):
     # controllo che la richiesta contenga tutte le informazioni obbligatorie
     if request.form.get('token_verifica') is None or\
             request.form.get('password') is None:
-        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione del docente'}), 404
+        return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione del docente'}), 400
 
     # controllo che esista l'utente
     user = preLoginSession.query(Utente).filter(Utente.id == id).first()
@@ -267,7 +267,7 @@ def complete_signup_teacher(id):
 
             return jsonify({'error': False, 'errormessage': ''}), 200
 
-    return jsonify({'error': True, 'errormessage': 'impossibile completare creazione docente'}), 404
+    return jsonify({'error': True, 'errormessage': 'Impossibile completare creazione docente'}), 400
 
 
 # route usata per inserire un nuovo amministratore
@@ -285,7 +285,7 @@ def add_administrator(user, id):
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore inserimento amministratore: ' + str(e)}), 404
+            return jsonify({'error': True, 'errormessage': 'Errore inserimento amministratore: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -348,31 +348,22 @@ def login():
     return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
 
 
-
-
-
-
-
-
-########################################################################################################################################
-
-
-
-
-
-
+#ritorna tutti gli studenti
 @auth.route('/utenti/studenti', methods=['GET'])
-@token_required(restrict_to_roles=['amministratore', 'docente'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])    #ruoli che possono eseguire questa funzione
 def get_students(user):
+    # Parametri del form
     skip = request.args.get('skip')
     limit = request.args.get('limit')
     name = request.args.get('name')
     surname = request.args.get('surname')
 
+    # Query per recuperare tutte le aule
     studenti = SessionDocenti.\
             query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio).\
             join(Utente, Utente.id == Studente.id).order_by(Utente.cognome, Utente.nome)
 
+    # Filtri per specializzazre la ricerca e/o la visualizzazione degli studenti
     if name is not None:
         studenti = studenti.filter(Utente.nome.like('%' + name + '%'))
     if surname is not None:
@@ -383,38 +374,45 @@ def get_students(user):
         studenti = studenti.limit(limit)
 
     if studenti is None:
+        # Se non trova alcun studente, ritorna uno status code 404
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire alcuno studente'}), 404
     else:
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
 
-
+#ritorna uno specifico studente in base al suo id
 @auth.route('/utenti/studenti/<id>', methods=['GET'])
-@token_required(restrict_to_roles=['amministratore', 'docente'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])    #ruoli che possono eseguire questa funzione
 def get_student(user, id):
+    # Query per recuperare lo studente
     studente = SessionDocenti.query(Studente).filter(Studente.id == id)
 
+    #prova a reperire lo studente dalla query
     try:
         studente = studente.first()
     except Exception as e:
-        return jsonify({'error': True, 'errormessage': 'Impossibile reperire lo studente: ' + str(e)}), 404
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire lo studente: ' + str(e)}), 500
 
     if studente is None:
+        # Se non trova lo studente, ritorna uno status code 404
         return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 404
     else:
         return jsonify(studente_schema.dump(studente)), 200
 
-
+#ritorna tutti i docenti
 @auth.route('/utenti/docenti', methods=['GET'])
 def get_docenti():
+    # Parametri del form
     skip = request.args.get('skip')
     limit = request.args.get('limit')
     name = request.args.get('name')
     surname = request.args.get('surname')
 
+    # Query per recuperare tutte le aule
     docenti = preLoginSession.\
             query(Utente.id, Utente.nome, Utente.cognome, Docente.descrizione_docente, Docente.immagine_profilo, Docente.link_pagina_docente).\
             join(Utente, Utente.id == Docente.id).order_by(Utente.cognome, Utente.nome)
 
+    # Filtri per specializzazre la ricerca e/o la visualizzazione dei docenti
     if name is not None:
         docenti = docenti.filter(Utente.nome.like('%' + name + '%'))
     if surname is not None:
@@ -424,38 +422,45 @@ def get_docenti():
     if limit is not None:
         docenti = docenti.limit(limit)
 
+    # Se non trova alcun docente, ritorna uno status code 404
     if docenti is None:
         return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun docente'}), 404
     else:
         return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
 
-
+#ritorna uno specifico docente in base al suo id
 @auth.route('/utenti/docenti/<id>', methods=['GET'])
 def get_docente(id):
+    # Query per recuperare il docente
     docente = preLoginSession.query(Docente).filter(Docente.id == id)
 
+    #prova a reperire il docente dalla query
     try:
         docente = docente.first()
     except Exception as e:
-        return jsonify({'error': True, 'errormessage': 'Impossibile reperire il docente: ' + str(e)}), 404
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire il docente: ' + str(e)}), 500
 
+    # Se non trova il docente, ritorna uno status code 404
     if docente is None:
         return jsonify({'error': True, 'errormessage': 'Docente inesistente'}), 404
     else:
         return jsonify(docente_schema.dump(docente)), 200
 
-
+#ritorna tutti gli utenti
 @auth.route('/utenti', methods=['GET'])
-@token_required(restrict_to_roles=['amministratore', 'docente'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])    #ruoli che possono eseguire questa funzione
 def get_users(user):
+    # Parametri del form
     skip = request.args.get('skip')
     limit = request.args.get('limit')
     name = request.args.get('name')
     surname = request.args.get('surname')
     birthdate = request.args.get('birthdate')
 
+    # Query per recuperare tutti gli utenti
     utenti = SessionDocenti.query(Utente).order_by(Utente.cognome, Utente.nome)
 
+    # Filtri per specializzazre la ricerca e/o la visualizzazione degli utenti
     if name is not None:
         utenti = utenti.filter(Utente.nome.like('%' + name + '%'))
     if surname is not None:
@@ -467,31 +472,27 @@ def get_users(user):
     if limit is not None:
         utenti = utenti.limit(limit)
 
+    # Se non trova nessun utente, ritorna uno status code 404
     if utenti is None:
         return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun utente'}), 404
     else:
         return jsonify(utenti_schema.dump(utenti.all())), 200
 
-
+#ritorna un utente specifico in base al suo id
 @auth.route('/utenti/<id>', methods=['GET'])
-@token_required(restrict_to_roles=['amministratore', 'docente'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])    #ruoli che possono eseguire questa funzione
 def get_user(user, id):
+    # Query per recuperare l'utente
     utente = SessionDocenti.query(Utente).filter(Utente.id == id)
 
+    #prova a reperire l'utente dalla query
     try:
         utente = utente.first()
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'utente: ' + str(e)}), 404
 
+    # Se non trova l'utente, ritorna uno status code 404
     if utente is None:
         return jsonify({'error': True, 'errormessage': 'Utente inesistente'}), 404
     else:
         return jsonify(utente_schema.dump(utente)), 200
-
-
-
-
-
-
-
-########################################################################################################################################
