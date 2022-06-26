@@ -5,16 +5,60 @@
         <div class="constainer row">
             <div class="col">
                 <h1>{{ this.course?.titolo }}</h1>
-                <h3>{{ this.course?.descrizione }}</h3>
                 <p>Language: <strong>{{ this.course?.lingua }}</strong></p>
+                <p>Tachers:
+                    <strong *ngFor="let docente of this.docenti">
+                        {{ docente.cognome }} {{ docente.nome }}<br>
+                    </strong>
+                </p>
             </div>
             <div *ngIf="this.course?.immagine_copertina" class="col">
                 <img src="{{ this.course?.immagine_copertina }}">
             </div>
         </div>
     </div>
-    <div class="col text-center">
-        <button type="button" class="btn btn-danger">Enroll</button>
-    </div>
     <br>
+</div>
+<div class="container">
+    <mat-tab-group>
+        <mat-tab label="Decription">
+            <br>
+            <div class="container">
+                <p>{{ this.course?.descrizione }}</p>
+            </div>
+        </mat-tab>
+        <mat-tab label="Scheduling">
+            <br>
+            <div *ngIf="this.prog_corso && this.prog_corso.length > 0" class="container">
+                <div *ngFor="let prog of this.prog_corso">
+                    <p><strong>Modality:</strong> {{ prog.modalita }}</p>
+                    <p><strong>Limit:</strong> {{ prog.limite_iscrizioni }} students</p>
+                    <p><strong>Lessons:</strong></p>
+                    <ol>
+                        <li *ngFor="let les of prog.lezioni">
+                            <p>
+                                {{ les.data | date:'EEEE, d MMMM, y' }}
+                                from {{ les.orario_inizio.substring(0, les.orario_inizio.length - 3) }}
+                                to {{ les.orario_fine.substring(0, les.orario_fine.length - 3) }}
+                                <a *ngIf="les.aula" href="#"> ({{ les.aula.nome }}) </a>
+                            </p>
+                        </li>
+                    </ol>
+                    <button *ngIf="this.isLogged() && this.isStudent()" type="button"
+                        class="btn btn-danger">Enroll</button>
+                    <button *ngIf="!this.isLogged()" type="button" class="btn btn-danger">Login to enroll</button>
+                    <hr>
+                </div>
+            </div>
+            <div *ngIf="this.prog_corso?.length == 0" class="alert alert-danger" role="alert">
+                There are no course schedules
+            </div>
+        </mat-tab>
+        <mat-tab label="Q&A">
+            <br>
+            <div class="container">
+                domande...
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 </div>

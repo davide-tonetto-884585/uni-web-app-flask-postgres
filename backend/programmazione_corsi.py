@@ -21,7 +21,7 @@ programmazione_lezione_schema = ProgrammazioneLezioniSchema()
 
 
 # aggiunge una programmazione del corso indicato nella route
-@prog_corsi.route('/corso/<id>/programmazione_corso', methods=['POST'])
+@prog_corsi.route('/corsi/<id>/programmazione_corso', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def add_prog_corso(user, id):
     if 'amministratore' not in user['roles']:
@@ -55,12 +55,13 @@ def add_prog_corso(user, id):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-@prog_corsi.route('/corso/<id>/programmazione_corso', methods=['GET'])
+@prog_corsi.route('/corsi/<id>/programmazione_corso', methods=['GET'])
 def get_progs_corso(id):
-    skip = request.args('skip')
-    limit = request.args('limit')
-    modality = request.args('modality')
-    subscriptions_limit = request.args('subscriptions_limit')
+    skip = request.args.get('skip')
+    print(skip)
+    limit = request.args.get('limit')
+    modality = request.args.get('modality')
+    subscriptions_limit = request.args.get('subscriptions_limit')
 
     progs_corso = preLoginSession.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.id_corso == id)
 
@@ -79,7 +80,7 @@ def get_progs_corso(id):
         return jsonify(programmazione_corsi_schema.dump(progs_corso.all())), 200
 
 
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>', methods=['GET'])
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>', methods=['GET'])
 def get_prog_corso(id_corso, id_prog):
     try:
         progr_corso = preLoginSession.query(ProgrammazioneCorso).filter(ProgrammazioneCorso.id_corso == id_corso, ProgrammazioneCorso.id == id_prog).first()
@@ -92,13 +93,13 @@ def get_prog_corso(id_corso, id_prog):
         return jsonify(programmazione_corso_schema.dump(progr_corso)), 200
 
 
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['GET'])
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['GET'])
 def get_lezioni_progs_corso(id_corso, id_prog):
-    skip = request.args('skip')
-    limit = request.args('limit')
-    date = request.args('date')
-    start_time = request.args('start_time')
-    finish_time = request.args('finish_time')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    date = request.args.get('date')
+    start_time = request.args.get('start_time')
+    finish_time = request.args.get('finish_time')
 
     progs_lezioni = preLoginSession.query(ProgrammazioneLezioni).filter(ProgrammazioneLezioni.id_programmazione_corso == id_prog)
 
@@ -119,7 +120,7 @@ def get_lezioni_progs_corso(id_corso, id_prog):
         return jsonify(programmazione_lezioni_schema.dump(progs_lezioni.all())), 200
 
 
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>', methods=['GET'])
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>', methods=['GET'])
 def get_lezione_prog_corso(id_corso, id_prog, id_lezione):
     try:
         progs_lezione = preLoginSession.query(ProgrammazioneLezioni).filter(ProgrammazioneLezioni.id_programmazione_corso == id_prog, ProgrammazioneLezioni.id == id_lezione).first()
@@ -133,7 +134,7 @@ def get_lezione_prog_corso(id_corso, id_prog, id_lezione):
 
 
 # aggiunge una nuova lezione
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['POST'])
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def add_lezione_prog_corso(user, id_corso, id_prog):
     date = request.form.get('date')
@@ -200,14 +201,13 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-# Reperisce le presenze della lezione del corso
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['GET'])
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
-    skip = request.args('skip')
-    limit = request.args('limit')
-    name = request.args('name')
-    lastname = request.args('lastname')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('name')
+    lastname = request.args.get('lastname')
 
     presenze = sessionDocenti.query(Utente.id, Utente.nome, Utente.cognome).filter(Utente.id == PresenzeLezione.id_studente, PresenzeLezione.id_programmazione_lezioni == id_lezione)
 
@@ -225,9 +225,8 @@ def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
     else:
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
     
-
-# Inserisce la presenza
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['POST'])
+# /corso/:id/programmazione_corso/:id/lezioni/:id/presenze
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def add_presenza(user, id_corso, id_prog, id_lezione):
     if request.form.get('id_studente') is None or request.form.get('codice_verifica_presenza') is None:
@@ -246,7 +245,8 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
     if lezione.codice_verifica_presenza != request.form.get('codice_verifica_presenza'):
         return jsonify({'error': True, 'errormessage': 'Codice verifica non valido'}), 401
 
-    new_presenza = PresenzeLezione(id_studente=studente.id, id_lezione=id_lezione)
+    new_presenza = PresenzeLezione(id_studente=studente.id,
+                                   id_programmazione_lezioni=id_lezione)
     
     try:
         sessionStudenti.add(new_presenza)
@@ -258,8 +258,8 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-# Agguinge l'iscrizione
-@prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/iscrizioni', methods=['POST'])
+# /corso/:id/programmazione_corso/:id/iscrizioni                           POST
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/iscrizioni', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def add_iscrizione(user, id_corso, id_prog):
     if request.form.get('id_studente') is None:

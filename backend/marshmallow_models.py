@@ -6,6 +6,14 @@ from .models import Docente, ProgrammazioneCorso, Scuola, Corso, Aula, Iscrizion
 # QUESTE CLASSI SERVONO PER CONVERTIRE LE CLASSI DI MODELS.PY IN JSON OBJECT
 
 
+class UtenteSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Utente
+        include_fk = True
+        include_relationships = True
+        load_instance = True
+
+
 class ScuolaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Scuola
@@ -68,6 +76,7 @@ class StudenteSchema(SQLAlchemyAutoSchema):
         include_fk = True
         include_relationships = True
         load_instance = True
+
 
 class PresenzeLezioneSchema(SQLAlchemyAutoSchema):
     class Meta:

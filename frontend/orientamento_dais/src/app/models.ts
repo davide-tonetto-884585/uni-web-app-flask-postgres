@@ -31,3 +31,33 @@ export interface Course {
     file_certificato: string | null;
     abilitato: boolean;
 }
+
+export interface ProgCourse {
+    id: number;
+    modalita: string;
+    limite_iscrizioni: number | null;
+    password_certificato: string;
+    id_corso: number;
+    lezioni: Lesson[] | undefined;
+}
+
+export interface Lesson {
+    id: number;
+    data: string;
+    orario_inizio: string;
+    orario_fine: string;
+    link_stanza_virtuale: string | null;
+    passcode_stanza_virtuale: string | null;
+    codice_verifica_presenza: string;
+    id_aula: number | null;
+    aula: Aula | undefined;
+    id_programmazione_corso: number;
+}
+
+export interface Aula {
+    id: number;
+    nome: string;
+    edificio: string;
+    campus: string;
+    capienza: string;
+}
