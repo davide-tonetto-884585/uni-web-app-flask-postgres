@@ -99,8 +99,6 @@
 
 	DA IMPLEMENTARE:
 
-	TODO: Ha senso aggiungere delle route per le scuole?
-
 	#################################################### DOMANDE ################################################################
 
 	/corsi/:id/domande   ... (pensare a possibili filtri)                    GET           Get domande corso

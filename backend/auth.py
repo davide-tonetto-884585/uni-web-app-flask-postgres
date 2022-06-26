@@ -348,6 +348,19 @@ def login():
     return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
 
 
+
+
+
+
+
+
+########################################################################################################################################
+
+
+
+
+
+
 @auth.route('/utenti/studenti', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def get_students(user):
@@ -474,3 +487,11 @@ def get_user(user, id):
         return jsonify({'error': True, 'errormessage': 'Utente inesistente'}), 404
     else:
         return jsonify(utente_schema.dump(utente)), 200
+
+
+
+
+
+
+
+########################################################################################################################################
