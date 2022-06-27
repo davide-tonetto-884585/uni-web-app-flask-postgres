@@ -48,7 +48,9 @@
 					?surname=cognome            cerca per cognome
 					?skip=n                     salta i primi n stud
 					?limit=m                    restituisce m stud
-	/utenti/stuenti/:id														GET           Get student by id
+	/utenti/studenti/:id													GET           Get student by id
+	/utenti/studenti/:id/iscrizioni											GET
+    /utenti/docenti/:id/corsi												GET
 	/utenti/docenti															GET           List all teachers
 						?name=nome                  cerca per nome
 						?surname=cognome            cerca per cognome

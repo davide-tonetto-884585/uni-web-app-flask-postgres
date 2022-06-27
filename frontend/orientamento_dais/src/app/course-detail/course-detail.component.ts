@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 
 import { CourseHttpService } from '../course-http.service';
 import { UserHttpService } from '../user-http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Course, ProgCourse, Lesson, Aula } from '../models';
+import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
 
 @Component({
   selector: 'app-course-detail',
@@ -13,13 +15,14 @@ import { Course, ProgCourse, Lesson, Aula } from '../models';
 export class CourseDetailComponent implements OnInit {
   private course_id: any;
   course: Course | undefined;
-  docenti: any;
-  prog_corso: ProgCourse[] | undefined;
+  docenti: any[] = [];
+  prog_corso: ProgCourse[] = [];
 
   constructor(
     private course_http: CourseHttpService,
     private activatedRoute: ActivatedRoute,
-    private user_http: UserHttpService
+    private user_http: UserHttpService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -59,16 +62,64 @@ export class CourseDetailComponent implements OnInit {
               });
             }
           });
+
+          this.course_http.getIscrittiProgCorso(this.course_id, el.id).subscribe({
+            next: (iscritti) => {
+              el.iscritti = iscritti;
+            }
+          })
         });
       }
     });
   }
 
-  isLogged() {
+  getId(): number | undefined {
+    return this.user_http.getId();
+  }
+
+  isLogged(): boolean {
     return this.user_http.isLogged();
   }
 
-  isStudent() {
+  isStudent(): boolean {
     return this.user_http.isStudent();
+  }
+
+  enrollStudent(id_prog_corso: number) {
+    let id_stud = this.user_http.getId()
+    if (id_stud) {
+      this.course_http.enrollStudent(this.course_id, id_prog_corso, id_stud).subscribe({
+        next: (d) => {
+          this.dialog.open(MessageDialogComponent, {
+            data: {
+              text: 'Successful registration',
+              title: 'Done!',
+              error: false
+            },
+          });
+        },
+        error: (err) => {
+          this.dialog.open(MessageDialogComponent, {
+            data: {
+              text: err,
+              title: 'Failed!',
+              error: true
+            },
+          });
+        }
+      })
+    }
+  }
+
+  isAlreadyInscripted(): boolean {
+    if (this.isStudent()) {
+      this.user_http.getInscriptions().subscribe({
+        next: (progs) => {
+
+        }
+      })
+    }
+
+    return false;
   }
 }

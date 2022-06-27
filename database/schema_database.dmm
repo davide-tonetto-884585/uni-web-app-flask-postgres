@@ -1,0 +1,2934 @@
+{
+	"tables": {
+		"730dee99-b13a-44f9-8886-0394f3811072": {
+			"id": "730dee99-b13a-44f9-8886-0394f3811072",
+			"visible": true,
+			"name": "utenti",
+			"desc": "Dati degli utenti iscritti al sito tra cui studenti e docenti",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "9bc5f402-5a86-4e07-a556-38cd100fefe6",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					}
+				},
+				{
+					"id": "026dc815-9997-44b7-ab05-d5453ad4ca2c",
+					"name": "email",
+					"datatype": "varchar",
+					"param": "55",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "5f2c1154-08a5-4c2b-a646-dd23099f1ba9",
+					"name": "salt",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "d5a392dd-923d-46cc-8945-a1879dcba9c2",
+					"name": "digest",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "0ccdee91-ca68-48da-9fc7-d276c99459e8",
+					"name": "nome",
+					"datatype": "varchar",
+					"param": "55",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "3dd9831f-c6f7-4b6a-b842-4d9d8f804468",
+					"name": "cognome",
+					"datatype": "varchar",
+					"param": "55",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "74cedc48-5819-4c57-a983-787fda3b6b37",
+					"name": "data_nascita",
+					"datatype": "date",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "dcb3daea-7bfa-4670-836b-7cdb322cce0f",
+					"name": "token_verifica",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "5f502fdf-66a8-466b-bda4-50bb87d1ed71",
+					"name": "verificato",
+					"datatype": "bool",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "FALSE",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "50af3972-d291-4375-bca2-f0f6377db088",
+					"name": "abilitato",
+					"datatype": "bool",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "TRUE",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				}
+			],
+			"relations": [
+				"8957d760-cc9d-4ab5-bb07-115effc490c0",
+				"63beeac1-08d2-4846-aae4-022bc94ebdc7",
+				"b5e002dd-ac00-41ca-940d-c4fcc28f35a7",
+				"70960aa9-7f66-4c29-98dd-b74d496d85bd"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "6ce72cd7-09fe-45e0-afc5-e7e772e0ac5f",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "a4edcb53-167a-4741-811e-f2edb0171904",
+							"colid": "9bc5f402-5a86-4e07-a556-38cd100fefe6"
+						}
+					]
+				}
+			],
+			"indexes": [
+				{
+					"id": "9af69b92-d178-4e0b-bbc4-610c1ebdd555",
+					"name": "Utenti_ix_email",
+					"unique": true,
+					"fulltext": false,
+					"using": "na",
+					"algorithm": "",
+					"lockoption": "na",
+					"pg": {
+						"storageParameters": ""
+					},
+					"cols": [
+						{
+							"id": "f1e6c334-0dd7-4d32-a3ca-57362d30bd65",
+							"colid": "026dc815-9997-44b7-ab05-d5453ad4ca2c",
+							"pg": {
+								"nullsLast": false
+							}
+						}
+					]
+				}
+			],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"9a3ae7aa-68e7-4d7c-8c77-900c29e40805": {
+			"id": "9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+			"visible": true,
+			"name": "studenti",
+			"desc": "Sottoctegoria di utenti rappresentante i possibili futuri studenti interessati ai corsi di orintamento ",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "9fe94858-60b5-443a-b892-b9a4689825d4",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "Utenti"
+				},
+				{
+					"id": "348f39b1-c751-4ece-883c-9d4bc6e02327",
+					"name": "indirizzo_di_studio",
+					"datatype": "1a68d290-0ad6-45c5-bede-7a5244e31d9d",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "45176a92-ee2c-448c-b407-adcc4924c684",
+					"name": "id_scuola",
+					"datatype": "varchar",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "scuole"
+				}
+			],
+			"relations": [
+				"8957d760-cc9d-4ab5-bb07-115effc490c0",
+				"604027c1-03a6-4514-81e5-0ab0691924ad",
+				"5da67895-12f7-445d-8ae2-8d245e05222c",
+				"6183cf82-88a4-4dc0-91aa-d94d93085bb9"
+			],
+			"lines": [
+				"9641793d-d70a-43d2-b073-93018b8d5c9f"
+			],
+			"keys": [
+				{
+					"id": "8154ac50-36db-4754-a05c-1525df7c351a",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "67b579a0-f0da-4a31-bd83-cd54849b2995",
+							"colid": "9fe94858-60b5-443a-b892-b9a4689825d4"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"f537064d-e38d-49e6-ae9d-50a037f1ec06": {
+			"id": "f537064d-e38d-49e6-ae9d-50a037f1ec06",
+			"visible": true,
+			"name": "docenti",
+			"desc": "Sottoctegoria di utenti rappresentante i docenti dell'università incaricati di gestire i corsi di orientamento",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "ffee921b-3f71-4e75-947f-700fe9f8ca26",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "Utenti"
+				},
+				{
+					"id": "99102585-5c66-4900-af3e-60f33f541543",
+					"name": "descrizione_docente",
+					"datatype": "text",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "751b229e-ce1e-4d57-9369-e784674f17b8",
+					"name": "immagine_profilo",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "2531257b-51d7-4ac5-9988-27da4efe25d7",
+					"name": "link_pagina_docente",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				}
+			],
+			"relations": [
+				"63beeac1-08d2-4846-aae4-022bc94ebdc7",
+				"415cb8a1-3825-4b3f-adfc-78221c5ab86b",
+				"a86ad46a-96b6-4af3-b681-ad54412034be"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "172e49b9-a609-4be4-8a51-c6db13d2dfaa",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "61a091a3-47a3-4155-b6d3-baa648d273cd",
+							"colid": "ffee921b-3f71-4e75-947f-700fe9f8ca26"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"a47ad6af-a6a5-4b25-97f7-8cb62df1629a": {
+			"id": "a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+			"visible": true,
+			"name": "corsi",
+			"desc": "corsi di orientamento proposti dai vari docenti",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "bc4ab615-5110-4229-9e8b-12e8963f9591",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					}
+				},
+				{
+					"id": "44cf1298-f7af-4604-a2b6-8c7274d76ce4",
+					"name": "titolo",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "ef2ea2ae-c835-4fa9-9391-d966f5f6d61b",
+					"name": "descrizione",
+					"datatype": "text",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "9670f9bc-9b11-446b-8a67-b4c152b7afd8",
+					"name": "lingua",
+					"datatype": "9cc16459-1d56-40c2-9371-2d0c37184064",
+					"param": "25",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "105b65ab-9a5f-4f0a-aae2-782ef38acbe1",
+					"name": "immagine_copertina",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "021b95e7-ed8d-4af5-bf79-eb903ff8c1f3",
+					"name": "file_certificato",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "ef343db4-aa97-49e2-9011-c1eb5dfc8183",
+					"name": "abilitato",
+					"datatype": "bool",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "TRUE",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				}
+			],
+			"relations": [
+				"4e8b2a1d-558a-467b-9296-70392bf5faf0",
+				"64c15497-15d1-420b-b4cf-842ab29d5602",
+				"3dc536e4-bf62-4e13-8ea2-caee02bba321",
+				"55e694d6-8cc5-49c3-9373-1f0c3bbc1651"
+			],
+			"lines": [
+				"37d685e2-fa34-4cba-84f5-a706b08baa43"
+			],
+			"keys": [
+				{
+					"id": "2e06466d-3af9-4f71-bfd8-c5ddc87c3c94",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "7b6c0f26-bd6a-42bc-8d09-8b89f985568c",
+							"colid": "bc4ab615-5110-4229-9e8b-12e8963f9591"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"914551ee-0d56-4dbc-b4e1-f89ed5bed0c5": {
+			"id": "914551ee-0d56-4dbc-b4e1-f89ed5bed0c5",
+			"visible": true,
+			"name": "docenti_corso",
+			"desc": "docente o docenti responsabili di un corso",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "b1000520-b6ab-4704-a574-d4fe16ebf251",
+					"name": "id_docente",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "docenti"
+				},
+				{
+					"id": "d270e26b-f9ed-4e44-bd59-32ec34212972",
+					"name": "id_corso",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "corsi"
+				}
+			],
+			"relations": [
+				"415cb8a1-3825-4b3f-adfc-78221c5ab86b",
+				"4e8b2a1d-558a-467b-9296-70392bf5faf0"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "40cc6814-68b3-43c0-b4de-5b04c89e612d",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "10a07753-880a-43d4-b5ab-8c1f70950e2e",
+							"colid": "b1000520-b6ab-4704-a574-d4fe16ebf251"
+						},
+						{
+							"id": "bf8a7d5d-ed7a-4253-babc-a44ebebb42e0",
+							"colid": "d270e26b-f9ed-4e44-bd59-32ec34212972"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"e144e192-b289-4dc5-8ac2-b4ce9785de24": {
+			"id": "e144e192-b289-4dc5-8ac2-b4ce9785de24",
+			"visible": true,
+			"name": "risorse_corso",
+			"desc": "risorse messe a disposizione dai docenti per un corso",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "83b943b9-9c1f-46ab-b59d-789b71ae84e0",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					}
+				},
+				{
+					"id": "8737a93a-69c2-44d4-b487-863c6b9605ba",
+					"name": "nome",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "eb66fc78-5642-426e-aac6-e572ce257d1a",
+					"name": "path_risorsa",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "39edcbef-10ed-47a7-ae09-01a30f8fa255",
+					"name": "visibile",
+					"datatype": "bool",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "TRUE",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "e01b6e75-d07a-4730-9c86-607add62a8a5",
+					"name": "id_corso",
+					"datatype": "integer",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "corsi"
+				}
+			],
+			"relations": [
+				"64c15497-15d1-420b-b4cf-842ab29d5602"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "4f6cf635-7248-47ec-a014-df255f3cf481",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "1af0e51c-b74c-4815-9730-be439cb28cde",
+							"colid": "83b943b9-9c1f-46ab-b59d-789b71ae84e0"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"75b813fa-792d-4e95-b0e9-643e5b6c3c28": {
+			"id": "75b813fa-792d-4e95-b0e9-643e5b6c3c28",
+			"visible": true,
+			"name": "aule",
+			"desc": "aule dell'ateneo disponibili per i corsi di orientamento",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "e3ced10e-c123-462c-b30b-7592728f8727",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					}
+				},
+				{
+					"id": "adc0cabb-a423-448a-aef2-a9ee49fa4a81",
+					"name": "nome",
+					"datatype": "varchar",
+					"param": "55",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "210c80d4-7b16-43b9-9bce-b050968701ac",
+					"name": "edificio",
+					"datatype": "varchar",
+					"param": "55",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "f31408b2-1b30-48db-96ea-5ae2a95e4516",
+					"name": "campus",
+					"datatype": "varchar",
+					"param": "55",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "73e83fd5-9247-4376-999b-893c192b0d9b",
+					"name": "capienza",
+					"datatype": "integer",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				}
+			],
+			"relations": [
+				"3d018e5b-b3f2-4859-a609-815767b86cf8"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "32e90acc-2914-4fb5-abfe-25639774d589",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "d2b9a99d-fc59-486c-8630-47e64ecc3d2e",
+							"colid": "e3ced10e-c123-462c-b30b-7592728f8727"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"0c68f741-b5da-4564-92e8-71ef7b04c534": {
+			"id": "0c68f741-b5da-4564-92e8-71ef7b04c534",
+			"visible": true,
+			"name": "programmazione_lezioni",
+			"desc": "calendario delle lezioni dei vari corsi",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "d9c451bc-2458-40f7-b185-8bfe4345f90f",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					}
+				},
+				{
+					"id": "80610aeb-a0c3-4159-8ac7-36538c247770",
+					"name": "data",
+					"datatype": "date",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "check (data > current_date)",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "6352cd78-1278-4446-a299-7b890fffac92",
+					"name": "orario_inizio",
+					"datatype": "time",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "e98de0c4-e382-41e7-86f6-833b923c92e3",
+					"name": "orario_fine",
+					"datatype": "time",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "e3022f94-6d77-491e-ac28-497b1fdc4f33",
+					"name": "link_stanza_virtuale",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "4e553334-3e26-4e83-9069-0bdad60738df",
+					"name": "passcode_stanza_virtuale",
+					"datatype": "varchar",
+					"param": "55",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "0fb5ccab-31b9-4420-8ab4-dd231ced8c4d",
+					"name": "codice_verifica_presenza",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "f5f38a28-48fa-4759-818b-3b0d61cc47f7",
+					"name": "id_aula",
+					"datatype": "integer",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "aule"
+				},
+				{
+					"id": "5485ef84-8dae-4348-8a32-442de592d7a9",
+					"name": "id_programmazione_corso",
+					"datatype": "integer",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					},
+					"fk": true,
+					"ref": "programmazione_corso"
+				}
+			],
+			"relations": [
+				"3d018e5b-b3f2-4859-a609-815767b86cf8",
+				"ddbfe35c-9125-41fa-939f-20e0b6680913",
+				"a1037a00-a4a6-4103-9367-cef4d40e6fc7"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "69b1ec50-8aa3-4ff4-a60b-c75e95c8197b",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "0cb644d7-29b7-4e22-a0ef-e79f042db85c",
+							"colid": "d9c451bc-2458-40f7-b185-8bfe4345f90f"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			},
+			"afterScript": "alter table programmazione_lezioni\nadd constraint \"check_orari\" check ( orario_inizio < orario_fine )"
+		},
+		"c4a3d38c-cdc1-442d-b222-6bb766ace639": {
+			"id": "c4a3d38c-cdc1-442d-b222-6bb766ace639",
+			"visible": true,
+			"name": "programmazione_corso",
+			"desc": "programmazione dello svolgimento di un corso",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "b6afe3cb-f01f-4b12-aa3e-1f65e050bef1",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					}
+				},
+				{
+					"id": "e29d7a74-a7a5-4600-bb3d-6f88de3c6389",
+					"name": "modalità",
+					"datatype": "0cb8bbdd-acd2-4060-84f9-618488e07025",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "0036e7b3-1b91-440a-a491-8b10dc374122",
+					"name": "limite_iscrizioni",
+					"datatype": "integer",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "1987c507-4631-4b4c-8f42-684785fbde16",
+					"name": "password_certificato",
+					"datatype": "varchar",
+					"param": "25",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "36b08eeb-3740-4ac9-af94-4fe9c41e4a3e",
+					"name": "id_corso",
+					"datatype": "integer",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					},
+					"fk": true,
+					"ref": "corsi"
+				}
+			],
+			"relations": [
+				"3dc536e4-bf62-4e13-8ea2-caee02bba321",
+				"ddbfe35c-9125-41fa-939f-20e0b6680913",
+				"bcf176e7-85fc-464e-8c22-e44e3410af4f"
+			],
+			"lines": [
+				"de77aa3a-2bbe-4684-99b2-24c12bba4bd6"
+			],
+			"keys": [
+				{
+					"id": "73a89e90-b362-4f3b-a45a-f5a0c741c45a",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "89b424bc-89c4-4103-842b-c1a3bfb53151",
+							"colid": "b6afe3cb-f01f-4b12-aa3e-1f65e050bef1"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"decdccc3-750b-4e2f-9e0e-f94487cb7df8": {
+			"id": "decdccc3-750b-4e2f-9e0e-f94487cb7df8",
+			"visible": true,
+			"name": "iscrizioni_corso",
+			"desc": "",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "c4c6b884-6792-44c0-a51c-b6e1239cb8e4",
+					"name": "id_studente",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "studenti"
+				},
+				{
+					"id": "db8d7924-79a4-4344-acc1-e66293c9f969",
+					"name": "id_programmazione_corso",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					},
+					"fk": true,
+					"ref": "programmazione_corso"
+				},
+				{
+					"id": "014e6f68-094f-4a43-8bac-d38737c65dad",
+					"name": "inPresenza",
+					"datatype": "bool",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				}
+			],
+			"relations": [
+				"604027c1-03a6-4514-81e5-0ab0691924ad",
+				"bcf176e7-85fc-464e-8c22-e44e3410af4f"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "ddafb1e4-518a-4933-908f-4fcd662d8368",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "e7c0ec13-05da-4b10-b472-b92a7b57b4e3",
+							"colid": "c4c6b884-6792-44c0-a51c-b6e1239cb8e4"
+						},
+						{
+							"id": "b4d8c867-ab17-41a8-a50c-0fbd92af6037",
+							"colid": "db8d7924-79a4-4344-acc1-e66293c9f969"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"94979f8b-78db-45be-8601-017111603c99": {
+			"id": "94979f8b-78db-45be-8601-017111603c99",
+			"visible": true,
+			"name": "presenze_lezione",
+			"desc": "storico presenze studenti alle lezioni",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "bc4fa976-70ff-409a-a699-e4a01ea721d4",
+					"name": "id_studente",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "studenti"
+				},
+				{
+					"id": "2b59b716-bcf0-4ca7-a313-8a38d4b1cc18",
+					"name": "id_programmazione_lezioni",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					},
+					"fk": true,
+					"ref": "programmazione_lezioni"
+				}
+			],
+			"relations": [
+				"5da67895-12f7-445d-8ae2-8d245e05222c",
+				"a1037a00-a4a6-4103-9367-cef4d40e6fc7"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "33bb1931-b237-40bb-93da-09a227d6ef18",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "936fbf1c-866c-4424-894d-04b787e96a8a",
+							"colid": "bc4fa976-70ff-409a-a699-e4a01ea721d4"
+						},
+						{
+							"id": "95e05058-becd-4faf-a195-1fa56bc396cc",
+							"colid": "2b59b716-bcf0-4ca7-a313-8a38d4b1cc18"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"41a106e5-1b47-453d-921b-e450fd64f0d5": {
+			"id": "41a106e5-1b47-453d-921b-e450fd64f0d5",
+			"visible": true,
+			"name": "domande_corso",
+			"desc": "domande post dagli studenti al docente del corso e risposte",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "48db0525-eda7-4871-9a44-7e61fb6e6ff1",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					}
+				},
+				{
+					"id": "80a14a93-6440-44e8-bb57-d0c70fd71ebb",
+					"name": "id_utente",
+					"datatype": "integer",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					},
+					"fk": true,
+					"ref": "utenti"
+				},
+				{
+					"id": "59890e1b-2ace-42c2-bd33-824b4d093fed",
+					"name": "id_corso",
+					"datatype": "integer",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					},
+					"fk": true,
+					"ref": "corsi"
+				},
+				{
+					"id": "040ee38d-6373-4452-a597-5e10891db519",
+					"name": "testo",
+					"datatype": "text",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "c88b052b-6b7b-4fd4-920c-c8d7119e598b",
+					"name": "chiusa",
+					"datatype": "bool",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "FALSE",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "4b2b6229-f524-42cc-8478-4b50a8b0d714",
+					"name": "id_domanda_corso",
+					"datatype": "integer",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "domande_corso"
+				}
+			],
+			"relations": [
+				"b5e002dd-ac00-41ca-940d-c4fcc28f35a7",
+				"55e694d6-8cc5-49c3-9373-1f0c3bbc1651",
+				"1060768a-0fb1-49a7-b164-715fd9b9a3e0",
+				"c41ea386-7160-4e09-89ac-0f82df5a4d51"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "59b282e2-1197-410e-980a-8c70c1d7407f",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "885651b9-8877-4bca-8820-c63bd2248eb5",
+							"colid": "48db0525-eda7-4871-9a44-7e61fb6e6ff1"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"f3df3480-b381-4521-85ca-3016999821dd": {
+			"id": "f3df3480-b381-4521-85ca-3016999821dd",
+			"visible": true,
+			"name": "like_domanda",
+			"desc": "like delle domande usati per dare priorità alle domande più votate",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "445b8da7-10c5-4009-8952-8ae0d238b548",
+					"name": "id_utente",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "always"
+					},
+					"fk": true,
+					"ref": "utenti"
+				},
+				{
+					"id": "1e524f84-ed8e-4553-9e66-33c0786b048e",
+					"name": "id_domanda_corso",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "domande_corso"
+				}
+			],
+			"relations": [
+				"70960aa9-7f66-4c29-98dd-b74d496d85bd",
+				"c41ea386-7160-4e09-89ac-0f82df5a4d51"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "2d8e1052-2fed-4189-8c06-2ad4d7a509eb",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "504ee8c9-2ffb-4444-b558-1a41a6975de0",
+							"colid": "445b8da7-10c5-4009-8952-8ae0d238b548"
+						},
+						{
+							"id": "fd1710be-9046-4cf8-8ac8-d7c99784c640",
+							"colid": "1e524f84-ed8e-4553-9e66-33c0786b048e"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"15bd9ac9-5837-4bea-af25-824222f5a022": {
+			"id": "15bd9ac9-5837-4bea-af25-824222f5a022",
+			"visible": true,
+			"name": "amministratori",
+			"desc": "amministratori di sistema con dei privilegi in più",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "9c46edfd-c7ca-4617-8279-e2e2c856ad1b",
+					"name": "id",
+					"datatype": "integer",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					},
+					"fk": true,
+					"ref": "docenti"
+				}
+			],
+			"relations": [
+				"a86ad46a-96b6-4af3-b681-ad54412034be"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "a75ed9ed-20a6-4706-b34a-7e024a1cfbcd",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "31bc4420-762a-4a43-8fc8-38156016a612",
+							"colid": "9c46edfd-c7ca-4617-8279-e2e2c856ad1b"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		},
+		"ca809667-fe15-480a-aa45-9e1416dc388a": {
+			"id": "ca809667-fe15-480a-aa45-9e1416dc388a",
+			"visible": true,
+			"name": "scuole",
+			"desc": "Tabella contenente informzioni delle scuole italiane statali",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "42930b72-347f-4b54-851e-a5ea839529bb",
+					"name": "id",
+					"datatype": "varchar",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "9021ec3b-458e-4b0a-97fc-f08b87a9edd1",
+					"name": "denominazione",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "c8df634d-bb5e-4165-8616-556602db7ad3",
+					"name": "comune",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "3de8f13c-3f4d-4439-9483-50886ea82ff9",
+					"name": "tipologia",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "75314f55-67d8-44fd-8542-84fc8d4d9f47",
+					"name": "indirizzo",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "a2145217-15de-4045-950b-986607cc7449",
+					"name": "provincia",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "95716458-6b86-4208-9ffe-2d59ffee507e",
+					"name": "regione",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				},
+				{
+					"id": "3a6e4f73-2a30-40f1-8b4d-cf7c1495736d",
+					"name": "sito",
+					"datatype": "varchar",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"collation": null,
+					"list": false,
+					"after": "",
+					"pg": {
+						"generatedIdentity": "no"
+					}
+				}
+			],
+			"relations": [
+				"6183cf82-88a4-4dc0-91aa-d94d93085bb9"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "9e671955-4dfc-4989-be40-86b2419692b1",
+					"name": "Primary key",
+					"isPk": true,
+					"using": "",
+					"cols": [
+						{
+							"id": "067b81ab-360e-44ef-b610-0bdee2a5173e",
+							"colid": "42930b72-347f-4b54-851e-a5ea839529bb"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"internalColumnIdRef": "",
+			"objectType": "table",
+			"pg": {
+				"rowsecurity": false,
+				"schema": ""
+			}
+		}
+	},
+	"relations": {
+		"8957d760-cc9d-4ab5-bb07-115effc490c0": {
+			"id": "8957d760-cc9d-4ab5-bb07-115effc490c0",
+			"visible": true,
+			"name": "Utenti_Studenti",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "6ce72cd7-09fe-45e0-afc5-e7e772e0ac5f",
+			"parent": "730dee99-b13a-44f9-8886-0394f3811072",
+			"child": "9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "a500d906-73ab-434b-a866-db80c416a465",
+					"parentcol": "9bc5f402-5a86-4e07-a556-38cd100fefe6",
+					"childcol": "9fe94858-60b5-443a-b892-b9a4689825d4"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"63beeac1-08d2-4846-aae4-022bc94ebdc7": {
+			"id": "63beeac1-08d2-4846-aae4-022bc94ebdc7",
+			"visible": true,
+			"name": "Utenti_docenti",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "6ce72cd7-09fe-45e0-afc5-e7e772e0ac5f",
+			"parent": "730dee99-b13a-44f9-8886-0394f3811072",
+			"child": "f537064d-e38d-49e6-ae9d-50a037f1ec06",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "1d8ec3ae-ad8e-4352-94fe-105f0fb0dfe7",
+					"parentcol": "9bc5f402-5a86-4e07-a556-38cd100fefe6",
+					"childcol": "ffee921b-3f71-4e75-947f-700fe9f8ca26"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"415cb8a1-3825-4b3f-adfc-78221c5ab86b": {
+			"id": "415cb8a1-3825-4b3f-adfc-78221c5ab86b",
+			"visible": true,
+			"name": "docenti_docenti_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "172e49b9-a609-4be4-8a51-c6db13d2dfaa",
+			"parent": "f537064d-e38d-49e6-ae9d-50a037f1ec06",
+			"child": "914551ee-0d56-4dbc-b4e1-f89ed5bed0c5",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "29c9ac2b-b67e-40f6-ab45-7a7d0071a3d6",
+					"parentcol": "ffee921b-3f71-4e75-947f-700fe9f8ca26",
+					"childcol": "b1000520-b6ab-4704-a574-d4fe16ebf251"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"4e8b2a1d-558a-467b-9296-70392bf5faf0": {
+			"id": "4e8b2a1d-558a-467b-9296-70392bf5faf0",
+			"visible": true,
+			"name": "corsi_docenti_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "2e06466d-3af9-4f71-bfd8-c5ddc87c3c94",
+			"parent": "a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+			"child": "914551ee-0d56-4dbc-b4e1-f89ed5bed0c5",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "a8004fa0-5874-41ac-b780-f27b9031f9a1",
+					"parentcol": "bc4ab615-5110-4229-9e8b-12e8963f9591",
+					"childcol": "d270e26b-f9ed-4e44-bd59-32ec34212972"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"64c15497-15d1-420b-b4cf-842ab29d5602": {
+			"id": "64c15497-15d1-420b-b4cf-842ab29d5602",
+			"visible": true,
+			"name": "corsi_risorse_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "2e06466d-3af9-4f71-bfd8-c5ddc87c3c94",
+			"parent": "a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+			"child": "e144e192-b289-4dc5-8ac2-b4ce9785de24",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "ff7d3b77-1d70-4041-9364-59eb69c88faf",
+					"parentcol": "bc4ab615-5110-4229-9e8b-12e8963f9591",
+					"childcol": "e01b6e75-d07a-4730-9c86-607add62a8a5"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"3d018e5b-b3f2-4859-a609-815767b86cf8": {
+			"id": "3d018e5b-b3f2-4859-a609-815767b86cf8",
+			"visible": true,
+			"name": "aule_programmazione_lezioni",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "32e90acc-2914-4fb5-abfe-25639774d589",
+			"parent": "75b813fa-792d-4e95-b0e9-643e5b6c3c28",
+			"child": "0c68f741-b5da-4564-92e8-71ef7b04c534",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "80325977-7b1c-4bd9-b75f-588db7546620",
+					"parentcol": "e3ced10e-c123-462c-b30b-7592728f8727",
+					"childcol": "f5f38a28-48fa-4759-818b-3b0d61cc47f7"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"3dc536e4-bf62-4e13-8ea2-caee02bba321": {
+			"id": "3dc536e4-bf62-4e13-8ea2-caee02bba321",
+			"visible": true,
+			"name": "corsi_programmazione_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "2e06466d-3af9-4f71-bfd8-c5ddc87c3c94",
+			"parent": "a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+			"child": "c4a3d38c-cdc1-442d-b222-6bb766ace639",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "858fd8fd-858a-40b6-8e5a-9d53d11eaf3f",
+					"parentcol": "bc4ab615-5110-4229-9e8b-12e8963f9591",
+					"childcol": "36b08eeb-3740-4ac9-af94-4fe9c41e4a3e"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"ddbfe35c-9125-41fa-939f-20e0b6680913": {
+			"id": "ddbfe35c-9125-41fa-939f-20e0b6680913",
+			"visible": true,
+			"name": "programmazione_corso_programmazione_lezioni",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "73a89e90-b362-4f3b-a45a-f5a0c741c45a",
+			"parent": "c4a3d38c-cdc1-442d-b222-6bb766ace639",
+			"child": "0c68f741-b5da-4564-92e8-71ef7b04c534",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "977c2b3c-6953-4676-9674-f7f7061723cc",
+					"parentcol": "b6afe3cb-f01f-4b12-aa3e-1f65e050bef1",
+					"childcol": "5485ef84-8dae-4348-8a32-442de592d7a9"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"604027c1-03a6-4514-81e5-0ab0691924ad": {
+			"id": "604027c1-03a6-4514-81e5-0ab0691924ad",
+			"visible": true,
+			"name": "studenti_iscrizioni_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "8154ac50-36db-4754-a05c-1525df7c351a",
+			"parent": "9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+			"child": "decdccc3-750b-4e2f-9e0e-f94487cb7df8",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "aa49de0d-73ba-4f46-a226-3f5978fab3c9",
+					"parentcol": "9fe94858-60b5-443a-b892-b9a4689825d4",
+					"childcol": "c4c6b884-6792-44c0-a51c-b6e1239cb8e4"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"bcf176e7-85fc-464e-8c22-e44e3410af4f": {
+			"id": "bcf176e7-85fc-464e-8c22-e44e3410af4f",
+			"visible": true,
+			"name": "programmazione_corso_iscrizioni_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "73a89e90-b362-4f3b-a45a-f5a0c741c45a",
+			"parent": "c4a3d38c-cdc1-442d-b222-6bb766ace639",
+			"child": "decdccc3-750b-4e2f-9e0e-f94487cb7df8",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "bd4c4815-b876-42c5-b0c6-8ddab8e72578",
+					"parentcol": "b6afe3cb-f01f-4b12-aa3e-1f65e050bef1",
+					"childcol": "db8d7924-79a4-4344-acc1-e66293c9f969"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"5da67895-12f7-445d-8ae2-8d245e05222c": {
+			"id": "5da67895-12f7-445d-8ae2-8d245e05222c",
+			"visible": true,
+			"name": "studenti_presenze_lezione",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "8154ac50-36db-4754-a05c-1525df7c351a",
+			"parent": "9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+			"child": "94979f8b-78db-45be-8601-017111603c99",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "efd108c3-94d7-49a0-b3c6-97257222b971",
+					"parentcol": "9fe94858-60b5-443a-b892-b9a4689825d4",
+					"childcol": "bc4fa976-70ff-409a-a699-e4a01ea721d4"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"a1037a00-a4a6-4103-9367-cef4d40e6fc7": {
+			"id": "a1037a00-a4a6-4103-9367-cef4d40e6fc7",
+			"visible": true,
+			"name": "programmazione_lezioni_presenze_lezione",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "69b1ec50-8aa3-4ff4-a60b-c75e95c8197b",
+			"parent": "0c68f741-b5da-4564-92e8-71ef7b04c534",
+			"child": "94979f8b-78db-45be-8601-017111603c99",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "91e5d4f0-6f4e-45e1-ae51-ec65b1a9fc4f",
+					"parentcol": "d9c451bc-2458-40f7-b185-8bfe4345f90f",
+					"childcol": "2b59b716-bcf0-4ca7-a313-8a38d4b1cc18"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"b5e002dd-ac00-41ca-940d-c4fcc28f35a7": {
+			"id": "b5e002dd-ac00-41ca-940d-c4fcc28f35a7",
+			"visible": true,
+			"name": "utenti_domande_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "6ce72cd7-09fe-45e0-afc5-e7e772e0ac5f",
+			"parent": "730dee99-b13a-44f9-8886-0394f3811072",
+			"child": "41a106e5-1b47-453d-921b-e450fd64f0d5",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "3e0d9ecc-1bef-4389-adc7-38d4f78ad21a",
+					"parentcol": "9bc5f402-5a86-4e07-a556-38cd100fefe6",
+					"childcol": "80a14a93-6440-44e8-bb57-d0c70fd71ebb"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"55e694d6-8cc5-49c3-9373-1f0c3bbc1651": {
+			"id": "55e694d6-8cc5-49c3-9373-1f0c3bbc1651",
+			"visible": true,
+			"name": "corsi_domande_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "2e06466d-3af9-4f71-bfd8-c5ddc87c3c94",
+			"parent": "a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+			"child": "41a106e5-1b47-453d-921b-e450fd64f0d5",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "022b64ff-3f5b-4e4d-b301-366c020ff975",
+					"parentcol": "bc4ab615-5110-4229-9e8b-12e8963f9591",
+					"childcol": "59890e1b-2ace-42c2-bd33-824b4d093fed"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"1060768a-0fb1-49a7-b164-715fd9b9a3e0": {
+			"id": "1060768a-0fb1-49a7-b164-715fd9b9a3e0",
+			"visible": true,
+			"name": "domande_corso_domande_corso",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "59b282e2-1197-410e-980a-8c70c1d7407f",
+			"parent": "41a106e5-1b47-453d-921b-e450fd64f0d5",
+			"child": "41a106e5-1b47-453d-921b-e450fd64f0d5",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "7668dc52-67de-4547-9f1d-3d50e0641d5f",
+					"parentcol": "48db0525-eda7-4871-9a44-7e61fb6e6ff1",
+					"childcol": "4b2b6229-f524-42cc-8478-4b50a8b0d714"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"70960aa9-7f66-4c29-98dd-b74d496d85bd": {
+			"id": "70960aa9-7f66-4c29-98dd-b74d496d85bd",
+			"visible": true,
+			"name": "utenti_like_domanda",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "6ce72cd7-09fe-45e0-afc5-e7e772e0ac5f",
+			"parent": "730dee99-b13a-44f9-8886-0394f3811072",
+			"child": "f3df3480-b381-4521-85ca-3016999821dd",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "9e02fa26-1672-4279-a072-91aab9ac158c",
+					"parentcol": "9bc5f402-5a86-4e07-a556-38cd100fefe6",
+					"childcol": "445b8da7-10c5-4009-8952-8ae0d238b548"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"c41ea386-7160-4e09-89ac-0f82df5a4d51": {
+			"id": "c41ea386-7160-4e09-89ac-0f82df5a4d51",
+			"visible": true,
+			"name": "domande_corso_like_domanda",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "59b282e2-1197-410e-980a-8c70c1d7407f",
+			"parent": "41a106e5-1b47-453d-921b-e450fd64f0d5",
+			"child": "f3df3480-b381-4521-85ca-3016999821dd",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "7e20c298-a015-4aea-a6d2-f9002e1f1746",
+					"parentcol": "48db0525-eda7-4871-9a44-7e61fb6e6ff1",
+					"childcol": "1e524f84-ed8e-4553-9e66-33c0786b048e"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"a86ad46a-96b6-4af3-b681-ad54412034be": {
+			"id": "a86ad46a-96b6-4af3-b681-ad54412034be",
+			"visible": true,
+			"name": "docenti_amministratori",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "172e49b9-a609-4be4-8a51-c6db13d2dfaa",
+			"parent": "f537064d-e38d-49e6-ae9d-50a037f1ec06",
+			"child": "15bd9ac9-5837-4bea-af25-824222f5a022",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "7479e9ef-bedd-49c2-91b9-79c731a95bb8",
+					"parentcol": "ffee921b-3f71-4e75-947f-700fe9f8ca26",
+					"childcol": "9c46edfd-c7ca-4617-8279-e2e2c856ad1b"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		},
+		"6183cf82-88a4-4dc0-91aa-d94d93085bb9": {
+			"id": "6183cf82-88a4-4dc0-91aa-d94d93085bb9",
+			"visible": true,
+			"name": "scuole_studenti",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "9e671955-4dfc-4989-be40-86b2419692b1",
+			"parent": "ca809667-fe15-480a-aa45-9e1416dc388a",
+			"child": "9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "598828dc-e941-4b29-a3a2-2162e403b0ae",
+					"parentcol": "42930b72-347f-4b54-851e-a5ea839529bb",
+					"childcol": "45176a92-ee2c-448c-b407-adcc4924c684"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true
+		}
+	},
+	"notes": {},
+	"lines": {
+		"de77aa3a-2bbe-4684-99b2-24c12bba4bd6": {
+			"id": "de77aa3a-2bbe-4684-99b2-24c12bba4bd6",
+			"visible": true,
+			"name": "enum_modalità_lezioni-programmazione_corso",
+			"desc": "",
+			"style": "solid",
+			"parent": "0cb8bbdd-acd2-4060-84f9-618488e07025",
+			"child": "c4a3d38c-cdc1-442d-b222-6bb766ace639",
+			"lineColor": "transparent",
+			"markerStart": "none",
+			"markerEnd": "arrowEnd",
+			"linegraphics": "basic",
+			"generate": true
+		},
+		"9641793d-d70a-43d2-b073-93018b8d5c9f": {
+			"id": "9641793d-d70a-43d2-b073-93018b8d5c9f",
+			"visible": true,
+			"name": "enum_indirizzi_scuole-studenti",
+			"desc": "",
+			"style": "solid",
+			"parent": "1a68d290-0ad6-45c5-bede-7a5244e31d9d",
+			"child": "9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+			"lineColor": "transparent",
+			"markerStart": "none",
+			"markerEnd": "arrowEnd",
+			"linegraphics": "basic",
+			"generate": true
+		},
+		"37d685e2-fa34-4cba-84f5-a706b08baa43": {
+			"id": "37d685e2-fa34-4cba-84f5-a706b08baa43",
+			"visible": true,
+			"name": "enum_lingue-corsi",
+			"desc": "",
+			"style": "solid",
+			"parent": "9cc16459-1d56-40c2-9371-2d0c37184064",
+			"child": "a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+			"lineColor": "transparent",
+			"markerStart": "none",
+			"markerEnd": "arrowEnd",
+			"linegraphics": "basic",
+			"generate": true
+		}
+	},
+	"model": {
+		"name": "ProgettoBD",
+		"id": "d0b986e6-2e66-44c6-993e-6ae0c055b1a0",
+		"activeDiagram": "de55ae7d-0742-471b-95bc-15619d91a9a6",
+		"desc": "",
+		"path": "",
+		"type": "PG",
+		"version": 1,
+		"parentTableInFkCols": true,
+		"caseConvention": "under",
+		"replaceSpace": "_",
+		"color": "transparent",
+		"sideSelections": true,
+		"isDirty": true,
+		"storedin": {
+			"major": 4,
+			"minor": 5,
+			"extra": 1
+		},
+		"embeddedInParentsIsDisplayed": true,
+		"schemaContainerIsDisplayed": false,
+		"cardinalityIsDisplayed": false,
+		"estimatedSizeIsDisplayed": false,
+		"stickyParentIsDisplayed": false,
+		"def_coltopk": true,
+		"pg": {
+			"schema": ""
+		},
+		"sqlSettings": {
+			"wrapLines": true,
+			"wrapOffset": 80,
+			"indent": true,
+			"indentationString": "spaces",
+			"indentationSize": 2,
+			"limitItemsOnLine": true,
+			"maxListItemsOnLine": 3,
+			"statementDelimiter": ";",
+			"routineDelimiter": ";",
+			"keywordCase": "upper",
+			"identiferCase": "original",
+			"includeSchema": "always",
+			"quotation": "if_needed"
+		},
+		"lastSaved": "4/5/2022",
+		"writeFileParam": false,
+		"customDataTypes": [],
+		"beforeScript": ""
+	},
+	"otherObjects": {
+		"0cb8bbdd-acd2-4060-84f9-618488e07025": {
+			"id": "0cb8bbdd-acd2-4060-84f9-618488e07025",
+			"visible": true,
+			"name": "enum_modalità_lezioni",
+			"desc": "",
+			"type": "Enum",
+			"code": "",
+			"lines": [
+				"de77aa3a-2bbe-4684-99b2-24c12bba4bd6"
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			},
+			"enumValues": "'online', 'presenza', 'duale'"
+		},
+		"1a68d290-0ad6-45c5-bede-7a5244e31d9d": {
+			"id": "1a68d290-0ad6-45c5-bede-7a5244e31d9d",
+			"visible": true,
+			"name": "enum_indirizzi_scuole",
+			"desc": "",
+			"type": "Enum",
+			"code": "",
+			"lines": [
+				"9641793d-d70a-43d2-b073-93018b8d5c9f"
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			},
+			"enumValues": "'informatico', 'scientifico tradizionale', 'altro indirizzo liceale', 'scientifico scienze applicate', 'elettronica', 'elettrotecnica', 'meccatronica', 'altro indirizzo tecnico'"
+		},
+		"b7f18de8-e1b8-445c-bf79-546776f69867": {
+			"id": "b7f18de8-e1b8-445c-bf79-546776f69867",
+			"visible": true,
+			"name": "trigger_check_like",
+			"desc": "",
+			"type": "Trigger",
+			"code": "CREATE TRIGGER trigger_check_like\n    BEFORE INSERT OR UPDATE\n    ON public.like_domanda\n    FOR EACH ROW\n    EXECUTE FUNCTION public.check_like();",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"fdd379e9-e016-4c69-917c-3c8bf30be0d1": {
+			"id": "fdd379e9-e016-4c69-917c-3c8bf30be0d1",
+			"visible": true,
+			"name": "check_like",
+			"desc": "",
+			"type": "Function",
+			"code": "CREATE OR REPLACE FUNCTION public.check_like()\n    RETURNS trigger\n    LANGUAGE 'plpgsql'\n    VOLATILE\n    COST 100\nAS $BODY$\nbegin\n    if (SELECT id_domanda_corso from domande_corso where id = new.id_domanda_corso) is not null then\n        RAISE EXCEPTION 'it is not allowed to like an answer';\n    end if;\n    return new;\nend;\n$BODY$;",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"9f778362-d6e9-4a2c-a402-39ea5fe06e4b": {
+			"id": "9f778362-d6e9-4a2c-a402-39ea5fe06e4b",
+			"visible": true,
+			"name": "check_risposte",
+			"desc": "",
+			"type": "Function",
+			"code": "CREATE OR REPLACE FUNCTION public.check_risposte()\n    RETURNS trigger\n    LANGUAGE 'plpgsql'\n    VOLATILE\n    COST 100\nAS $BODY$\nbegin\n    if new.id_domanda_corso is not null then\n        if (select chiusa from domande_corso where id = new.id_domanda_corso) = true then\n            RAISE EXCEPTION 'it is not allowed to answer closed questions';\n        end if;\n        if (select id_utente from domande_corso where id = new.id_domanda_corso) != new.id_utente and\n           new.id_utente not in (select id_docente from docenti_corso where id_corso = new.id_corso) then\n            RAISE EXCEPTION 'only teachers and the author of the question can answer a question';\n        end if;\n    end if;\n    \n    return new;\nend;\n$BODY$;",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"0b8d85c5-e585-4c74-8ca2-532faccdd61a": {
+			"id": "0b8d85c5-e585-4c74-8ca2-532faccdd61a",
+			"visible": true,
+			"name": "trigger_check_risposte",
+			"desc": "",
+			"type": "Trigger",
+			"code": "CREATE TRIGGER trigger_check_risposte\n    BEFORE INSERT OR UPDATE\n    ON public.domande_corso\n    FOR EACH ROW\n    EXECUTE FUNCTION public.check_risposte();",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"e526fb4e-de40-4b1f-a6ed-972ad5d9e018": {
+			"id": "e526fb4e-de40-4b1f-a6ed-972ad5d9e018",
+			"visible": true,
+			"name": "check_iscrizioni",
+			"desc": "",
+			"type": "Function",
+			"code": "CREATE OR REPLACE FUNCTION public.check_iscrizioni()\n    RETURNS trigger\n    LANGUAGE 'plpgsql'\n    VOLATILE\n    COST 100\nAS $BODY$\ndeclare\n    new_lecture  programmazione_lezioni;\n    lecture      programmazione_lezioni;\n    prog_corso   programmazione_corso;\n    num_iscritti integer;\nbegin\n    if (select id_corso from programmazione_corso where id = new.id_programmazione_corso) in\n       (select id_corso\n        from iscrizioni_corso ic\n                 join programmazione_corso pc on ic.id_programmazione_corso = pc.id\n        where ic.id_studente = new.id_studente) then\n        RAISE EXCEPTION 'there is already an enrollment to this course';\n    end if;\n\n    for new_lecture in\n        (select pl.*\n         from programmazione_lezioni pl\n         where pl.id_programmazione_corso = new.id_programmazione_corso)\n        loop\n            for lecture in\n                (select pl.*\n                 from programmazione_lezioni pl\n                          join programmazione_corso p on p.id = pl.id_programmazione_corso\n                          join iscrizioni_corso i on p.id = i.id_programmazione_corso\n                 where i.id_studente = new.id_studente)\n                loop\n                    if new_lecture.data = lecture.data and new_lecture.orario_fine > new_lecture.orario_inizio then\n                        RAISE EXCEPTION 'there is another lesson with overlapping timetable';\n                    end if;\n                end loop;\n        end loop;\n\n    select pc.*\n    into prog_corso\n    from programmazione_corso pc\n    where pc.id = new.id_programmazione_corso;\n\n    select coalesce(count(*), 0)\n    into num_iscritti\n    from iscrizioni_corso\n    where new.id_programmazione_corso = id_programmazione_corso\n      and \"inPresenza\";\n\n    if (prog_corso.limite_iscrizioni is not null and num_iscritti >= prog_corso.limite_iscrizioni) or\n        num_iscritti >= (select min(a.capienza)\n                        from programmazione_lezioni pl\n                                 join aule a on pl.id_aula = a.id\n                        where pl.id_programmazione_corso = new.id_programmazione_corso) then\n        raise exception 'the course is full';\n    end if;\n\n    return new;\nend;\n$BODY$;",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"7e7aff57-d1be-4b35-8518-0fc18a66d1c2": {
+			"id": "7e7aff57-d1be-4b35-8518-0fc18a66d1c2",
+			"visible": true,
+			"name": "trigger_check_iscrizioni",
+			"desc": "",
+			"type": "Trigger",
+			"code": "CREATE TRIGGER trigger_check_iscrizioni\n    BEFORE INSERT OR UPDATE \n    ON public.iscrizioni_corso\n    FOR EACH ROW\n    EXECUTE FUNCTION public.check_iscrizioni();",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"11bbd3df-960f-4767-8200-9e5085676b1b": {
+			"id": "11bbd3df-960f-4767-8200-9e5085676b1b",
+			"visible": true,
+			"name": "check_aule",
+			"desc": "",
+			"type": "Trigger",
+			"code": "CREATE TRIGGER check_aule\n    BEFORE INSERT OR UPDATE \n    ON public.programmazione_lezioni\n    FOR EACH ROW\n    EXECUTE FUNCTION public.check_limite_iscrizioni();",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"700a152b-7724-48ea-9e71-6ea88113a27e": {
+			"id": "700a152b-7724-48ea-9e71-6ea88113a27e",
+			"visible": true,
+			"name": "check_limite_iscrizioni",
+			"desc": "",
+			"type": "Function",
+			"code": "CREATE FUNCTION public.check_limite_iscrizioni()\n    RETURNS trigger\n    LANGUAGE 'plpgsql'\n     NOT LEAKPROOF\nAS $BODY$\ndeclare\n    prog_corso programmazione_corso;\nbegin\n    select pc.*\n    into prog_corso\n    from programmazione_corso pc\n    where pc.id = new.id_programmazione_corso;\n\n    if prog_corso.modalità = 'duale' or prog_corso.modalità = 'presenza' and prog_corso.limite_iscrizioni is not null then\n        if (select a.capienza from aule a where a.id = new.id_aula) < prog_corso.limite_iscrizioni then\n            raise exception 'classroom too small for the registration limit of the course';\n        end if;\n    end if;\n\n    return new;\nend;\n$BODY$;",
+			"lines": [],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			}
+		},
+		"9cc16459-1d56-40c2-9371-2d0c37184064": {
+			"id": "9cc16459-1d56-40c2-9371-2d0c37184064",
+			"visible": true,
+			"name": "enum_lingue",
+			"desc": "",
+			"type": "Enum",
+			"code": "",
+			"lines": [
+				"37d685e2-fa34-4cba-84f5-a706b08baa43"
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"pg": {
+				"schema": ""
+			},
+			"enumValues": "'italiano', 'inglese'"
+		}
+	},
+	"diagrams": {
+		"de55ae7d-0742-471b-95bc-15619d91a9a6": {
+			"name": "Orientamento_DAIS",
+			"description": "",
+			"id": "de55ae7d-0742-471b-95bc-15619d91a9a6",
+			"keysgraphics": true,
+			"linegraphics": "basic",
+			"zoom": 0.9,
+			"background": "transparent",
+			"lineColor": "transparent",
+			"isOpen": true,
+			"main": true,
+			"diagramItems": {
+				"730dee99-b13a-44f9-8886-0394f3811072": {
+					"referencedItemId": "730dee99-b13a-44f9-8886-0394f3811072",
+					"x": 137,
+					"y": 107,
+					"gHeight": 208,
+					"gWidth": 262,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": true,
+					"autoExpand": true
+				},
+				"9a3ae7aa-68e7-4d7c-8c77-900c29e40805": {
+					"referencedItemId": "9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+					"x": 533,
+					"y": 150,
+					"gHeight": 81,
+					"gWidth": 319,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"f537064d-e38d-49e6-ae9d-50a037f1ec06": {
+					"referencedItemId": "f537064d-e38d-49e6-ae9d-50a037f1ec06",
+					"x": 486,
+					"y": 328,
+					"gHeight": 99,
+					"gWidth": 257,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"a47ad6af-a6a5-4b25-97f7-8cb62df1629a": {
+					"referencedItemId": "a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+					"x": 246,
+					"y": 756,
+					"gHeight": 153,
+					"gWidth": 258,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"914551ee-0d56-4dbc-b4e1-f89ed5bed0c5": {
+					"referencedItemId": "914551ee-0d56-4dbc-b4e1-f89ed5bed0c5",
+					"x": 621,
+					"y": 692,
+					"gHeight": 63,
+					"gWidth": 202,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"e144e192-b289-4dc5-8ac2-b4ce9785de24": {
+					"referencedItemId": "e144e192-b289-4dc5-8ac2-b4ce9785de24",
+					"x": 155,
+					"y": 1009,
+					"gHeight": 117,
+					"gWidth": 212,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"75b813fa-792d-4e95-b0e9-643e5b6c3c28": {
+					"referencedItemId": "75b813fa-792d-4e95-b0e9-643e5b6c3c28",
+					"x": 1030,
+					"y": 964,
+					"gHeight": 117,
+					"gWidth": 206,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"0c68f741-b5da-4564-92e8-71ef7b04c534": {
+					"referencedItemId": "0c68f741-b5da-4564-92e8-71ef7b04c534",
+					"x": 976,
+					"y": 681,
+					"gHeight": 189,
+					"gWidth": 303,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"0cb8bbdd-acd2-4060-84f9-618488e07025": {
+					"referencedItemId": "0cb8bbdd-acd2-4060-84f9-618488e07025",
+					"x": 575,
+					"y": 1162,
+					"gHeight": 49,
+					"gWidth": 160,
+					"color": "#eee",
+					"background": "#9c27b0",
+					"resized": true,
+					"autoExpand": true
+				},
+				"c4a3d38c-cdc1-442d-b222-6bb766ace639": {
+					"referencedItemId": "c4a3d38c-cdc1-442d-b222-6bb766ace639",
+					"x": 514,
+					"y": 976,
+					"gHeight": 117,
+					"gWidth": 278,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"decdccc3-750b-4e2f-9e0e-f94487cb7df8": {
+					"referencedItemId": "decdccc3-750b-4e2f-9e0e-f94487cb7df8",
+					"x": 934,
+					"y": 484,
+					"gHeight": 81,
+					"gWidth": 289,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"94979f8b-78db-45be-8601-017111603c99": {
+					"referencedItemId": "94979f8b-78db-45be-8601-017111603c99",
+					"x": 1275,
+					"y": 457,
+					"gHeight": 63,
+					"gWidth": 294,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"41a106e5-1b47-453d-921b-e450fd64f0d5": {
+					"referencedItemId": "41a106e5-1b47-453d-921b-e450fd64f0d5",
+					"x": 45,
+					"y": 456,
+					"gHeight": 135,
+					"gWidth": 246,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"f3df3480-b381-4521-85ca-3016999821dd": {
+					"referencedItemId": "f3df3480-b381-4521-85ca-3016999821dd",
+					"x": 363,
+					"y": 491,
+					"gHeight": 63,
+					"gWidth": 246,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"1a68d290-0ad6-45c5-bede-7a5244e31d9d": {
+					"referencedItemId": "1a68d290-0ad6-45c5-bede-7a5244e31d9d",
+					"x": 620,
+					"y": 46,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#9c27b0",
+					"resized": false,
+					"autoExpand": true
+				},
+				"15bd9ac9-5837-4bea-af25-824222f5a022": {
+					"referencedItemId": "15bd9ac9-5837-4bea-af25-824222f5a022",
+					"x": 728,
+					"y": 511,
+					"gHeight": 45,
+					"gWidth": 151,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"b7f18de8-e1b8-445c-bf79-546776f69867": {
+					"referencedItemId": "b7f18de8-e1b8-445c-bf79-546776f69867",
+					"x": 942,
+					"y": 45,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#9c27b0",
+					"resized": false,
+					"autoExpand": true
+				},
+				"fdd379e9-e016-4c69-917c-3c8bf30be0d1": {
+					"referencedItemId": "fdd379e9-e016-4c69-917c-3c8bf30be0d1",
+					"x": 942,
+					"y": 117,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#607d8b",
+					"resized": false,
+					"autoExpand": true
+				},
+				"9f778362-d6e9-4a2c-a402-39ea5fe06e4b": {
+					"referencedItemId": "9f778362-d6e9-4a2c-a402-39ea5fe06e4b",
+					"x": 1126,
+					"y": 117,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#607d8b",
+					"resized": false,
+					"autoExpand": true
+				},
+				"0b8d85c5-e585-4c74-8ca2-532faccdd61a": {
+					"referencedItemId": "0b8d85c5-e585-4c74-8ca2-532faccdd61a",
+					"x": 1126,
+					"y": 47,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#9c27b0",
+					"resized": false,
+					"autoExpand": true
+				},
+				"e526fb4e-de40-4b1f-a6ed-972ad5d9e018": {
+					"referencedItemId": "e526fb4e-de40-4b1f-a6ed-972ad5d9e018",
+					"x": 1311,
+					"y": 115,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#607d8b",
+					"resized": false,
+					"autoExpand": true
+				},
+				"7e7aff57-d1be-4b35-8518-0fc18a66d1c2": {
+					"referencedItemId": "7e7aff57-d1be-4b35-8518-0fc18a66d1c2",
+					"x": 1312,
+					"y": 47,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#9c27b0",
+					"resized": false,
+					"autoExpand": true
+				},
+				"11bbd3df-960f-4767-8200-9e5085676b1b": {
+					"referencedItemId": "11bbd3df-960f-4767-8200-9e5085676b1b",
+					"x": 1493,
+					"y": 47,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#9c27b0",
+					"resized": false,
+					"autoExpand": true
+				},
+				"700a152b-7724-48ea-9e71-6ea88113a27e": {
+					"referencedItemId": "700a152b-7724-48ea-9e71-6ea88113a27e",
+					"x": 1494,
+					"y": 114,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#607d8b",
+					"resized": false,
+					"autoExpand": true
+				},
+				"ca809667-fe15-480a-aa45-9e1416dc388a": {
+					"referencedItemId": "ca809667-fe15-480a-aa45-9e1416dc388a",
+					"x": 1258,
+					"y": 199,
+					"gHeight": 171,
+					"gWidth": 230,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true
+				},
+				"9cc16459-1d56-40c2-9371-2d0c37184064": {
+					"referencedItemId": "9cc16459-1d56-40c2-9371-2d0c37184064",
+					"x": 45,
+					"y": 812,
+					"gHeight": 44,
+					"gWidth": 150,
+					"color": "#eee",
+					"background": "#9c27b0",
+					"resized": false,
+					"autoExpand": true
+				}
+			},
+			"scroll": {
+				"x": 0,
+				"y": 0
+			},
+			"type": "erd"
+		}
+	},
+	"order": [
+		"0cb8bbdd-acd2-4060-84f9-618488e07025",
+		"1a68d290-0ad6-45c5-bede-7a5244e31d9d",
+		"9cc16459-1d56-40c2-9371-2d0c37184064",
+		"730dee99-b13a-44f9-8886-0394f3811072",
+		"9a3ae7aa-68e7-4d7c-8c77-900c29e40805",
+		"f537064d-e38d-49e6-ae9d-50a037f1ec06",
+		"a47ad6af-a6a5-4b25-97f7-8cb62df1629a",
+		"914551ee-0d56-4dbc-b4e1-f89ed5bed0c5",
+		"e144e192-b289-4dc5-8ac2-b4ce9785de24",
+		"75b813fa-792d-4e95-b0e9-643e5b6c3c28",
+		"0c68f741-b5da-4564-92e8-71ef7b04c534",
+		"c4a3d38c-cdc1-442d-b222-6bb766ace639",
+		"decdccc3-750b-4e2f-9e0e-f94487cb7df8",
+		"94979f8b-78db-45be-8601-017111603c99",
+		"41a106e5-1b47-453d-921b-e450fd64f0d5",
+		"f3df3480-b381-4521-85ca-3016999821dd",
+		"15bd9ac9-5837-4bea-af25-824222f5a022",
+		"ca809667-fe15-480a-aa45-9e1416dc388a",
+		"8957d760-cc9d-4ab5-bb07-115effc490c0",
+		"63beeac1-08d2-4846-aae4-022bc94ebdc7",
+		"415cb8a1-3825-4b3f-adfc-78221c5ab86b",
+		"4e8b2a1d-558a-467b-9296-70392bf5faf0",
+		"64c15497-15d1-420b-b4cf-842ab29d5602",
+		"3d018e5b-b3f2-4859-a609-815767b86cf8",
+		"3dc536e4-bf62-4e13-8ea2-caee02bba321",
+		"ddbfe35c-9125-41fa-939f-20e0b6680913",
+		"604027c1-03a6-4514-81e5-0ab0691924ad",
+		"bcf176e7-85fc-464e-8c22-e44e3410af4f",
+		"5da67895-12f7-445d-8ae2-8d245e05222c",
+		"a1037a00-a4a6-4103-9367-cef4d40e6fc7",
+		"b5e002dd-ac00-41ca-940d-c4fcc28f35a7",
+		"55e694d6-8cc5-49c3-9373-1f0c3bbc1651",
+		"1060768a-0fb1-49a7-b164-715fd9b9a3e0",
+		"70960aa9-7f66-4c29-98dd-b74d496d85bd",
+		"c41ea386-7160-4e09-89ac-0f82df5a4d51",
+		"a86ad46a-96b6-4af3-b681-ad54412034be",
+		"6183cf82-88a4-4dc0-91aa-d94d93085bb9",
+		"fdd379e9-e016-4c69-917c-3c8bf30be0d1",
+		"9f778362-d6e9-4a2c-a402-39ea5fe06e4b",
+		"e526fb4e-de40-4b1f-a6ed-972ad5d9e018",
+		"700a152b-7724-48ea-9e71-6ea88113a27e",
+		"b7f18de8-e1b8-445c-bf79-546776f69867",
+		"0b8d85c5-e585-4c74-8ca2-532faccdd61a",
+		"7e7aff57-d1be-4b35-8518-0fc18a66d1c2",
+		"11bbd3df-960f-4767-8200-9e5085676b1b",
+		"de77aa3a-2bbe-4684-99b2-24c12bba4bd6",
+		"9641793d-d70a-43d2-b073-93018b8d5c9f"
+	]
+}

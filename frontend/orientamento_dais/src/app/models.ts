@@ -39,6 +39,7 @@ export interface ProgCourse {
     password_certificato: string;
     id_corso: number;
     lezioni: Lesson[] | undefined;
+    iscritti: any[] | undefined;
 }
 
 export interface Lesson {
