@@ -435,7 +435,8 @@ def remove_subscription(user, id_corso, id_prog, id_studente):
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def get_student_inscriptions(user, id):
     if 'studente' in user.roles and user.id != id:
-        return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 404
+
+        return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
     
     inscriptions = sessionStudenti.query(IscrizioniCorso.id_programmazione_corso).filter(IscrizioniCorso.id == id).all()
     return jsonify(json.loads(json.dumps([dict(iscr._mapping) for iscr in inscriptions]))), 200

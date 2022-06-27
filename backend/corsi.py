@@ -66,7 +66,7 @@ def get_corso(id):
 def add_corso(user):  # su tutte token_required bisogna mettere user (per reperire i dati di chi è loggato)
 
     # Controlla se ci sono i campi necessari
-    if request.form.get('title') is None:
+    if request.form.get('titolo') is None:
         return jsonify({'error': True, 'errormessage': 'Titolo mancante'}), 400
 
     # Controlla che il corso non abbia un titolo già esistente
@@ -162,7 +162,7 @@ def get_docenti_corsi(id):
 def add_docente_corso(user, id):
     # TODO: CAPIRE SE è GIà UN ARRAY?   (Assumiamo che lo sia)
     # Crea un set per eliminare i duplicati
-    id_docenti_to_add = set(request.post.get('id_docenti'))
+    id_docenti_to_add = set(request.form.get('id_docenti'))
 
     try:
         # Aggiunge ogni docente nel set
@@ -195,12 +195,14 @@ def get_corsi_docente(id):
 @token_required(restrict_to_roles=['amministratore'])
 def remove_docente(user, id):
     # Crea un set per rimuovere i duplicati
-    id_docenti_to_remove = set(request.post.get('id_docenti'))
+    id_docenti_to_remove = set(request.form.get('id_docenti'))
 
     try:
         # Rimuove i docenti presenti nel set
         for id_docente in id_docenti_to_remove:
-            sessionAmministratori.delete(DocenteCorso(id_docente = id_docente, id_corso = id))
+            docente = sessionAmministratori.query(DocenteCorso).\
+                filter(DocenteCorso.id_docente == id_docente, DocenteCorso.id_corso == id).first()
+            sessionAmministratori.delete(docente)
 
         # Solo dopo averli rimossi tutti esegue la commit
         sessionAmministratori.commit()
@@ -216,7 +218,8 @@ def remove_docente(user, id):
 def remove_course(user, id):
     try:
         # Rimuove uno specifico corso
-        sessionAmministratori.delete(Corso(id = id))
+        corso = sessionAmministratori.query(Corso).filter(Corso.id == id).first()
+        sessionAmministratori.delete(corso)
         sessionAmministratori.commit()
     except Exception as e:
         sessionAmministratori.rollback()

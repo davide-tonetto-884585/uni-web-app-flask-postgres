@@ -7,7 +7,7 @@ from .marshmallow_models import RisorseCorsoSchema
 from .auth import token_required
 from .models import DocenteCorso, ProgrammazioneCorso, IscrizioniCorso, RisorseCorso
 
-risorse = Blueprint('risorse_corso', __name__)
+risorse = Blueprint('risorse', __name__)
 
 preLoginSession = PreLoginSession()
 sessionDocenti = SessionDocenti()

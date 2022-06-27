@@ -50,10 +50,10 @@ def get_aule():
 @aule.route('/aule', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore'])
 def add_aule(user):
-    name = request.form.get('name')
-    building = request.form.get('building')
+    name = request.form.get('nome')
+    building = request.form.get('edificio')
     campus = request.form.get('campus')
-    capacity = request.form.get('capacity')
+    capacity = request.form.get('capienza')
 
     # Controlla i campi necessari per l'inserimento dell'aula
     if name is None:
