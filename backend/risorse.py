@@ -21,7 +21,7 @@ risorse_corso_schema = RisorseCorsoSchema(many=True)
 # Funzione per controllare che un docente possieda il corso (per evitare ridondanze nel codice)
 def checkDocenteHasCourse(user, id_corso):
     return (sessionDocenti.query(DocenteCorso.id_docente).\
-        filter(DocenteCorso.id_corso == id, DocenteCorso.id_docente == user['id']).count() != 0)
+        filter(DocenteCorso.id_corso == id_corso, DocenteCorso.id_docente == user['id']).count() != 0)
 
 
 #ritorna le risorse di un corso
@@ -34,7 +34,7 @@ def get_risorse(user, id):
     name = request.args('nome')
     visible = request.args('visibile')
 
-    if (user['role'] == 'studente'):
+    if ('studente' in user['roles']):
 
         # Controlliamo che lo studente sia iscritto al corso, altrimenti non mostriamo le risorse
         if(sessionDocenti.query(IscrizioniCorso.id_studente).\
@@ -48,7 +48,7 @@ def get_risorse(user, id):
             visible = True
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non mostriamo le risorse
-    elif(user['role'] == 'docente' and not checkDocenteHasCourse(user, id)):
+    elif('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
         return jsonify({'error': True, 'errormessage': 'Non puoi vedere la/e risorsa/e di questo corso'}), 401
 
     risorse = sessionStudenti.query(RisorseCorso).\
@@ -76,14 +76,14 @@ def get_risorse(user, id):
 @risorse.route('/corso/<id>/risorse', methods=['POST'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])    #ruoli che possono eseguire questa funzione
 def add_risorsa(user, id):
-    
+
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo l'aggiunta di risorse
-    if(user['role'] == 'docente' and not checkDocenteHasCourse(user, id)):
+    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
         return jsonify({'error': True, 'errormessage': 'Non puoi aggiuntere la/e risorsa/e a questo corso'}), 401
 
     #controllo che i dati obbligatori siano stati inseriti nel form
     if request.form.get('nome') is None or request.form.get('visibile') is None:
-        return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 404
+        return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
 
     # Recupera il path della risorsa e la salva (se non già presente) nel server
     path_risorsa = load_file('risorsa_corso')
@@ -107,7 +107,7 @@ def add_risorsa(user, id):
 def delete_risorsa(user, id_corso, id_risorsa):
     
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la rimozione delle risorse
-    if(user['role'] == 'docente' and not checkDocenteHasCourse(user, id)):
+    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
         return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere la/e risorsa/e per questo corso'}), 401
 
     try:
@@ -126,7 +126,7 @@ def delete_risorsa(user, id_corso, id_risorsa):
 def modify_risorsa(user, id_corso, id_risorsa):
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la modifica delle risorse
-    if(user['role'] == 'docente' and not checkDocenteHasCourse(user, id)):
+    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
         return jsonify({'error': True, 'errormessage': 'Non puoi modificare la/e risorsa/e di questo corso'}), 401
 
     # Recupera la risorsa da modificare
