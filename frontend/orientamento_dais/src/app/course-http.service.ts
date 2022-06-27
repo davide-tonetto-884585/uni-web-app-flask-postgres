@@ -14,13 +14,13 @@ export class CourseHttpService {
 
   constructor(
     private http: HttpClient,
-    private user_http: UserHttpService
+    private user_http: UserHttpService,
   ) { }
 
   private createOptions(params = {}) {
     return {
       headers: new HttpHeaders({
-        authorization: 'Bearer ' + this.user_http.getToken(),
+        'authorization': 'Bearer ' + this.user_http.getToken(),
         'cache-control': 'no-cache',
         'Content-Type': 'application/json',
       }),
@@ -30,17 +30,15 @@ export class CourseHttpService {
 
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error.message);
+      return throwError(() => error.error.message);
     } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
       console.error(
         `Backend returned code ${error.status}, ` +
         'body was: ' + JSON.stringify(error.error));
-    }
 
-    return throwError(() => 'Something bad happened; please try again later.');
+      return throwError(() => error.error.errormessage);
+    }
   }
 
   getCourses(limit = 10, skip = 0): Observable<Course[]> {
@@ -83,6 +81,14 @@ export class CourseHttpService {
   getAula(id_aula: number): Observable<Aula> {
     return this.http.get<Aula>(
       `${BACKEND_URL}/aule/${id_aula}`
+    ).pipe(catchError(this.handleError));
+  }
+
+  enrollStudent(id_corso: number, id_prog_corso: number, id_stud: number): Observable<any> {
+    return this.http.post(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/iscrizioni`,
+      { 'id_studente': id_stud.toString() },
+      this.createOptions({ 'id_studente': id_stud.toString() })
     ).pipe(catchError(this.handleError));
   }
 }

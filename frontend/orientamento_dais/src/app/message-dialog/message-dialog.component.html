@@ -1,0 +1,4 @@
+<h1 mat-dialog-title>{{ this.message.title }}</h1>
+<div mat-dialog-content [class]="this.message.error ? 'alert alert-danger' : 'alert alert-success'" role="alert">
+  {{ this.message.text }}
+</div>

@@ -60,7 +60,7 @@ def token_required(restrict_to_roles=[]):
             except Exception as e:
                 return jsonify({
                     'error': True,
-                    'errormessage': 'Token invalido: ' + str(e)
+                    'errormessage': 'Invalid token: ' + str(e)
                 }), 401
                 
             # returns the current logged in users contex to the routes

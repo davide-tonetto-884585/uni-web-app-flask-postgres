@@ -20,10 +20,10 @@ risorse_corso_schema = RisorseCorsoSchema(many=True)
 @risorse.route('/corso/<id>/risorse', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def get_risorse(user, id):
-    skip = request.args('skip')
-    limit = request.args('limit')
-    name = request.args('nome')
-    visible = request.args('visibile')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('nome')
+    visible = request.args.get('visibile')
 
     # TODO: CAPIRE SE 'user' EFFETTIVAMENTE HA ANCHE LA CHIAVE 'id'
     if (user['role'] == 'studente'):

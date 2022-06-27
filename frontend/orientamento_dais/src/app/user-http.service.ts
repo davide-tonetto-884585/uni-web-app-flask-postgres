@@ -83,7 +83,7 @@ export class UserHttpService {
     );
   }
 
-  isLogged() : boolean {
+  isLogged(): boolean {
     return this.user_data ? true : false;
   }
 
@@ -113,5 +113,16 @@ export class UserHttpService {
 
   getName(): string | boolean {
     return this.user_data?.nome ?? false;
+  }
+
+  getId(): number | undefined {
+    return this.user_data?.id;
+  }
+
+  // TODO: manca token
+  getInscriptions(): Observable<any> {
+    return this.http.get(
+      `${BACKEND_URL}/utenti/studenti/${this.getId()}/iscrizioni`
+    )
   }
 }

@@ -31,8 +31,8 @@
             <br>
             <div *ngIf="this.prog_corso && this.prog_corso.length > 0" class="container">
                 <div *ngFor="let prog of this.prog_corso">
-                    <p><strong>Modality:</strong> {{ prog.modalita }}</p>
-                    <p><strong>Limit:</strong> {{ prog.limite_iscrizioni }} students</p>
+                    <p><strong>Modality:</strong> {{ prog.modalita }} </p>
+                    <p *ngIf="prog.limite_iscrizioni"><strong>Limit:</strong> {{ prog.limite_iscrizioni }} students</p>
                     <p><strong>Lessons:</strong></p>
                     <ol>
                         <li *ngFor="let les of prog.lezioni">
@@ -44,9 +44,20 @@
                             </p>
                         </li>
                     </ol>
-                    <button *ngIf="this.isLogged() && this.isStudent()" type="button"
-                        class="btn btn-danger">Enroll</button>
-                    <button *ngIf="!this.isLogged()" type="button" class="btn btn-danger">Login to enroll</button>
+                    <div
+                        *ngIf="!prog.limite_iscrizioni || prog.iscritti && prog.iscritti.length < prog.limite_iscrizioni
+                               ">
+                        <button *ngIf="this.isLogged() && this.isStudent()" type="button"
+                            class="btn btn-danger" (click)="enrollStudent(prog.id)">Enroll</button>
+                        <button *ngIf="!this.isLogged()" type="button" class="btn btn-danger" routerLink="/login">
+                            Login to enroll
+                        </button>
+                    </div>
+                    <div
+                        *ngIf="(prog.limite_iscrizioni && prog.iscritti && prog.iscritti.length >= prog.limite_iscrizioni)"
+                        class="alert alert-danger" role="alert">
+                        registration limit reached
+                    </div>
                     <hr>
                 </div>
             </div>

@@ -19,7 +19,9 @@ import { CarouselItemComponent } from './carousel-item/carousel-item.component';
 import { CoursesComponent } from './courses/courses.component';
 import { CourseDetailComponent } from './course-detail/course-detail.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MessageDialogComponent } from './message-dialog/message-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import {MatTabsModule} from '@angular/material/tabs';
     CarouselComponent,
     CarouselItemComponent,
     CoursesComponent,
-    CourseDetailComponent
+    CourseDetailComponent,
+    MessageDialogComponent
   ],
   imports: [
     FormsModule,
@@ -42,7 +45,8 @@ import {MatTabsModule} from '@angular/material/tabs';
     AppRoutingModule,
     NgCeilPipeModule,
     BrowserAnimationsModule,
-    MatTabsModule
+    MatTabsModule,
+    MatDialogModule,
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService }

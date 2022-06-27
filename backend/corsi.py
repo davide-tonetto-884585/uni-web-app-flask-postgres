@@ -201,7 +201,7 @@ def remove_course(user, id):
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-@corsi.route('/corsi/:id/studenti ', methods=['GET'])
+@corsi.route('/corsi/<id>/studenti', methods=['GET'])
 def get_studenti_corso(id):
     try:
         studenti = preLoginSession.\
@@ -212,7 +212,7 @@ def get_studenti_corso(id):
             filter(ProgrammazioneCorso.id_corso == id).all()
 
     except Exception as e:
-        return jsonify({'error': True, 'errormessage': 'Impossibile reperire docenti del corso: ' + str(e)}), 404
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire studenti del corso: ' + str(e)}), 404
 
     if studenti is None:
         return jsonify({'error': True, 'errormessage': 'Corso senza studenti registrati'}), 404
