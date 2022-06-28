@@ -315,7 +315,7 @@ def login():
         'nome': user.nome,
         'cognome': user.cognome,
         'data_nascita': user.data_nascita.strftime('%m/%d/%Y'),
-        'exp': datetime.utcnow() + timedelta(minutes=60)
+        'exp': datetime.utcnow() + timedelta(minutes=120)
     }
 
     studente = preLoginSession.query(Studente).filter(Studente.id == user.id).first()

@@ -6,6 +6,7 @@ import { UserHttpService } from '../user-http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Course, ProgCourse, Lesson, Aula } from '../models';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
+import { BACKEND_URL } from '../globals';
 
 @Component({
   selector: 'app-course-detail',
@@ -17,6 +18,7 @@ export class CourseDetailComponent implements OnInit {
   course: Course | undefined;
   docenti: any[] = [];
   prog_corso: ProgCourse[] = [];
+  BACKEND_URL: string = BACKEND_URL;
 
   constructor(
     private course_http: CourseHttpService,

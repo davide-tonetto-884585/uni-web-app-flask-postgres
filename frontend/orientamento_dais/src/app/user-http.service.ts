@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import jwt_decode from 'jwt-decode';
+import { Router } from '@angular/router';
 
 import { User, UserData } from './models';
 import { BACKEND_URL, FRONTEND_URL } from './globals';
@@ -14,7 +15,7 @@ export class UserHttpService {
   private token: string;
   private user_data: UserData | null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.token = localStorage.getItem('token') ?? '';
     if (this.token.length < 1) {
       this.token = ""
@@ -24,7 +25,22 @@ export class UserHttpService {
     }
   }
 
-  getToken(): string {
+  private createOptions(params = {}) {
+    return {
+      headers: new HttpHeaders({
+        'authorization': 'Bearer ' + this.getToken(),
+        'cache-control': 'no-cache'
+      }),
+      params: new HttpParams({ fromObject: params })
+    };
+  }
+
+  getToken(): string | null {
+    if (this.user_data && Date.now() > +this.user_data?.exp * 1000) {
+      this.logout();
+      this.router.navigate(['/login']);
+    }
+
     return this.token;
   }
 
@@ -84,7 +100,7 @@ export class UserHttpService {
   }
 
   isLogged(): boolean {
-    return this.user_data ? true : false;
+    return (this.user_data && Date.now() <= +this.user_data?.exp * 1000) ? true : false;
   }
 
   isAdmin(): boolean {
@@ -119,10 +135,10 @@ export class UserHttpService {
     return this.user_data?.id;
   }
 
-  // TODO: manca token
   getInscriptions(): Observable<any> {
     return this.http.get(
-      `${BACKEND_URL}/utenti/studenti/${this.getId()}/iscrizioni`
+      `${BACKEND_URL}/utenti/studenti/${this.getId()}/iscrizioni`,
+      this.createOptions()
     )
   }
 }

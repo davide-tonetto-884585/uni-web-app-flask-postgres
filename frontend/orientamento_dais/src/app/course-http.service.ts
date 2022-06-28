@@ -21,8 +21,7 @@ export class CourseHttpService {
     return {
       headers: new HttpHeaders({
         'authorization': 'Bearer ' + this.user_http.getToken(),
-        'cache-control': 'no-cache',
-        'Content-Type': 'application/json',
+        'cache-control': 'no-cache'
       }),
       params: new HttpParams({ fromObject: params })
     };
@@ -68,7 +67,8 @@ export class CourseHttpService {
 
   getLezioniProgCorso(id_corso: number, id_prog_corso: number): Observable<Lesson[]> {
     return this.http.get<Lesson[]>(
-      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/lezioni`
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/lezioni`,
+      this.createOptions()
     ).pipe(catchError(this.handleError));
   }
 
@@ -85,10 +85,13 @@ export class CourseHttpService {
   }
 
   enrollStudent(id_corso: number, id_prog_corso: number, id_stud: number): Observable<any> {
+    const form_data = new FormData();
+    form_data.append('id_studente', id_stud.toString())
+
     return this.http.post(
       `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/iscrizioni`,
-      { 'id_studente': id_stud.toString() },
-      this.createOptions({ 'id_studente': id_stud.toString() })
+      form_data,
+      this.createOptions()
     ).pipe(catchError(this.handleError));
   }
 }
