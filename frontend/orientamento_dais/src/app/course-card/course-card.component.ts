@@ -2,6 +2,7 @@ import { Component, OnInit, Input, HostBinding } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { Course } from '../models';
+import { BACKEND_URL } from '../globals';
 
 @Component({
   selector: 'app-course-card',
@@ -13,6 +14,7 @@ export class CourseCardComponent implements OnInit {
   @Input() course: Course | undefined;
   @Input() card: boolean = true;
   @HostBinding('class.col') classCol: boolean = false;
+  BACKEND_URL: string = BACKEND_URL;
 
   constructor(
     private router: Router

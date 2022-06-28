@@ -29,5 +29,6 @@ def load_file(request_parameter_name):
             path = os.path.join(
                 current_app.config['UPLOAD_FOLDER'], filename)
             file.save(path)
-
+            path = path[1:].replace('\\', '/')
+            
     return path
