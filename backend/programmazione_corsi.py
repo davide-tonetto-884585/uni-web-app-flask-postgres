@@ -46,10 +46,8 @@ def add_prog_corso(user, id):
 
     # creazione del nuovo oggetto da inserire
     new_prog_corso = ProgrammazioneCorso(modalità=request.form.get('modalita'),
-                                         limite_iscrizioni=request.form.get(
-                                             'limite_iscrizioni'),
-                                         password_certificato=request.form.get(
-                                             'password_certificato'),
+                                         limite_iscrizioni=request.form.get('limite_iscrizioni'),
+                                         password_certificato=request.form.get('password_certificato'),
                                          id_corso=id)
 
     # prova di inserimento della nuova programmazione del corso
@@ -69,8 +67,8 @@ def get_progs_corso(id):
     # Parametri del form
     skip = request.args.get('skip')
     limit = request.args.get('limit')
-    modality = request.args.get('modality')
-    subscriptions_limit = request.args.get('subscriptions_limit')
+    modality = request.args.get('modalita')
+    subscriptions_limit = request.args.get('limite_iscrizioni')
 
     # Query per recuperare tutte le programmazioni del corso
     progs_corso = preLoginSession.query(ProgrammazioneCorso).filter(
@@ -79,7 +77,7 @@ def get_progs_corso(id):
     # Filtri per specializzare la ricerca e/o la visualizzazione delle programmazioni del corso
     if modality is not None:
         progs_corso = progs_corso.filter(
-            ProgrammazioneCorso.modalita == modality)
+            ProgrammazioneCorso.modalità == modality)
     if subscriptions_limit is not None:
         progs_corso = progs_corso.filter(
             ProgrammazioneCorso.limite_iscrizioni == subscriptions_limit)
@@ -90,15 +88,19 @@ def get_progs_corso(id):
 
     progs_corso = progs_corso.all()
 
-    # Per ogni entry, recupera il limite delle iscrizioni
-    for prog_corso in progs_corso:
-        if prog_corso.modalita == 'presenza' or prog_corso.modalita == 'duale' and prog_corso.limite_iscrizioni is None:
-            progs_corso.limite_iscrizioni = preLoginSession.query(Aula.capienza).\
-                join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
-                filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
-                order_by(Aula.capienza).limit(1).first()
+    if len(progs_corso) == 0 :
+        # Se non trova alcuna risorsa, ritorna uno status code 404
+        return jsonify({'error': True, 'errormessage': 'Nessuna programmazione del corso disponibile'}), 404
+    else:
+         # Per ogni entry, aggiunge il limite di iscrizione sulla base dell'aula più piccola
+        for prog_corso in progs_corso:
+            if prog_corso.modalità == 'presenza' or prog_corso.modalità == 'duale' and prog_corso.limite_iscrizioni is None:
+                prog_corso.limite_iscrizioni = preLoginSession.query(Aula.capienza).\
+                    join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
+                    filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
+                    order_by(Aula.capienza).limit(1).first()
 
-    return jsonify(programmazione_corsi_schema.dump(progs_corso)), 200
+        return jsonify(programmazione_corsi_schema.dump(progs_corso)), 200
 
 
 # ritorna una programmazione specifica di un corso specifico in base al loro id
@@ -106,20 +108,27 @@ def get_progs_corso(id):
 def get_prog_corso(id_corso, id_prog):
     # prova a recuperare la programmazione del corso
     try:
-        progr_corso = preLoginSession.query(ProgrammazioneCorso).filter(
-            ProgrammazioneCorso.id_corso == id_corso, ProgrammazioneCorso.id == id_prog).first()
+        prog_corso = preLoginSession.query(ProgrammazioneCorso).\
+            filter(ProgrammazioneCorso.id_corso == id_corso, ProgrammazioneCorso.id == id_prog).first()
+
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Errore nel reperire il corso: ' + str(e)}), 500
 
-    if progr_corso is None:
+    if prog_corso is None:
         # Se non trova alcuna programmazione, ritorna uno status code 404
         return jsonify({'error': True, 'errormessage': 'Programmazione del corso inesistente'}), 404
     else:
-        return jsonify(programmazione_corso_schema.dump(progr_corso)), 200
+        # Per ogni entry, aggiunge il limite di iscrizione sulla base dell'aula più piccola
+        if prog_corso.modalità == 'presenza' or prog_corso.modalità == 'duale' and prog_corso.limite_iscrizioni is None:
+            prog_corso.limite_iscrizioni = preLoginSession.query(Aula.capienza).\
+                join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
+                filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
+                order_by(Aula.capienza).limit(1).first()
+
+        return jsonify(programmazione_corso_schema.dump(prog_corso)), 200
+
 
 # ritorna le lezioni di una programmazione specifica di un corso specifico in base al loro id
-
-
 @prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni', methods=['GET'])
 def get_lezioni_progs_corso(id_corso, id_prog):
     # Parametri del form
@@ -150,24 +159,11 @@ def get_lezioni_progs_corso(id_corso, id_prog):
 
     progs_lezioni = progs_lezioni.all()
 
-    return jsonify(programmazione_lezioni_schema.dump(progs_lezioni)), 200
-
-
-# ritorna una lezione specifica di una programmazione del corso specifica di un corso specifico in base all'id
-@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>', methods=['GET'])
-def get_lezione_prog_corso(id_corso, id_prog, id_lezione):
-    # prova a recuperare la programmazione della lezione
-    try:
-        progs_lezione = preLoginSession.query(ProgrammazioneLezioni).filter(
-            ProgrammazioneLezioni.id_programmazione_corso == id_prog, ProgrammazioneLezioni.id == id_lezione).first()
-    except Exception as e:
-        return jsonify({'error': True, 'errormessage': 'Impossibile reperire la lezione: ' + str(e)}), 500
-
-    if progs_lezione is None:
-        # Se non trova alcuna programmazione, ritorna uno status code 404
-        return jsonify({'error': True, 'errormessage': 'Programmazione della lezione inesistente'}), 404
+    if len(progs_lezioni) == 0 :
+        # Se non trova alcuna risorsa, ritorna uno status code 404
+        return jsonify({'error': True, 'errormessage': 'Nessuna lezione del corso disponibile'}), 404
     else:
-        return jsonify(programmazione_lezione_schema.dump(progs_lezione)), 200
+        return jsonify(programmazione_lezioni_schema.dump(progs_lezioni)), 200
 
 
 # aggiunge una nuova lezione
@@ -182,6 +178,7 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
     link_virtual_class = request.form.get('link_virtual_class')
     passcode_virtual_class = request.form.get('passcode_virtual_class')
     presence_code = request.form.get('presence_code')
+    id_aula = request.form.get('id_aula')
 
     # query per reperire tutti i docenti di un corso
     if 'amministratore' not in user['roles']:
@@ -222,20 +219,20 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
         return jsonify({'error': True, 'errormessage': 'Codice verifica presenza mancante'}), 400
 
     # Controlla che la lezione non vada a sovrapporsi ad un'altra
-    if sessionAmministratori.\
-            query(ProgrammazioneLezioni).\
+    if sessionAmministratori.query(ProgrammazioneLezioni).\
             join(ProgrammazioneCorso, ProgrammazioneLezioni.id_programmazione_corso == ProgrammazioneCorso.id).\
             filter(
                 ProgrammazioneLezioni.data == date,
                 ProgrammazioneLezioni.orario_inizio >= start_time,
                 ProgrammazioneLezioni.orario_inizio <= finish_time,
                 ProgrammazioneCorso.id == id_prog
-            ).first():
+            ).count() > 0:
         return jsonify({'error': True, 'errormessage': 'Lezione sovrapposta ad un\'altra'}), 409
 
     # creazione nuovo oggetto con i campi da inserire nella tabella
-    new_lezione = ProgrammazioneLezioni(data=date, orario_inizio=start_time, orario_fine=finish_time, link_stanza_virtuale=link_virtual_class,
-                                        passcode_stanza_virtuale=passcode_virtual_class, codice_verifica_presenza=presence_code, id_corso=id_corso)
+    new_lezione = ProgrammazioneLezioni(data=date, orario_inizio=start_time, orario_fine=finish_time,
+                                        link_stanza_virtuale=link_virtual_class, passcode_stanza_virtuale=passcode_virtual_class,
+                                        codice_verifica_presenza=presence_code, id_programmazione_corso=id_prog, id_aula=id_aula)
 
     # prova inserimento della nuova lezione
     try:
@@ -246,6 +243,23 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
         return jsonify({'error': True, 'errormessage': 'Errore inserimento lezione' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+# ritorna una lezione specifica di una programmazione del corso specifica di un corso specifico in base all'id
+@prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>', methods=['GET'])
+def get_lezione_prog_corso(id_corso, id_prog, id_lezione):
+    # prova a recuperare la programmazione della lezione
+    try:
+        progs_lezione = preLoginSession.query(ProgrammazioneLezioni).filter(
+            ProgrammazioneLezioni.id_programmazione_corso == id_prog, ProgrammazioneLezioni.id == id_lezione).first()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Impossibile reperire la lezione: ' + str(e)}), 500
+
+    if progs_lezione is None:
+        # Se non trova alcuna programmazione, ritorna uno status code 404
+        return jsonify({'error': True, 'errormessage': 'Programmazione della lezione inesistente'}), 404
+    else:
+        return jsonify(programmazione_lezione_schema.dump(progs_lezione)), 200
 
 
 # ritorna le presenze di una specifica lezione
