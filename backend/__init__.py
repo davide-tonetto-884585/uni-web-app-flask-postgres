@@ -101,6 +101,8 @@
 
 	DA IMPLEMENTARE:
 
+	TODO: Fare in modo che all'eliminazione di una risorsa o di un corso vengano eliminate anche le immagini o file dal server
+
 	#################################################### DOMANDE ################################################################
 
 	/corsi/:id/domande   ... (pensare a possibili filtri)                    GET           Get domande corso

@@ -70,6 +70,7 @@ def token_required(restrict_to_roles=[]):
 
     return decorator
 
+
 # route usata per aggiungere un nuovo studente 
 @auth.route('/utenti/studenti', methods=['POST'])
 def signup_student():
@@ -361,7 +362,7 @@ def get_students(user):
     # Query per recuperare tutte le aule
     studenti = SessionDocenti.\
             query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio).\
-            join(Utente, Utente.id == Studente.id).order_by(Utente.cognome, Utente.nome)
+            join(Utente, Utente.id == Studente.id).order_by(Utente.cognome, Utente.nome).all()
 
     # Filtri per specializzazre la ricerca e/o la visualizzazione degli studenti
     if name is not None:
@@ -373,11 +374,12 @@ def get_students(user):
     if limit is not None:
         studenti = studenti.limit(limit)
 
-    if studenti is None:
+    if len(studenti) == 0:
         # Se non trova alcun studente, ritorna uno status code 404
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire alcuno studente'}), 404
     else:
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
+
 
 #ritorna uno specifico studente in base al suo id
 @auth.route('/utenti/studenti/<id>', methods=['GET'])
@@ -398,6 +400,7 @@ def get_student(user, id):
     else:
         return jsonify(studente_schema.dump(studente)), 200
 
+
 #ritorna tutti i docenti
 @auth.route('/utenti/docenti', methods=['GET'])
 def get_docenti():
@@ -410,7 +413,7 @@ def get_docenti():
     # Query per recuperare tutte le aule
     docenti = preLoginSession.\
             query(Utente.id, Utente.nome, Utente.cognome, Docente.descrizione_docente, Docente.immagine_profilo, Docente.link_pagina_docente).\
-            join(Utente, Utente.id == Docente.id).order_by(Utente.cognome, Utente.nome)
+            join(Utente, Utente.id == Docente.id).order_by(Utente.cognome, Utente.nome).all()
 
     # Filtri per specializzazre la ricerca e/o la visualizzazione dei docenti
     if name is not None:
@@ -423,10 +426,11 @@ def get_docenti():
         docenti = docenti.limit(limit)
 
     # Se non trova alcun docente, ritorna uno status code 404
-    if docenti is None:
+    if len(docenti) == 0:
         return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun docente'}), 404
     else:
         return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
+
 
 #ritorna uno specifico docente in base al suo id
 @auth.route('/utenti/docenti/<id>', methods=['GET'])
@@ -446,6 +450,7 @@ def get_docente(id):
     else:
         return jsonify(docente_schema.dump(docente)), 200
 
+
 #ritorna tutti gli utenti
 @auth.route('/utenti', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])    #ruoli che possono eseguire questa funzione
@@ -458,7 +463,7 @@ def get_users(user):
     birthdate = request.args.get('birthdate')
 
     # Query per recuperare tutti gli utenti
-    utenti = SessionDocenti.query(Utente).order_by(Utente.cognome, Utente.nome)
+    utenti = SessionDocenti.query(Utente).order_by(Utente.cognome, Utente.nome).all()
 
     # Filtri per specializzazre la ricerca e/o la visualizzazione degli utenti
     if name is not None:
@@ -473,7 +478,7 @@ def get_users(user):
         utenti = utenti.limit(limit)
 
     # Se non trova nessun utente, ritorna uno status code 404
-    if utenti is None:
+    if len(utenti) == 0:
         return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun utente'}), 404
     else:
         return jsonify(utenti_schema.dump(utenti.all())), 200

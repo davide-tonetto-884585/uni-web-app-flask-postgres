@@ -88,7 +88,7 @@ class PresenzeLezioneSchema(SQLAlchemyAutoSchema):
 
 class RisorseCorsoSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = PresenzeLezione
+        model = RisorseCorso
         include_fk = True
         include_relationships = True
         load_instance = True

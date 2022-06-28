@@ -29,10 +29,10 @@ def checkDocenteHasCourse(user, id_corso):
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])    #ruoli che possono eseguire questa funzione
 def get_risorse(user, id):
     # Parametri del form
-    skip = request.args('skip')
-    limit = request.args('limit')
-    name = request.args('nome')
-    visible = request.args('visibile')
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('nome')
+    visible = request.args.get('visibile')
 
     if ('studente' in user['roles']):
 
@@ -53,7 +53,7 @@ def get_risorse(user, id):
 
     risorse = sessionStudenti.query(RisorseCorso).\
         filter(RisorseCorso.id_corso == id).\
-        order_by(RisorseCorso.nome, RisorseCorso.visibile)
+        order_by(RisorseCorso.nome, RisorseCorso.visibile).all()
 
     #Filtri per specializzare la ricerca e/o la visualizzazione delle risorse del corso
     if visible is not None:
@@ -65,7 +65,7 @@ def get_risorse(user, id):
     if limit is not None:
         risorse = risorse.limit(limit)
 
-    if len(risorse) == 0:
+    if len(risorse) == 0 :
         # Se non trova alcuna risorsa, ritorna uno status code 404
         return jsonify({'error': True, 'errormessage': 'Nessuna risorsa del corso disponibile'}), 404
     else:
@@ -86,7 +86,7 @@ def add_risorsa(user, id):
         return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
 
     # Recupera il path della risorsa e la salva (se non già presente) nel server
-    path_risorsa = load_file('risorsa_corso')
+    path_risorsa = load_file('path_risorsa')
 
     # Crea un oggetto di tipo RisorseCorso da aggiungere successivamente al DB
     new_risorsa = RisorseCorso(nome = request.form.get('nome'), visibile = request.form.get('visibile'), path_risorsa = path_risorsa, id_corso = id)
@@ -107,12 +107,15 @@ def add_risorsa(user, id):
 def delete_risorsa(user, id_corso, id_risorsa):
     
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la rimozione delle risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
+    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
         return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere la/e risorsa/e per questo corso'}), 401
 
     try:
         # Elimina la risorsa dal corso
-        sessionDocenti.delete(RisorseCorso(id_corso = id_corso, id_risorsa = id_risorsa))
+        risorsa = sessionDocenti.query(RisorseCorso).\
+            filter(RisorseCorso.id == id_risorsa, RisorseCorso.id_corso == id_corso).first()
+
+        sessionDocenti.delete(risorsa)
         sessionDocenti.commit()
     except Exception as e:
         sessionDocenti.rollback()
@@ -126,11 +129,14 @@ def delete_risorsa(user, id_corso, id_risorsa):
 def modify_risorsa(user, id_corso, id_risorsa):
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la modifica delle risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
+    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
         return jsonify({'error': True, 'errormessage': 'Non puoi modificare la/e risorsa/e di questo corso'}), 401
 
     # Recupera la risorsa da modificare
-    risorsa = sessionDocenti.query(RisorseCorso).filter(RisorseCorso.id_corso == id_corso, RisorseCorso.id_risorsa == id_risorsa).first()
+    try:
+        risorsa = sessionDocenti.query(RisorseCorso).filter(RisorseCorso.id_corso == id_corso, RisorseCorso.id == id_risorsa).first()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Risorsa inesistente: ' + str(e)}), 404
 
     # Campi del form
     nome = request.form.get('nome')

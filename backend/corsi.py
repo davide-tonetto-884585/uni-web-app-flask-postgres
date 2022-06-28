@@ -1,4 +1,5 @@
 import json
+from telnetlib import DO
 from flask import Blueprint, jsonify, request
 
 from . import PreLoginSession, SessionDocenti, SessionAmministratori
@@ -28,7 +29,7 @@ def get_corsi():
     lingua = request.args.get('lingua')
 
     # Query per reperire tutti i corsi
-    corsi = preLoginSession.query(Corso).order_by(Corso.titolo)
+    corsi = preLoginSession.query(Corso).order_by(Corso.titolo).all()
 
     # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
     if name is not None:
@@ -40,7 +41,11 @@ def get_corsi():
     if lingua is not None:
         corsi = corsi.filter(Corso.lingua.like('%' + lingua + '%'))
 
-    return jsonify(corsi_schemas.dump(corsi.all())), 200
+    if len(corsi) == 0 :
+        # Se non trova alcuna risorsa, ritorna uno status code 404
+        return jsonify({'error': True, 'errormessage': 'Nessun corso presente'}), 404
+    else:
+        return jsonify(corsi_schemas.dump(corsi.all())), 200
 
 
 @corsi.route('/corsi/<id>', methods=['GET'])
@@ -98,10 +103,15 @@ def add_corso(user):  # su tutte token_required bisogna mettere user (per reperi
     return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-# TODO: CONTROLLARE CHE IL DOCENTE (user) POSSIEDA IL CORSO
 @corsi.route('/corsi/<id>', methods=['PUT'])
 @token_required(restrict_to_roles=['amministratore', 'docente'])
 def modify_corso(user, id):
+
+    # Controlla che l'utente sia il docente che deteiene il corso
+    if(sessionDocenti.query(DocenteCorso).\
+        filter(DocenteCorso.id_docente == user['id'], DocenteCorso.id_corso == id).count() == 0):
+        return jsonify({'error': True, 'errormessage': 'Non puoi modificare un corso che non ti appartiene'}), 401
+
     # Recupera il corso tramite l'id
     corso = sessionDocenti.query(Corso).filter(Corso.id == id).first()
 
@@ -111,12 +121,8 @@ def modify_corso(user, id):
     lingua = request.form.get('lingua')
     abilitato = request.form.get('abilitato')
 
-    # TODO permetter modifica dell'imagine di copertina e file certificato
-    # path_to_immagine_copertina = load_file('immagine_copertina')
-    # path_to_file_certificato = load_file('file_certificato')
-
-    # corso.immagine_copertina = path_to_immagine_copertina
-    # corso.file_certificato = path_to_file_certificato
+    corso.immagine_copertina = load_file('immagine_copertina')
+    corso.file_certificato = load_file('file_certificato')
 
     # Controlla che le variabili necessarie siano settate, altrimenti le lascia ai vecchi valori
     if titolo is not None:
@@ -173,7 +179,7 @@ def add_docente_corso(user, id):
         sessionAmministratori.commit()
     except Exception as e:
         sessionAmministratori.rollback()
-        return jsonify({'error': True, 'errormessage': 'Errore nell\'aggiungere uno (o più) docenti al corso: ' + str(e)}), 500
+        return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento di uno (o più) docenti al corso: ' + str(e)}), 500
     
     return jsonify({'error': False, 'errormessage': ''}), 200
 

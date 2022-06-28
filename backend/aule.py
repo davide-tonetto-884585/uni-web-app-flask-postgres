@@ -26,7 +26,7 @@ def get_aule():
     campus = request.args.get('campus')
 
     # Query per recuperare tutte le aule
-    aule = preLoginSession.query(Aula).order_by(Aula.campus, Aula.edificio, Aula.nome)
+    aule = preLoginSession.query(Aula).order_by(Aula.campus, Aula.edificio, Aula.nome).all()
 
     # Filtri per specializzazre la ricerca e/o la visualizzazione delle aule
     if name is not None:
@@ -40,7 +40,7 @@ def get_aule():
     if limit is not None:
         aule = aule.limit(limit)
 
-    if aule is None:
+    if len(aule) == 0:
         # Se non trova alcun'aula, ritorna uno status code 404
         return jsonify({'error': True, 'errormessage': 'Impossibile recuperare la/e aula/e'}), 404
     else:
@@ -90,7 +90,7 @@ def add_aule(user):
 def get_aula(id):
     try:
         # Query per recuperare l'aula tramite id
-        aula = preLoginSession.query(Aula).filter(Aula.id == id).one()
+        aula = preLoginSession.query(Aula).filter(Aula.id == id).first()
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'aula: ' + str(e)}), 500
 
