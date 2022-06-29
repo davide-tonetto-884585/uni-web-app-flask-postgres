@@ -1,9 +1,7 @@
 """
+    TODO: DA TESTARE LA DELETE DELLE DOMANDE!
 
-
-	/corsi/:id/domande                                                       DELETE        remove domanda corso
-
-	/corsi/:id/domande/:id/like                                              GET           Get number of like of the question
+    /corsi/:id/domande/:id/like                                              GET           Get number of like of the question
 	/corsi/:id/domande/:id/like                                              POST          Add like to question
 	/corsi/:id/domande/:id/like                                              DELETE        Remove like from question
 """
@@ -15,7 +13,7 @@ from sqlalchemy import func
 from . import PreLoginSession, SessionDocenti, SessionAmministratori, SessionStudenti
 from .marshmallow_models import DomandeCorsoSchema, LikeDomandaSchema
 from .auth import token_required
-from .models import DomandeCorso, LikeDomanda, Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso, Aula, Corso
+from .models import DomandeCorso, LikeDomanda, DocenteCorso, Utente, IscrizioniCorso
 
 domande = Blueprint('domande_corso', __name__)
 
@@ -105,12 +103,44 @@ def add_domande(user, id):
     new_domanda_corso = DomandeCorso(testo = testo, chiusa = chiusa, id_corso = id,
                                     id_utente = user['id'], id_domanda_corso = id_domanda_corso)
 
-    # prova di inserimento della nuova programmazione del corso
+    # prova di inserimento della nuova domanda
     try:
         sessionAmministratori.add(new_domanda_corso)
         sessionAmministratori.commit()
     except Exception as e:
         sessionAmministratori.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento della domanda: ' + str(e)}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+@domande.route('/corsi/<id>/domande', methods=['DELETE'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
+def remove_domanda(user, id):
+    id_domanda = request.form.get('id_domanda')
+
+    try:
+        domanda_to_remove = sessionStudenti.query(DomandeCorso).filter(DomandeCorso.id == id_domanda).first()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento della domanda: ' + str(e)}), 500
+
+    # Controlliamo che lo studente che vuole eliminare la domanda sia effettivamente quello che l'ha posta
+    if ('studente' in user['roles'] and domanda_to_remove.id_utente != user['id']):
+        return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere una domanda che non hai posto tu stesso'}), 401
+
+    # Controlliamo che il docente sia proprietario del corso, altrimenti non permettiamo la rimozione delle domande
+    if('docente' in user['roles'] and 'amministratore' not in user['roles']):
+        try:
+            if(sessionDocenti.query(DocenteCorso.id_docente).filter(DocenteCorso.id_corso == id).first() != user['id']):
+                return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere una domanda da un corso che non ti appartiene'}), 401
+        except Exception as e:
+            return jsonify({'error': True, 'errormessage': 'Errore durante la verifica dei permessi: ' + str(e)}), 500
+
+    try:
+        sessionDocenti.delete(domanda_to_remove)
+        sessionDocenti.commit()
+    except Exception as e:
+        sessionDocenti.rollback()
+        return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione della domanda dal corso: ' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200

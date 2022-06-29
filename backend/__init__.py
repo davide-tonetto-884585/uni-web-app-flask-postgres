@@ -114,12 +114,15 @@
 	/corsi/:id/domande                                                       POST          Add domanda corso
 
 	-------------------------------------------------------------------------------------------------------------------------------
+	DA CONTROLLARE
+
+	/corsi/:id/domande                                                       DELETE        remove domanda corso
+
 
 	DA IMPLEMENTARE:
 
 	TODO: Fare in modo che all'eliminazione di una risorsa o di un corso vengano eliminate anche le immagini o file dal server
 
-	/corsi/:id/domande                                                       DELETE        remove domanda corso
 
 	/corsi/:id/domande/:id/like                                              GET           Get number of like of the question
 	/corsi/:id/domande/:id/like                                              POST          Add like to question

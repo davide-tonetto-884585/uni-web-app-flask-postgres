@@ -48,7 +48,7 @@ def get_risorse(user, id):
             visible = True
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non mostriamo le risorse
-    elif('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
+    elif('amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id)):
         return jsonify({'error': True, 'errormessage': 'Non puoi vedere la/e risorsa/e di questo corso'}), 401
 
     risorse = sessionStudenti.query(RisorseCorso).\
@@ -78,7 +78,7 @@ def get_risorse(user, id):
 def add_risorsa(user, id):
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo l'aggiunta di risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
+    if('docente' in user['roles'] and 'amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id)):
         return jsonify({'error': True, 'errormessage': 'Non puoi aggiuntere la/e risorsa/e a questo corso'}), 401
 
     #controllo che i dati obbligatori siano stati inseriti nel form
@@ -107,7 +107,7 @@ def add_risorsa(user, id):
 def delete_risorsa(user, id_corso, id_risorsa):
     
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la rimozione delle risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
+    if('docente' in user['roles'] and 'amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
         return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere la/e risorsa/e per questo corso'}), 401
 
     try:
@@ -119,7 +119,7 @@ def delete_risorsa(user, id_corso, id_risorsa):
         sessionDocenti.commit()
     except Exception as e:
         sessionDocenti.rollback()
-        return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione della risorsa'}), 500
+        return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione della risorsa: ' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -129,7 +129,7 @@ def delete_risorsa(user, id_corso, id_risorsa):
 def modify_risorsa(user, id_corso, id_risorsa):
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la modifica delle risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
+    if('docente' in user['roles'] and 'amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
         return jsonify({'error': True, 'errormessage': 'Non puoi modificare la/e risorsa/e di questo corso'}), 401
 
     # Recupera la risorsa da modificare
