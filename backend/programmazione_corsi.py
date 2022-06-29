@@ -20,9 +20,9 @@ programmazione_lezioni_schema = ProgrammazioneLezioniSchema(many=True)
 programmazione_lezione_schema = ProgrammazioneLezioniSchema()
 corsi_schema = CorsoSchema(many=True)
 
+
+
 # aggiunge una programmazione del corso indicato nella route
-
-
 @prog_corsi.route('/corsi/<id>/programmazione_corso', methods=['POST'])
 # ruoli che possono eseguire questa funzione
 @token_required(restrict_to_roles=['amministratore', 'docente'])
