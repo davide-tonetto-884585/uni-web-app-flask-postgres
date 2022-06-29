@@ -36,6 +36,11 @@ export class HomeComponent implements OnInit {
   }
 
   counter(i: number) {
-    return new Array(i);
+    let res = new Array(i);
+    for (let ind = 0; ind < i; ind++) {
+      res[ind] = ind;
+    }
+
+    return res;
   }
 }

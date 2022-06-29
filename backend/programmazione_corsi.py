@@ -3,9 +3,9 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import Date, Time, cast
 
 from . import PreLoginSession, SessionDocenti, SessionAmministratori, SessionStudenti
-from .marshmallow_models import ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema
+from .marshmallow_models import ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema, CorsoSchema
 from .auth import token_required
-from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso, Aula
+from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso, Aula, Corso
 
 prog_corsi = Blueprint('programmazione_corsi', __name__)
 
@@ -18,7 +18,7 @@ programmazione_corsi_schema = ProgrammazioneCorsoSchema(many=True)
 programmazione_corso_schema = ProgrammazioneCorsoSchema()
 programmazione_lezioni_schema = ProgrammazioneLezioniSchema(many=True)
 programmazione_lezione_schema = ProgrammazioneLezioniSchema()
-
+corsi_schema = CorsoSchema(many=True)
 
 # aggiunge una programmazione del corso indicato nella route
 @prog_corsi.route('/corsi/<id>/programmazione_corso', methods=['POST'])
@@ -291,7 +291,7 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
     if studente is None:
         return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 404
     
-    if ('studente' in user['roles'] and user['id'] != request.form.get('id_studente')):
+    if ('studente' in user['roles'] and user['id'] != int(request.form.get('id_studente'))):
         return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 400
 
     # Controlla che lo studente sia iscritto al corso
@@ -427,7 +427,7 @@ def get_iscrizioni(id_corso, id_prog):
 def remove_subscription(user, id_corso, id_prog, id_studente):
 
     # Controlla che lo studente non stia cercando di eliminare altri studenti al di fuori di sé stesso
-    if ('studente' in user['roles'] and user['id'] != id_studente):
+    if ('studente' in user['roles'] and user['id'] != int(id_studente)):
         return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a eliminare uno studente dal corso al di fuori di te stesso'}), 400
 
     # Controlla che il docente non stia cercando di eliminare uno studente da un corso che non gli appartiene
@@ -451,9 +451,12 @@ def remove_subscription(user, id_corso, id_prog, id_studente):
 @prog_corsi.route('/utenti/studenti/<id>/iscrizioni', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def get_student_inscriptions(user, id):
-    if 'studente' in user.roles and user.id != id:
+    if 'studente' in user['roles'] and user['id'] != int(id):
         return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
 
-    inscriptions = sessionStudenti.query(
-        IscrizioniCorso.id_programmazione_corso).filter(IscrizioniCorso.id == id).all()
-    return jsonify(json.loads(json.dumps([dict(iscr._mapping) for iscr in inscriptions]))), 200
+    inscriptions = sessionStudenti.query(Corso)\
+        .join(ProgrammazioneCorso, Corso.id == ProgrammazioneCorso.id_corso)\
+        .join(IscrizioniCorso, IscrizioniCorso.id_programmazione_corso == ProgrammazioneCorso.id)\
+        .filter(IscrizioniCorso.id_studente == id).all()
+    
+    return jsonify(corsi_schema.dump(inscriptions)), 200

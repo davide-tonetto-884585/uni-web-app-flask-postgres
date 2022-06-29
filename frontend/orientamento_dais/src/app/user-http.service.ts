@@ -134,11 +134,4 @@ export class UserHttpService {
   getId(): number | undefined {
     return this.user_data?.id;
   }
-
-  getInscriptions(): Observable<any> {
-    return this.http.get(
-      `${BACKEND_URL}/utenti/studenti/${this.getId()}/iscrizioni`,
-      this.createOptions()
-    )
-  }
 }

@@ -10,10 +10,10 @@
     </div>
 
     <app-carousel [title]="'Some courses...'" [exploreLink]="'/courses'">
-        <app-carousel-item [active]="true" *ngFor="let in of counter(courses.length / 3 | ceil), let i = index">
-            <app-course-card *ngIf="courses[i]" [course]="courses[i]"></app-course-card>
-            <app-course-card *ngIf="courses[i + 1]" [course]="courses[i + 1]"></app-course-card>
-            <app-course-card *ngIf="courses[i + 2]" [course]="courses[i + 2]"></app-course-card>
+        <app-carousel-item [active]="i == 0 ? true : false" *ngFor="let i of counter(courses.length / 3 | ceil)">
+            <app-course-card *ngIf="courses[i * 3]" [course]="courses[i * 3]"></app-course-card>
+            <app-course-card *ngIf="courses[i * 3 + 1]" [course]="courses[i * 3 + 1]"></app-course-card>
+            <app-course-card *ngIf="courses[i * 3 + 2]" [course]="courses[i * 3 + 2]"></app-course-card>
         </app-carousel-item>
     </app-carousel>
     

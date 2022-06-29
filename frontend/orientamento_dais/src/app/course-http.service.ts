@@ -94,4 +94,17 @@ export class CourseHttpService {
       this.createOptions()
     ).pipe(catchError(this.handleError));
   }
+
+  getCorsiDocente(id_docente: number): Observable<Course[]> {
+    return this.http.get<Course[]>(
+      `${BACKEND_URL}/utenti/docenti/${id_docente}/corsi`
+    ).pipe(catchError(this.handleError));
+  }
+
+  getInscriptionsStudent(id_studente: number): Observable<any> {
+    return this.http.get(
+      `${BACKEND_URL}/utenti/studenti/${id_studente}/iscrizioni`,
+      this.createOptions()
+    ).pipe(catchError(this.handleError));
+  }
 }

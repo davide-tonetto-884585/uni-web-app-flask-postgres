@@ -114,13 +114,7 @@ export class CourseDetailComponent implements OnInit {
   }
 
   isAlreadyInscripted(): boolean {
-    if (this.isStudent()) {
-      this.user_http.getInscriptions().subscribe({
-        next: (progs) => {
-
-        }
-      })
-    }
+    //TODO: completare
 
     return false;
   }

@@ -22,6 +22,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MessageDialogComponent } from './message-dialog/message-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MyCoursesComponent } from './my-courses/my-courses.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     CarouselItemComponent,
     CoursesComponent,
     CourseDetailComponent,
-    MessageDialogComponent
+    MessageDialogComponent,
+    MyCoursesComponent
   ],
   imports: [
     FormsModule,
