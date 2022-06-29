@@ -5,7 +5,7 @@ from sqlalchemy import Date, Time, cast
 from . import PreLoginSession, SessionDocenti, SessionAmministratori, SessionStudenti
 from .marshmallow_models import ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema
 from .auth import token_required
-from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso, Aula
+from .models import Docente, DocenteCorso, Utente, ProgrammazioneCorso, ProgrammazioneLezioni, PresenzeLezione, Studente, IscrizioniCorso, Aula, Corso
 
 prog_corsi = Blueprint('programmazione_corsi', __name__)
 
@@ -189,7 +189,7 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
                 join(DocenteCorso, DocenteCorso.id_docente == Docente.id).\
                 filter(DocenteCorso.id_corso == id_corso).all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Impossibile reperire docenti del corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento dei docenti del corso: ' + str(e)}), 500
 
         # controllo che il docente sia nei docenti che detiene il corso
         if (user['id'], ) not in docenti:
@@ -240,7 +240,7 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
         sessionAmministratori.commit()
     except Exception as e:
         sessionAmministratori.rollback()
-        return jsonify({'error': True, 'errormessage': 'Errore inserimento lezione' + str(e)}), 500
+        return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento della lezione' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -250,16 +250,16 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
 def get_lezione_prog_corso(id_corso, id_prog, id_lezione):
     # prova a recuperare la programmazione della lezione
     try:
-        progs_lezione = preLoginSession.query(ProgrammazioneLezioni).filter(
+        prog_lezione = preLoginSession.query(ProgrammazioneLezioni).filter(
             ProgrammazioneLezioni.id_programmazione_corso == id_prog, ProgrammazioneLezioni.id == id_lezione).first()
     except Exception as e:
-        return jsonify({'error': True, 'errormessage': 'Impossibile reperire la lezione: ' + str(e)}), 500
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento della lezione: ' + str(e)}), 500
 
-    if progs_lezione is None:
+    if prog_lezione is None:
         # Se non trova alcuna programmazione, ritorna uno status code 404
         return jsonify({'error': True, 'errormessage': 'Programmazione della lezione inesistente'}), 404
     else:
-        return jsonify(programmazione_lezione_schema.dump(progs_lezione)), 200
+        return jsonify(programmazione_lezione_schema.dump(prog_lezione)), 200
 
 
 # ritorna le presenze di una specifica lezione
@@ -290,7 +290,10 @@ def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
 
     presenze = presenze.all()
 
-    return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
+    if (len(presenze) == 0):
+        return jsonify({'error': True, 'errormessage': 'Nessuna presenza rilevata per la lezione'}), 404
+    else:
+        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
 
 
 @prog_corsi.route('/corsi/<id_corso>/programmazione_corso/<id_prog>/lezioni/<id_lezione>/presenze', methods=['POST'])
@@ -347,7 +350,7 @@ def add_iscrizione(user, id_corso, id_prog):
         return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 404
         
     if ('studente' in user['roles'] and user['id'] != int(request.form.get('id_studente'))):
-        return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 400
+        return jsonify({'error': True, 'errormessage': 'Non puoi iscrivere altri studenti al corso'}), 400
 
     # Controlla che lo studente non sia già iscritto al corso
     if sessionStudenti.query(IscrizioniCorso).\
@@ -361,12 +364,12 @@ def add_iscrizione(user, id_corso, id_prog):
     in_presenza = None
 
     # Se lo studente ha scelto "duale" e non sceglie se in presenza od online, allora lo setta a True di default
-    if prog_corso.modalita == 'duale':
+    if prog_corso.modalità == 'duale':
         if request.form.get('inPresenza') is not None:
             in_presenza = request.form.get('inPresenza')
         else:
             in_presenza = True
-    elif prog_corso.modalita == 'presenza':
+    elif prog_corso.modalità == 'presenza':
         in_presenza = True
 
     # Recupera il numero di iscritti
@@ -377,11 +380,12 @@ def add_iscrizione(user, id_corso, id_prog):
     capienza_aula_piu_piccola = sessionStudenti.query(Aula.capienza).\
         join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
         filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
-        order_by(Aula.capienza).limit(1).first()
+        order_by(Aula.capienza).limit(1).first()[0]
+
 
     # Si puo' indicare un limite di iscrizioni, se non e' indicato viene scelto come limite la capienza dell'aula piu' piccola
     # Nota: ogni lezione ha una sola aula
-    if prog_corso.modalita == 'duale' or prog_corso.modalita == 'presenza':
+    if prog_corso.modalità == 'duale' or prog_corso.modalità == 'presenza':
         if (prog_corso.limite_iscrizioni is not None and num_iscritti >= prog_corso.limite_iscrizioni) \
                 or (num_iscritti >= capienza_aula_piu_piccola):
             return jsonify({'error': True, 'errormessage': 'Limite iscrizioni raggiunto.'}), 401
@@ -419,13 +423,11 @@ def get_iscrizioni(id_corso, id_prog):
 
     # Filtri per migliorare la ricerca e/o visualizzazione
     if inPresenza is not None:
-        iscrizioni = iscrizioni.filter(
-            IscrizioniCorso.inPresenza == inPresenza)
+        iscrizioni = iscrizioni.filter(IscrizioniCorso.inPresenza == inPresenza)
     if name is not None:
         iscrizioni = iscrizioni.filter(Utente.nome.like('%' + name + '%'))
     if lastname is not None:
-        iscrizioni = iscrizioni.filter(
-            Utente.cognome.like('%' + lastname + '%'))
+        iscrizioni = iscrizioni.filter(Utente.cognome.like('%' + lastname + '%'))
     if skip is not None:
         iscrizioni = iscrizioni.offset(skip)
     if limit is not None:
@@ -433,7 +435,10 @@ def get_iscrizioni(id_corso, id_prog):
 
     iscrizioni = iscrizioni.all()
 
-    return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in iscrizioni]))), 200
+    if (len(iscrizioni) == 0):
+        return jsonify({'error': True, 'errormessage': 'Nessuna iscrizione per la programmazione del corso'}), 404
+    else:
+        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in iscrizioni]))), 200
 
 
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/iscrizioni/<id_studente>', methods=['DELETE'])
@@ -442,22 +447,24 @@ def remove_subscription(user, id_corso, id_prog, id_studente):
 
     # Controlla che lo studente non stia cercando di eliminare altri studenti al di fuori di sé stesso
     if ('studente' in user['roles'] and user['id'] != id_studente):
-        return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a eliminare uno studente dal corso al di fuori di te stesso'}), 400
+        return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a eliminare altri studenti dal corso'}), 401
 
     # Controlla che il docente non stia cercando di eliminare uno studente da un corso che non gli appartiene
-    if ('docente' in user['roles']):
-        if (sessionDocenti.query(DocenteCorso.id_docente).
+    if ('docente' in user['roles'] and 'amministratore' not in user['roles']):
+        if (sessionDocenti.query(DocenteCorso.id_docente).\
                 filter(DocenteCorso.id_corso == id_corso, DocenteCorso.id_docente == user['id']).count() == 0):
 
-            return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a eliminare uno studente da un corso che non ti appartiene'}), 400
+            return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a eliminare uno studente da un corso che non ti appartiene'}), 401
 
     try:
-        sessionStudenti.delete(IscrizioniCorso(
-            id_studente=id_studente, id_programmazione_corso=id_prog))
+        iscrizione = sessionStudenti.query(IscrizioniCorso).\
+            filter(IscrizioniCorso.id_studente == id_studente, IscrizioniCorso.id_programmazione_corso == id_prog).first()
+
+        sessionStudenti.delete(iscrizione)
         sessionStudenti.commit()
     except Exception as e:
         sessionStudenti.rollback()
-        return jsonify({'error': True, 'errormessage': 'Impossibile eliminare l\'iscrizione'}), 500
+        return jsonify({'error': True, 'errormessage': 'Impossibile eliminare l\'iscrizione: ' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -465,9 +472,20 @@ def remove_subscription(user, id_corso, id_prog, id_studente):
 @prog_corsi.route('/utenti/studenti/<id>/iscrizioni', methods=['GET'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def get_student_inscriptions(user, id):
-    if 'studente' in user.roles and user.id != id:
-        return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
 
-    inscriptions = sessionStudenti.query(
-        IscrizioniCorso.id_programmazione_corso).filter(IscrizioniCorso.id == id).all()
-    return jsonify(json.loads(json.dumps([dict(iscr._mapping) for iscr in inscriptions]))), 200
+    if 'studente' in user['roles'] and user['id'] != int(id):
+        return jsonify({'error': True, 'errormessage': 'Non puoi vedere le iscrizioni di altri studenti'}), 401
+
+    try:
+        iscrizioni_studente = sessionStudenti.query(Corso.titolo, Corso.descrizione, Corso.lingua, Corso.id,
+            ProgrammazioneCorso.modalità, IscrizioniCorso.id_programmazione_corso, IscrizioniCorso.inPresenza).\
+            join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
+            join(Corso, Corso.id == ProgrammazioneCorso.id_corso).\
+            filter(IscrizioniCorso.id_studente == id).all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperire le iscrizioni dello studente: ' + str(e)}), 500
+
+    if (len(iscrizioni_studente) == 0):
+        return jsonify({'error': True, 'errormessage': 'Lo studente non è iscritto ad alcun corso'}), 404
+    else:
+        return jsonify(json.loads(json.dumps([dict(iscr._mapping) for iscr in iscrizioni_studente]))), 200
