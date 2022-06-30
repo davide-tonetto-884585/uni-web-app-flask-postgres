@@ -112,21 +112,22 @@
                         ?skip=n                    salta i primi n doc
                         ?limit=m                   restituisce m doc
 	/corsi/:id/domande                                                       POST          Add domanda corso
+	/corsi/:id/domande                                                       DELETE        remove domanda corso
+
+
+
+	/corsi/:id/domande/:id/like                                              GET           Get likes (and who gave them) of the question
+	/corsi/:id/domande/:id/like                                              POST          Add like to question
+	/corsi/:id/domande/:id/like                                              DELETE        remove like of domanda corso
 
 	-------------------------------------------------------------------------------------------------------------------------------
 	DA CONTROLLARE
 
-	/corsi/:id/domande                                                       DELETE        remove domanda corso
-
-
 	DA IMPLEMENTARE:
 
 	TODO: Fare in modo che all'eliminazione di una risorsa o di un corso vengano eliminate anche le immagini o file dal server
-
-
-	/corsi/:id/domande/:id/like                                              GET           Get number of like of the question
-	/corsi/:id/domande/:id/like                                              POST          Add like to question
-	/corsi/:id/domande/:id/like                                              DELETE        Remove like from question
+	REMINDER: Potrebbe servire una data della scadenza per la riabilitazione di un account sospeso?
+	TODO: Aggiungere try-except nelle GET nel caso ci sia un errore del server
 
    -------------------------------------------------------------------------------------------------------------------------------
 """

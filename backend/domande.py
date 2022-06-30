@@ -1,11 +1,3 @@
-"""
-    TODO: DA TESTARE LA DELETE DELLE DOMANDE!
-
-    /corsi/:id/domande/:id/like                                              GET           Get number of like of the question
-	/corsi/:id/domande/:id/like                                              POST          Add like to question
-	/corsi/:id/domande/:id/like                                              DELETE        Remove like from question
-"""
-
 import json
 from flask import Blueprint, jsonify, request
 from sqlalchemy import func
@@ -29,7 +21,8 @@ like_domanda_schema = LikeDomandaSchema()
 
 
 @domande.route('/corsi/<id>/domande', methods=['GET'])
-def get_domande(id):
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
+def get_domande(user, id):
     # Parametri del form
     testo = request.args.get('testo')
     chiusa = request.args.get('chiusa')
@@ -37,11 +30,11 @@ def get_domande(id):
     limit = request.args.get('limit')
 
     # Query per reperire le domande con il relativo numero dei like
-    domande = preLoginSession.query(Utente.nome, Utente.cognome, Utente.id, DomandeCorso.id,
+    domande = sessionStudenti.query(Utente.nome, Utente.cognome, Utente.id, DomandeCorso.id,
         DomandeCorso.testo, func.count(DomandeCorso.id).label('total_likes')).\
         join(Utente, DomandeCorso.id_utente == Utente.id).\
         join(LikeDomanda, DomandeCorso.id == LikeDomanda.id_domanda_corso).\
-        group_by(DomandeCorso.id, Utente.nome, Utente.cognome, Utente.id, DomandeCorso.testo)
+        group_by(DomandeCorso.id, Utente.id, Utente.cognome, Utente.nome, DomandeCorso.testo)
 
     # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
     if testo is not None:
@@ -52,6 +45,8 @@ def get_domande(id):
         domande = domande.limit(limit)
     if chiusa is not None:
         domande = domande.filter(DomandeCorso.chiusa == chiusa)
+
+    domande = domande.all()
 
     return jsonify(json.loads(json.dumps([dict(domanda._mapping) for domanda in domande]))), 200
 
@@ -105,10 +100,10 @@ def add_domande(user, id):
 
     # prova di inserimento della nuova domanda
     try:
-        sessionAmministratori.add(new_domanda_corso)
-        sessionAmministratori.commit()
+        sessionStudenti.add(new_domanda_corso)
+        sessionStudenti.commit()
     except Exception as e:
-        sessionAmministratori.rollback()
+        sessionStudenti.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento della domanda: ' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
@@ -118,6 +113,9 @@ def add_domande(user, id):
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def remove_domanda(user, id):
     id_domanda = request.form.get('id_domanda')
+
+    if (id_domanda is None):
+        return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
 
     try:
         domanda_to_remove = sessionStudenti.query(DomandeCorso).filter(DomandeCorso.id == id_domanda).first()
@@ -137,10 +135,94 @@ def remove_domanda(user, id):
             return jsonify({'error': True, 'errormessage': 'Errore durante la verifica dei permessi: ' + str(e)}), 500
 
     try:
-        sessionDocenti.delete(domanda_to_remove)
-        sessionDocenti.commit()
+        sessionStudenti.delete(domanda_to_remove)
+        sessionStudenti.commit()
     except Exception as e:
-        sessionDocenti.rollback()
+        sessionStudenti.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione della domanda dal corso: ' + str(e)}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+@domande.route('/corsi/<id_corso>/domande/<id_domanda>/like', methods=['GET'])
+def get_likes_domanda(id_corso, id_domanda):
+    skip = request.args.get('skip')
+    limit = request.args.get('limit')
+    name = request.args.get('nome')
+    lastname = request.args.get('cognome')
+
+    likes = preLoginSession.query(Utente.id, Utente.nome, Utente.cognome).\
+        join(LikeDomanda, LikeDomanda.id_utente == Utente.id).\
+        filter(LikeDomanda.id_domanda_corso == id_domanda)
+
+    if skip is not None:
+        likes = likes.offset(skip)
+    if limit is not None:
+        likes = likes.limit(limit)
+    if name is not None:
+        likes = likes.filter(Utente.nome.like('%' + name + '%'))
+    if lastname is not None:
+        likes = likes.filter(Utente.cognome.like('%' + lastname + '%'))
+
+    likes = likes.all()
+
+    return jsonify(json.loads(json.dumps([dict(like._mapping) for like in likes]))), 200
+
+
+@domande.route('/corsi/<id_corso>/domande/<id_domanda>/like', methods=['POST'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
+def add_like_domanda(user, id_corso, id_domanda):
+
+    try:
+        if (sessionStudenti.query(DomandeCorso.id).filter(DomandeCorso.id == id_domanda).count() == 0):
+            return jsonify({'error': True, 'errormessage': 'Domanda inesistente'}), 404
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento della domanda: '  + str(e)}), 500
+
+    try:
+        if(sessionStudenti.query(LikeDomanda.id_utente).\
+            filter(LikeDomanda.id_utente == user['id'], LikeDomanda.id_domanda_corso == id_domanda).count() != 0):
+
+            return jsonify({'error': True, 'errormessage': 'Hai già messo like a questa domanda'}), 409
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel controllo dei like duplicati: '  + str(e)}), 500
+
+    # creazione del nuovo oggetto da inserire
+    new_like_domanda = LikeDomanda(id_utente = user['id'], id_domanda_corso = id_domanda)
+
+    # prova di inserimento del nuovo like alla domanda
+    try:
+        sessionStudenti.add(new_like_domanda)
+        sessionStudenti.commit()
+    except Exception as e:
+        sessionStudenti.rollback()
+        return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento del like alla domanda: ' + str(e)}), 500
+
+    return jsonify({'error': False, 'errormessage': ''}), 200
+
+
+@domande.route('/corsi/<id_corso>/domande/<id_domanda>/like', methods=['DELETE'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
+def delete_like_domanda(user, id_corso, id_domanda):
+    # NOTA: Lasciamo la possibilità di eliminare i like indipendentemente da chi li ha messi solo all'amministratore
+    # per questioni di sicurezza; i docenti non possono eliminare i like (W LA LIBERTà DI ESPRESSIONE!)
+
+    id_utente = user['id']
+    if ('amministratore' in user['roles']):
+        id_utente = request.form.get('id_utente') if (request.form.get('id_utente') is not None) else user['id']
+
+    try:
+        # Recupera il like posto a quella domanda dell'utente corrente
+        like_to_remove = sessionStudenti.query(LikeDomanda).\
+            filter(LikeDomanda.id_utente == id_utente, LikeDomanda.id_domanda_corso == id_domanda).first()
+
+        if (like_to_remove is None):
+            return jsonify({'error': True, 'errormessage': 'Like inesistente'}), 404
+
+        sessionStudenti.delete(like_to_remove)
+        sessionStudenti.commit()
+    except Exception as e:
+        sessionStudenti.rollback()
+        return jsonify({'error': True, 'errormessage': 'Errore durante l\'eliminazione del like alla domanda: ' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
