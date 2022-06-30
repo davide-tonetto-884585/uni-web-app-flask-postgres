@@ -21,21 +21,25 @@ def index():
 # Accedere da utenti loggati oppure no?  Quali ruoli possono accedervi (da loggati)?
 @main.route('/scuole', methods=['GET'])
 def get_scuole():
-
     # Campi del form
     name = request.args.get('name')
     skip = request.args.get('skip')
     limit = request.args.get('limit')
     
-    # Query per reperire tutte le scuole
-    scuole = preLoginSession.query(Scuola).order_by(Scuola.denominazione)
+    try:
+        # Query per reperire tutte le scuole
+        scuole = preLoginSession.query(Scuola).order_by(Scuola.denominazione)
 
-    # Filtri per specializzare la ricerca delle scuole o la loro visualizzazione
-    if name is not None:
-        scuole = scuole.filter(Scuola.denominazione.like('%' + name + '%'))
-    if skip is not None:
-        scuole = scuole.offset(skip)
-    if limit is not None:
-        scuole = scuole.limit(limit) 
+        # Filtri per specializzare la ricerca delle scuole o la loro visualizzazione
+        if name is not None:
+            scuole = scuole.filter(Scuola.denominazione.like('%' + name + '%'))
+        if skip is not None:
+            scuole = scuole.offset(skip)
+        if limit is not None:
+            scuole = scuole.limit(limit)
 
-    return jsonify(scuola_schemas.dump(scuole.all())), 200
+        scuole = scuole.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle scuole: ' + str(e)}), 500
+
+    return jsonify(scuola_schemas.dump(scuole)), 200

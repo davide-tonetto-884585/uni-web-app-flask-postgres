@@ -127,7 +127,6 @@
 
 	TODO: Fare in modo che all'eliminazione di una risorsa o di un corso vengano eliminate anche le immagini o file dal server
 	REMINDER: Potrebbe servire una data della scadenza per la riabilitazione di un account sospeso?
-	TODO: Aggiungere try-except nelle GET nel caso ci sia un errore del server
 
    -------------------------------------------------------------------------------------------------------------------------------
 """

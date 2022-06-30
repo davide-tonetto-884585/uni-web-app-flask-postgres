@@ -74,31 +74,35 @@ def get_progs_corso(id):
     modality = request.args.get('modalita')
     subscriptions_limit = request.args.get('limite_iscrizioni')
 
-    # Query per recuperare tutte le programmazioni del corso
-    progs_corso = preLoginSession.query(ProgrammazioneCorso).filter(
-        ProgrammazioneCorso.id_corso == id)
+    try:
+        # Query per recuperare tutte le programmazioni del corso
+        progs_corso = preLoginSession.query(ProgrammazioneCorso).filter(
+            ProgrammazioneCorso.id_corso == id)
 
-    # Filtri per specializzare la ricerca e/o la visualizzazione delle programmazioni del corso
-    if modality is not None:
-        progs_corso = progs_corso.filter(
-            ProgrammazioneCorso.modalità == modality)
-    if subscriptions_limit is not None:
-        progs_corso = progs_corso.filter(
-            ProgrammazioneCorso.limite_iscrizioni == subscriptions_limit)
-    if skip is not None:
-        progs_corso = progs_corso.offset(skip)
-    if limit is not None:
-        progs_corso = progs_corso.limit(limit)
+        # Filtri per specializzare la ricerca e/o la visualizzazione delle programmazioni del corso
+        if modality is not None:
+            progs_corso = progs_corso.filter(
+                ProgrammazioneCorso.modalità == modality)
+        if subscriptions_limit is not None:
+            progs_corso = progs_corso.filter(
+                ProgrammazioneCorso.limite_iscrizioni == subscriptions_limit)
+        if skip is not None:
+            progs_corso = progs_corso.offset(skip)
+        if limit is not None:
+            progs_corso = progs_corso.limit(limit)
 
-    progs_corso = progs_corso.all()
+        progs_corso = progs_corso.all()
 
-    # Per ogni entry, aggiunge il limite di iscrizione sulla base dell'aula più piccola
-    for prog_corso in progs_corso:
-        if prog_corso.modalità == 'presenza' or prog_corso.modalità == 'duale' and prog_corso.limite_iscrizioni is None:
-            prog_corso.limite_iscrizioni = preLoginSession.query(Aula.capienza).\
-                join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
-                filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
-                order_by(Aula.capienza).limit(1).first()
+        # Per ogni entry, aggiunge il limite di iscrizione sulla base dell'aula più piccola
+        for prog_corso in progs_corso:
+            if prog_corso.modalità == 'presenza' or prog_corso.modalità == 'duale' and prog_corso.limite_iscrizioni is None:
+                prog_corso.limite_iscrizioni = preLoginSession.query(Aula.capienza).\
+                    join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
+                    filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
+                    order_by(Aula.capienza).limit(1).first()
+
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperire programmazione corso: ' + str(e)}), 500
 
     return jsonify(programmazione_corsi_schema.dump(progs_corso)), 200
 
@@ -139,26 +143,30 @@ def get_lezioni_progs_corso(id_corso, id_prog):
     start_time = request.args.get('start_time')
     finish_time = request.args.get('finish_time')
 
-    # Query per recuperare tutte le programmazioni delle lezioni
-    progs_lezioni = preLoginSession.query(ProgrammazioneLezioni).filter(
-        ProgrammazioneLezioni.id_programmazione_corso == id_prog)
+    try:
+        # Query per recuperare tutte le programmazioni delle lezioni
+        progs_lezioni = preLoginSession.query(ProgrammazioneLezioni).filter(
+            ProgrammazioneLezioni.id_programmazione_corso == id_prog)
 
-    # Filtri per specializzare la ricerca e/o la visualizzazione delle programmazioni delle lezioni
-    if date is not None:
-        progs_lezioni = progs_lezioni.filter(
-            cast(ProgrammazioneLezioni.data, Date) == cast(date, Date))
-    if start_time is not None:
-        progs_lezioni = progs_lezioni.filter(
-            cast(ProgrammazioneLezioni.orario_inizio, Time) == cast(start_time, Time))
-    if finish_time is not None:
-        progs_lezioni = progs_lezioni.filter(
-            cast(ProgrammazioneLezioni.orario_fine, Time) == cast(finish_time, Time))
-    if skip is not None:
-        progs_lezioni = progs_lezioni.offset(skip)
-    if limit is not None:
-        progs_lezioni = progs_lezioni.limit(limit)
+        # Filtri per specializzare la ricerca e/o la visualizzazione delle programmazioni delle lezioni
+        if date is not None:
+            progs_lezioni = progs_lezioni.filter(
+                cast(ProgrammazioneLezioni.data, Date) == cast(date, Date))
+        if start_time is not None:
+            progs_lezioni = progs_lezioni.filter(
+                cast(ProgrammazioneLezioni.orario_inizio, Time) == cast(start_time, Time))
+        if finish_time is not None:
+            progs_lezioni = progs_lezioni.filter(
+                cast(ProgrammazioneLezioni.orario_fine, Time) == cast(finish_time, Time))
+        if skip is not None:
+            progs_lezioni = progs_lezioni.offset(skip)
+        if limit is not None:
+            progs_lezioni = progs_lezioni.limit(limit)
 
-    progs_lezioni = progs_lezioni.all()
+        progs_lezioni = progs_lezioni.all()
+        
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento delle lezioni: ' + str(e)}), 500
 
     return jsonify(programmazione_lezioni_schema.dump(progs_lezioni)), 200
 
@@ -270,22 +278,25 @@ def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
     name = request.args.get('name')
     lastname = request.args.get('lastname')
 
-    # query per reperire le presenze degli studenti in una lezione
-    presenze = sessionDocenti.query(Utente.id, Utente.nome, Utente.cognome).\
-        filter(Utente.id == PresenzeLezione.id_studente,
-               PresenzeLezione.id_programmazione_lezioni == id_lezione)
+    try:
+        # query per reperire le presenze degli studenti in una lezione
+        presenze = sessionDocenti.query(Utente.id, Utente.nome, Utente.cognome).\
+            filter(Utente.id == PresenzeLezione.id_studente,
+                PresenzeLezione.id_programmazione_lezioni == id_lezione)
 
-    # Filtri per specializzare la ricerca e/o la visualizzazione delle presenze
-    if name is not None:
-        presenze = presenze.filter(Utente.nome.like('%' + name + '%'))
-    if lastname is not None:
-        presenze = presenze.filter(Utente.cognome.like('%' + lastname + '%'))
-    if skip is not None:
-        presenze = presenze.offset(skip)
-    if limit is not None:
-        presenze = presenze.limit(limit)
+        # Filtri per specializzare la ricerca e/o la visualizzazione delle presenze
+        if name is not None:
+            presenze = presenze.filter(Utente.nome.like('%' + name + '%'))
+        if lastname is not None:
+            presenze = presenze.filter(Utente.cognome.like('%' + lastname + '%'))
+        if skip is not None:
+            presenze = presenze.offset(skip)
+        if limit is not None:
+            presenze = presenze.limit(limit)
 
-    presenze = presenze.all()
+        presenze = presenze.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle presenze: ' + str(e)}), 500
 
     return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
 
@@ -407,28 +418,31 @@ def get_iscrizioni(id_corso, id_prog):
     name = request.args.get('nome')
     lastname = request.args.get('cognome')
 
-    # Query per recurepare le iscrizioni dal programma del corso
-    iscrizioni = preLoginSession.query(Utente.id, Utente.nome, Utente.cognome, IscrizioniCorso.inPresenza).\
-        join(Studente, Utente.id == Studente.id).\
-        join(IscrizioniCorso, Studente.id == IscrizioniCorso.id_studente).\
-        filter(IscrizioniCorso.id_programmazione_corso == id_prog).\
-        order_by(Utente.cognome, Utente.nome)
+    try:
+        # Query per recurepare le iscrizioni dal programma del corso
+        iscrizioni = preLoginSession.query(Utente.id, Utente.nome, Utente.cognome, IscrizioniCorso.inPresenza).\
+            join(Studente, Utente.id == Studente.id).\
+            join(IscrizioniCorso, Studente.id == IscrizioniCorso.id_studente).\
+            filter(IscrizioniCorso.id_programmazione_corso == id_prog).\
+            order_by(Utente.cognome, Utente.nome)
 
-    # Filtri per migliorare la ricerca e/o visualizzazione
-    if inPresenza is not None:
-        iscrizioni = iscrizioni.filter(
-            IscrizioniCorso.inPresenza == inPresenza)
-    if name is not None:
-        iscrizioni = iscrizioni.filter(Utente.nome.like('%' + name + '%'))
-    if lastname is not None:
-        iscrizioni = iscrizioni.filter(
-            Utente.cognome.like('%' + lastname + '%'))
-    if skip is not None:
-        iscrizioni = iscrizioni.offset(skip)
-    if limit is not None:
-        iscrizioni = iscrizioni.limit(limit)
+        # Filtri per migliorare la ricerca e/o visualizzazione
+        if inPresenza is not None:
+            iscrizioni = iscrizioni.filter(
+                IscrizioniCorso.inPresenza == inPresenza)
+        if name is not None:
+            iscrizioni = iscrizioni.filter(Utente.nome.like('%' + name + '%'))
+        if lastname is not None:
+            iscrizioni = iscrizioni.filter(
+                Utente.cognome.like('%' + lastname + '%'))
+        if skip is not None:
+            iscrizioni = iscrizioni.offset(skip)
+        if limit is not None:
+            iscrizioni = iscrizioni.limit(limit)
 
-    iscrizioni = iscrizioni.all()
+        iscrizioni = iscrizioni.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle iscrizioni del corso: ' + str(e)}), 500
 
     return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in iscrizioni]))), 200
 

@@ -303,50 +303,54 @@ def login():
 
     email = auth.username
     password = auth.password
+    
+    try:
+        # reperisco l'utente
+        user = preLoginSession.query(Utente).filter(Utente.email == email).first()
+        if not user or user.abilitato == False or user.verificato == False:
+            return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
 
-    # reperisco l'utente
-    user = preLoginSession.query(Utente).filter(Utente.email == email).first()
-    if not user or user.abilitato == False or user.verificato == False:
+        # definisco il token jwt (json web token)
+        token_data = {
+            'id': user.id,
+            'email': user.email,
+            'nome': user.nome,
+            'cognome': user.cognome,
+            'data_nascita': user.data_nascita.strftime('%m/%d/%Y'),
+            'exp': datetime.utcnow() + timedelta(minutes=120)
+        }
+
+        studente = preLoginSession.query(Studente).filter(Studente.id == user.id).first()
+        docente = preLoginSession.query(Docente).filter(Docente.id == user.id).first()
+        roles = []
+        if studente:
+            token_data['id_scuola'] = studente.id_scuola
+            token_data['indirizzo_di_studio'] = studente.indirizzo_di_studio
+            roles.append('studente')
+        else:
+            token_data['descrizione_docente'] = docente.descrizione_docente
+            token_data['immagine_profilo'] = docente.immagine_profilo
+            token_data['link_pagina_docente'] = docente.link_pagina_docente
+            roles.append('docente')
+
+        amministratore = preLoginSession.query(Amministratore).filter(
+            Amministratore.id == user.id).first()
+        if amministratore:
+            roles.append('amministratore')
+
+        token_data['roles'] = roles
+
+        # verifico che la password corrisponda
+        if hmac.new(user.salt.encode(), password.encode(), hashlib.sha512).hexdigest() == user.digest:
+            # codifico il token
+            token = jwt.encode(token_data, current_app.config['SECRET_KEY'])
+
+            return jsonify({'error': False, 'errormessage': '', 'token': token}), 200
+
         return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
 
-    # definisco il token jwt (json web token)
-    token_data = {
-        'id': user.id,
-        'email': user.email,
-        'nome': user.nome,
-        'cognome': user.cognome,
-        'data_nascita': user.data_nascita.strftime('%m/%d/%Y'),
-        'exp': datetime.utcnow() + timedelta(minutes=120)
-    }
-
-    studente = preLoginSession.query(Studente).filter(Studente.id == user.id).first()
-    docente = preLoginSession.query(Docente).filter(Docente.id == user.id).first()
-    roles = []
-    if studente:
-        token_data['id_scuola'] = studente.id_scuola
-        token_data['indirizzo_di_studio'] = studente.indirizzo_di_studio
-        roles.append('studente')
-    else:
-        token_data['descrizione_docente'] = docente.descrizione_docente
-        token_data['immagine_profilo'] = docente.immagine_profilo
-        token_data['link_pagina_docente'] = docente.link_pagina_docente
-        roles.append('docente')
-
-    amministratore = preLoginSession.query(Amministratore).filter(
-        Amministratore.id == user.id).first()
-    if amministratore:
-        roles.append('amministratore')
-
-    token_data['roles'] = roles
-
-    # verifico che la password corrisponda
-    if hmac.new(user.salt.encode(), password.encode(), hashlib.sha512).hexdigest() == user.digest:
-        # codifico il token
-        token = jwt.encode(token_data, current_app.config['SECRET_KEY'])
-
-        return jsonify({'error': False, 'errormessage': '', 'token': token}), 200
-
-    return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore durante l\'autenticazione: ' + str(e)}), 500
 
 
 #ritorna tutti gli studenti
@@ -359,26 +363,27 @@ def get_students(user):
     name = request.args.get('name')
     surname = request.args.get('surname')
 
-    # Query per recuperare tutte le aule
-    studenti = SessionDocenti.\
-            query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio).\
-            join(Utente, Utente.id == Studente.id).order_by(Utente.cognome, Utente.nome).all()
+    try:
+        # Query per recuperare tutte le aule
+        studenti = SessionDocenti.\
+                query(Utente.id, Utente.nome, Utente.cognome, Studente.indirizzo_di_studio).\
+                join(Utente, Utente.id == Studente.id).order_by(Utente.cognome, Utente.nome)
 
-    # Filtri per specializzazre la ricerca e/o la visualizzazione degli studenti
-    if name is not None:
-        studenti = studenti.filter(Utente.nome.like('%' + name + '%'))
-    if surname is not None:
-        studenti = studenti.filter(Utente.cognome.like('%' + surname + '%'))
-    if skip is not None:
-        studenti = studenti.offset(skip)
-    if limit is not None:
-        studenti = studenti.limit(limit)
+        # Filtri per specializzazre la ricerca e/o la visualizzazione degli studenti
+        if name is not None:
+            studenti = studenti.filter(Utente.nome.like('%' + name + '%'))
+        if surname is not None:
+            studenti = studenti.filter(Utente.cognome.like('%' + surname + '%'))
+        if skip is not None:
+            studenti = studenti.offset(skip)
+        if limit is not None:
+            studenti = studenti.limit(limit)
 
-    if len(studenti) == 0:
-        # Se non trova alcun studente, ritorna uno status code 404
-        return jsonify({'error': True, 'errormessage': 'Impossibile reperire alcuno studente'}), 404
-    else:
-        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
+        studenti = studenti.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento degli studenti: ' + str(e)}), 500
+
+    return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
 
 
 #ritorna uno specifico studente in base al suo id
@@ -410,26 +415,28 @@ def get_docenti():
     name = request.args.get('name')
     surname = request.args.get('surname')
 
-    # Query per recuperare tutte le aule
-    docenti = preLoginSession.\
-            query(Utente.id, Utente.nome, Utente.cognome, Docente.descrizione_docente, Docente.immagine_profilo, Docente.link_pagina_docente).\
-            join(Utente, Utente.id == Docente.id).order_by(Utente.cognome, Utente.nome).all()
+    try:
+        # Query per recuperare tutte le aule
+        docenti = preLoginSession.\
+                query(Utente.id, Utente.nome, Utente.cognome, Docente.descrizione_docente, Docente.immagine_profilo, Docente.link_pagina_docente).\
+                join(Utente, Utente.id == Docente.id).order_by(Utente.cognome, Utente.nome)
 
-    # Filtri per specializzazre la ricerca e/o la visualizzazione dei docenti
-    if name is not None:
-        docenti = docenti.filter(Utente.nome.like('%' + name + '%'))
-    if surname is not None:
-        docenti = docenti.filter(Utente.cognome.like('%' + surname + '%'))
-    if skip is not None:
-        docenti = docenti.offset(skip)
-    if limit is not None:
-        docenti = docenti.limit(limit)
+        # Filtri per specializzazre la ricerca e/o la visualizzazione dei docenti
+        if name is not None:
+            docenti = docenti.filter(Utente.nome.like('%' + name + '%'))
+        if surname is not None:
+            docenti = docenti.filter(Utente.cognome.like('%' + surname + '%'))
+        if skip is not None:
+            docenti = docenti.offset(skip)
+        if limit is not None:
+            docenti = docenti.limit(limit)
 
+        docenti = docenti.all()
     # Se non trova alcun docente, ritorna uno status code 404
-    if len(docenti) == 0:
-        return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun docente'}), 404
-    else:
-        return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento dei docenti: ' + str(e)}), 500
+
+    return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
 
 
 #ritorna uno specifico docente in base al suo id
@@ -462,26 +469,27 @@ def get_users(user):
     surname = request.args.get('surname')
     birthdate = request.args.get('birthdate')
 
+    try:
     # Query per recuperare tutti gli utenti
-    utenti = SessionDocenti.query(Utente).order_by(Utente.cognome, Utente.nome).all()
+        utenti = SessionDocenti.query(Utente).order_by(Utente.cognome, Utente.nome)
 
-    # Filtri per specializzazre la ricerca e/o la visualizzazione degli utenti
-    if name is not None:
-        utenti = utenti.filter(Utente.nome.like('%' + name + '%'))
-    if surname is not None:
-        utenti = utenti.filter(Utente.cognome.like('%' + surname + '%'))
-    if birthdate is not None:
-        utenti = utenti.filter(Utente.date_time == birthdate)
-    if skip is not None:
-        utenti = utenti.offset(skip)
-    if limit is not None:
-        utenti = utenti.limit(limit)
+        # Filtri per specializzazre la ricerca e/o la visualizzazione degli utenti
+        if name is not None:
+            utenti = utenti.filter(Utente.nome.like('%' + name + '%'))
+        if surname is not None:
+            utenti = utenti.filter(Utente.cognome.like('%' + surname + '%'))
+        if birthdate is not None:
+            utenti = utenti.filter(Utente.date_time == birthdate)
+        if skip is not None:
+            utenti = utenti.offset(skip)
+        if limit is not None:
+            utenti = utenti.limit(limit)
 
-    # Se non trova nessun utente, ritorna uno status code 404
-    if len(utenti) == 0:
-        return jsonify({'error': True, 'errormessage': 'Impossibile recuperare alcun utente'}), 404
-    else:
-        return jsonify(utenti_schema.dump(utenti.all())), 200
+        utenti = utenti.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento degli utenti: ' + str(e)}), 500
+
+    return jsonify(utenti_schema.dump(utenti.all())), 200
 
 #ritorna un utente specifico in base al suo id
 @auth.route('/utenti/<id>', methods=['GET'])

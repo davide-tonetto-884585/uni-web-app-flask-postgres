@@ -29,24 +29,28 @@ def get_domande(user, id):
     skip = request.args.get('skip')
     limit = request.args.get('limit')
 
-    # Query per reperire le domande con il relativo numero dei like
-    domande = sessionStudenti.query(Utente.nome, Utente.cognome, Utente.id, DomandeCorso.id,
-        DomandeCorso.testo, func.count(DomandeCorso.id).label('total_likes')).\
-        join(Utente, DomandeCorso.id_utente == Utente.id).\
-        join(LikeDomanda, DomandeCorso.id == LikeDomanda.id_domanda_corso).\
-        group_by(DomandeCorso.id, Utente.id, Utente.cognome, Utente.nome, DomandeCorso.testo)
+    try:
+        # Query per reperire le domande con il relativo numero dei like
+        domande = sessionStudenti.query(Utente.nome, Utente.cognome, Utente.id, DomandeCorso.id,
+            DomandeCorso.testo, func.count(DomandeCorso.id).label('total_likes')).\
+            join(Utente, DomandeCorso.id_utente == Utente.id).\
+            join(LikeDomanda, DomandeCorso.id == LikeDomanda.id_domanda_corso).\
+            group_by(DomandeCorso.id, Utente.id, Utente.cognome, Utente.nome, DomandeCorso.testo)
 
-    # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
-    if testo is not None:
-        domande = domande.filter(DomandeCorso.testo.like('%' + testo + '%'))
-    if skip is not None:
-        domande = domande.offset(skip)
-    if limit is not None:
-        domande = domande.limit(limit)
-    if chiusa is not None:
-        domande = domande.filter(DomandeCorso.chiusa == chiusa)
+        # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
+        if testo is not None:
+            domande = domande.filter(DomandeCorso.testo.like('%' + testo + '%'))
+        if skip is not None:
+            domande = domande.offset(skip)
+        if limit is not None:
+            domande = domande.limit(limit)
+        if chiusa is not None:
+            domande = domande.filter(DomandeCorso.chiusa == chiusa)
 
-    domande = domande.all()
+        domande = domande.all()
+
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento delle domande: ' + str(e)}), 500
 
     return jsonify(json.loads(json.dumps([dict(domanda._mapping) for domanda in domande]))), 200
 
@@ -151,20 +155,24 @@ def get_likes_domanda(id_corso, id_domanda):
     name = request.args.get('nome')
     lastname = request.args.get('cognome')
 
-    likes = preLoginSession.query(Utente.id, Utente.nome, Utente.cognome).\
-        join(LikeDomanda, LikeDomanda.id_utente == Utente.id).\
-        filter(LikeDomanda.id_domanda_corso == id_domanda)
+    try:
+        likes = preLoginSession.query(Utente.id, Utente.nome, Utente.cognome).\
+            join(LikeDomanda, LikeDomanda.id_utente == Utente.id).\
+            filter(LikeDomanda.id_domanda_corso == id_domanda)
 
-    if skip is not None:
-        likes = likes.offset(skip)
-    if limit is not None:
-        likes = likes.limit(limit)
-    if name is not None:
-        likes = likes.filter(Utente.nome.like('%' + name + '%'))
-    if lastname is not None:
-        likes = likes.filter(Utente.cognome.like('%' + lastname + '%'))
+        if skip is not None:
+            likes = likes.offset(skip)
+        if limit is not None:
+            likes = likes.limit(limit)
+        if name is not None:
+            likes = likes.filter(Utente.nome.like('%' + name + '%'))
+        if lastname is not None:
+            likes = likes.filter(Utente.cognome.like('%' + lastname + '%'))
 
-    likes = likes.all()
+        likes = likes.all()
+
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperimento dei like: ' + str(e)}), 500
 
     return jsonify(json.loads(json.dumps([dict(like._mapping) for like in likes]))), 200
 
