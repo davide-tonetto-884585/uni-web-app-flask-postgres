@@ -28,18 +28,23 @@ def get_corsi():
     limit = request.args.get('limit')
     lingua = request.args.get('lingua')
 
-    # Query per reperire tutti i corsi
-    corsi = preLoginSession.query(Corso).order_by(Corso.titolo)
+    try:
+        # Query per reperire tutti i corsi
+        corsi = preLoginSession.query(Corso).order_by(Corso.titolo)
 
-    # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
-    if name is not None:
-        corsi = corsi.filter(Corso.titolo.like('%' + name + '%'))
-    if skip is not None:
-        corsi = corsi.offset(skip)
-    if limit is not None:
-        corsi = corsi.limit(limit)
-    if lingua is not None:
-        corsi = corsi.filter(Corso.lingua.like('%' + lingua + '%'))
+        # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
+        if name is not None:
+            corsi = corsi.filter(Corso.titolo.like('%' + name + '%'))
+        if skip is not None:
+            corsi = corsi.offset(skip)
+        if limit is not None:
+            corsi = corsi.limit(limit)
+        if lingua is not None:
+            corsi = corsi.filter(Corso.lingua.like('%' + lingua + '%'))
+
+        corsi = corsi.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento dei corsi: ' + str(e)}), 500
 
     return jsonify(corsi_schemas.dump(corsi.all())), 200
 
@@ -153,10 +158,7 @@ def get_docenti_corsi(id):
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Errore nel reperire i docenti del corso: ' + str(e)}), 500
 
-    if len(docenti) == 0:
-        return jsonify({'error': True, 'errormessage': 'Corso senza docenti assegnati'}), 404
-    else:
-        return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
+    return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
 
 
 @corsi.route('/corsi/<id>/docenti', methods=['POST'])
@@ -244,7 +246,4 @@ def get_studenti_corso(id):
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Errore nel reperire gli studenti del corso: ' + str(e)}), 500
 
-    if len(studenti) == 0:
-        return jsonify({'error': True, 'errormessage': 'Corso senza studenti registrati'}), 404
-    else:
-        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
+    return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200

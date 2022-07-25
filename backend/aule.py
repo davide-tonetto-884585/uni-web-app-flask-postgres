@@ -25,26 +25,27 @@ def get_aule():
     building = request.args.get('building')
     campus = request.args.get('campus')
 
-    # Query per recuperare tutte le aule
-    aule = preLoginSession.query(Aula).order_by(Aula.campus, Aula.edificio, Aula.nome).all()
+    try:
+        # Query per recuperare tutte le aule
+        aule = preLoginSession.query(Aula).order_by(Aula.campus, Aula.edificio, Aula.nome)
 
-    # Filtri per specializzazre la ricerca e/o la visualizzazione delle aule
-    if name is not None:
-        aule = aule.filter(Aula.nome.like('%' + name + '%'))
-    if building is not None:
-        aule = aule.filter(Aula.building.like('%' + building + '%'))
-    if campus is not None:
-        aule = aule.filter(Aula.campus.like('%' + campus + '%'))
-    if skip is not None:
-        aule = aule.offset(skip)
-    if limit is not None:
-        aule = aule.limit(limit)
+        # Filtri per specializzazre la ricerca e/o la visualizzazione delle aule
+        if name is not None:
+            aule = aule.filter(Aula.nome.like('%' + name + '%'))
+        if building is not None:
+            aule = aule.filter(Aula.building.like('%' + building + '%'))
+        if campus is not None:
+            aule = aule.filter(Aula.campus.like('%' + campus + '%'))
+        if skip is not None:
+            aule = aule.offset(skip)
+        if limit is not None:
+            aule = aule.limit(limit)
 
-    if len(aule) == 0:
-        # Se non trova alcun'aula, ritorna uno status code 404
-        return jsonify({'error': True, 'errormessage': 'Impossibile recuperare la/e aula/e'}), 404
-    else:
-        return jsonify(aule_schema.dump(aule.all())), 200
+        aule = aule.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperire le aule: ' + str(e)}), 500
+
+    return jsonify(aule_schema.dump(aule.all())), 200
 
 
 @aule.route('/aule', methods=['POST'])
@@ -92,7 +93,7 @@ def get_aula(id):
         # Query per recuperare l'aula tramite id
         aula = preLoginSession.query(Aula).filter(Aula.id == id).first()
     except Exception as e:
-        return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'aula: ' + str(e)}), 500
+        return jsonify({'error': True, 'errormessage': 'Errore nel reperire l\'aula: ' + str(e)}), 500
 
     if aula is None:
         return jsonify({'error': True, 'errormessage': 'Aula inesistente'}), 404

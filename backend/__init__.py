@@ -3,7 +3,6 @@
 	-------------------------------------------------------------------------------------------------------------------------------
 	BLUEPRINT auth:
 
-
 	/utenti/studenti            ...                                          GET           List all students
 
 
@@ -18,9 +17,31 @@
 	/utenti/docenti/:id         -                                            POST          Complete teacher registration
 	/utenti/amministratori/:id  -                                            POST          Add a new administrator
 	/login               -                                                   GET           Login an existing user, returning a JWT
+	/utenti/studenti                                                         GET           List all students
+					?name=nome                  cerca per nome
+					?surname=cognome            cerca per cognome
+					?skip=n                     salta i primi n stud
+					?limit=m                    restituisce m stud
+	/utenti/studenti/:id													 GET           Get student by id
+	/utenti/studenti/:id/iscrizioni											 GET
+    /utenti/docenti/:id/corsi												 GET
+	/utenti/docenti															 GET           List all teachers
+						?name=nome                  cerca per nome
+						?surname=cognome            cerca per cognome
+						?skip=n                     salta i primi n utenti
+						?limit=m                    restituisce m utenti
+	/utenti/docenti/:id                                                      GET           Get docente by id
+	/utenti																	 GET           List all users
+						?name=nome                  cerca per nome
+						?surname=cognome            cerca per cognome
+						?birthdate=birthdate		cerca per data di nascita (precisa)
+						?skip=n						salta i primi n utenti
+						?limit=m					restituisce m utenti
+	/utenti/:id                                                              GET           Get user by id
 
 	-------------------------------------------------------------------------------------------------------------------------------
 	BLUEPRINT main:
+
 	/                    -                                                   GET           Returns the version and a list of
 																						   available endpoint
 
@@ -30,6 +51,7 @@
 
 	------------------------------------------------------------------------------------------------------------------------------
 	BLUEPRINT corsi:
+
 	/corsi               ?lingua                                             GET           List all courses
 						 ?name=nome                  prende i corsi per nome
 						 ?skip=n                     salta i primi n corsi
@@ -38,45 +60,26 @@
 	/corsi                -                                                  POST          Insert new course
 	/corsi/:id/docenti                                                       GET           Get docenti del corso
 	/corsi/:id                                                               PUT           Modify course
+	/corsi/:id																 PUT           Modify course
+	/corsi/:id/docenti														 POST          add docente al corso
+	/corsi/:id/docenti                                                       DELETE        remove docente from course
+	/corsi/:id                                                               DELETE        remove course
+	/corsi/:id/studenti                                                      GET           Get all students registred to course :id
 
 	------------------------------------------------------------------------------------------------------------------------------
-	DA CONTROLLARE:
-	/corsi/:id																PUT           Modify course
-	/corsi/:id/docenti														POST          add docente al corso
-	/utenti/studenti                                                        GET           List all students
-					?name=nome                  cerca per nome
-					?surname=cognome            cerca per cognome
-					?skip=n                     salta i primi n stud
-					?limit=m                    restituisce m stud
-	/utenti/studenti/:id													GET           Get student by id
-	/utenti/studenti/:id/iscrizioni											GET
-    /utenti/docenti/:id/corsi												GET
-	/utenti/docenti															GET           List all teachers
-						?name=nome                  cerca per nome
-						?surname=cognome            cerca per cognome
-						?skip=n                     salta i primi n utenti
-						?limit=m                    restituisce m utenti
-	/utenti/docenti/:id                                                     GET           Get docente by id
-	/utenti																	GET           List all users
-						?name=nome                  cerca per nome
-						?surname=cognome            cerca per cognome
-						?birthdate=birthdate		cerca per data di nascita (precisa)
-						?skip=n						salta i primi n utenti
-						?limit=m					restituisce m utenti
-	/utenti/:id                                                             GET           Get user by id
+	BLUEPRINT aule:
 
-	/aule                                                                   POST          Add aula
-	/aule                                                                   GET           Get aula
+	/aule                                                                    POST          Add aula
+	/aule                                                                    GET           Get aula
                   ?name=nome                  cerca per nome
                   ?building=edificio          cerca per edificio
                   ?campus=campus      		cerca per campus
                   ?skip=n						salta le prime n aule
                   ?limit=m					restituisce m aule
-	/aule/:id                                                               GET           Get aula by id
+	/aule/:id                                                                GET           Get aula by id
 
-	/corsi/:id/docenti                                                       DELETE        remove docente from course
-	/corsi/:id                                                               DELETE        remove course
-	/corsi/:id/studenti                                                      GET           Get all students registred to course :id
+	------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT programmazione_corso
 
 	/corso/:id/programmazione_corso                                          POST          Add prog corso
 	/corso/:id/programmazione_corso/                                         GET
@@ -92,30 +95,38 @@
 	/corso/:id/programmazione_corso/:id/iscrizioni                           GET
 	/corso/:id/programmazione_corso/:id/iscrizioni/:id_studente              DELETE
 
+	------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT risorse:
+
 	/corsi/:id/risorse                                                       GET           Get risorse del corso
 	/corsi/:id/risorse                                                       POST          Add risorsa del corso
 	/corsi/:id/risorse/:id                                                   DELETE        Remove risorsa del corso
 	/corsi/:id/risorse/:id                                                   PUT           Modify risorsa del corso
 
-	------------------------------------------------------------------------------------------------------------------------------
+	-------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT domande:
+
+    /corsi/:id/domande                                                      GET           Get domande corso
+                        ?testo=testi               cerca per il testo
+                        ?chiusa=chiusa             trova le domande chiuse
+                        ?skip=n                    salta i primi n doc
+                        ?limit=m                   restituisce m doc
+	/corsi/:id/domande                                                       POST          Add domanda corso
+	/corsi/:id/domande                                                       DELETE        remove domanda corso
+
+
+
+	/corsi/:id/domande/:id/like                                              GET           Get likes (and who gave them) of the question
+	/corsi/:id/domande/:id/like                                              POST          Add like to question
+	/corsi/:id/domande/:id/like                                              DELETE        remove like of domanda corso
+
+	-------------------------------------------------------------------------------------------------------------------------------
+	DA CONTROLLARE
 
 	DA IMPLEMENTARE:
 
 	TODO: Fare in modo che all'eliminazione di una risorsa o di un corso vengano eliminate anche le immagini o file dal server
-
-	#################################################### DOMANDE ################################################################
-
-	/corsi/:id/domande   ... (pensare a possibili filtri)                    GET           Get domande corso
-						 ?skip=n                    salta i primi n doc
-						 ?limit=m                   restituisce m doc
-	/corsi/:id/domande                                                       POST          Add domanda corso
-	/corsi/:id/domande                                                       DELETE        remove domanda corso
-
-	/corsi/:id/domande/:id/like                                              GET           Get number of like of the question
-	/corsi/:id/domande/:id/like                                              POST          Add like to question
-	/corsi/:id/domande/:id/like                                              DELETE        Remove like from question
-
-	#############################################################################################################################
+	REMINDER: Potrebbe servire una data della scadenza per la riabilitazione di un account sospeso?
 
    -------------------------------------------------------------------------------------------------------------------------------
 """
@@ -212,5 +223,8 @@ def create_app():
 	# blueprint per le risorse del corso
     from .risorse import risorse as risorse_blueprint
     app.register_blueprint(risorse_blueprint)
+
+    from .domande import domande as domande_corso_blueprint
+    app.register_blueprint(domande_corso_blueprint)
 
     return app

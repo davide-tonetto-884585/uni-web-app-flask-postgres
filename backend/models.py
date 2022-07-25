@@ -51,3 +51,11 @@ class PresenzeLezione(Base):
 
 class RisorseCorso(Base):
     __table__ = Base.metadata.tables['risorse_corso']
+
+
+class DomandeCorso(Base):
+    __table__ = Base.metadata.tables['domande_corso']
+
+
+class LikeDomanda(Base):
+    __table__ = Base.metadata.tables['like_domanda']

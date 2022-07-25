@@ -34,42 +34,43 @@ def get_risorse(user, id):
     name = request.args.get('nome')
     visible = request.args.get('visibile')
 
-    if ('studente' in user['roles']):
+    try:
+        if ('studente' in user['roles']):
 
-        # Controlliamo che lo studente sia iscritto al corso, altrimenti non mostriamo le risorse
-        if(sessionDocenti.query(IscrizioniCorso.id_studente).\
-            join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
-            filter(ProgrammazioneCorso.id_corso == id, IscrizioniCorso.id_studente == user['id']).count() == 0):
+            # Controlliamo che lo studente sia iscritto al corso, altrimenti non mostriamo le risorse
+            if(sessionDocenti.query(IscrizioniCorso.id_studente).\
+                join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
+                filter(ProgrammazioneCorso.id_corso == id, IscrizioniCorso.id_studente == user['id']).count() == 0):
 
+                return jsonify({'error': True, 'errormessage': 'Non puoi vedere la/e risorsa/e di questo corso'}), 401
+
+            # Forziamo la visualizzazione delle risorse solo a quelle visibili, per gli studenti iscritti
+            else:
+                visible = True
+
+        # Controlliamo che il docente sia proprietario del corso, altrimento non mostriamo le risorse
+        elif('amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id)):
             return jsonify({'error': True, 'errormessage': 'Non puoi vedere la/e risorsa/e di questo corso'}), 401
 
-        # Forziamo la visualizzazione delle risorse solo a quelle visibili, per gli studenti iscritti
-        else:
-            visible = True
+        risorse = sessionStudenti.query(RisorseCorso).\
+            filter(RisorseCorso.id_corso == id).\
+            order_by(RisorseCorso.nome, RisorseCorso.visibile)
 
-    # Controlliamo che il docente sia proprietario del corso, altrimento non mostriamo le risorse
-    elif('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
-        return jsonify({'error': True, 'errormessage': 'Non puoi vedere la/e risorsa/e di questo corso'}), 401
+        #Filtri per specializzare la ricerca e/o la visualizzazione delle risorse del corso
+        if visible is not None:
+            risorse = risorse.filter(RisorseCorso.visibile == visible)
+        if name is not None:
+            risorse = risorse.filter(RisorseCorso.nome.like('%' + name + '%'))
+        if skip is not None:
+            risorse = risorse.offset(skip)
+        if limit is not None:
+            risorse = risorse.limit(limit)
 
-    risorse = sessionStudenti.query(RisorseCorso).\
-        filter(RisorseCorso.id_corso == id).\
-        order_by(RisorseCorso.nome, RisorseCorso.visibile).all()
+        risorse = risorse.all()
+    except Exception as e:
+        return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle risorse del corso: ' + str(e)}), 500
 
-    #Filtri per specializzare la ricerca e/o la visualizzazione delle risorse del corso
-    if visible is not None:
-        risorse = risorse.filter(RisorseCorso.visibile == visible)
-    if name is not None:
-        risorse = risorse.filter(RisorseCorso.nome.like('%' + name + '%'))
-    if skip is not None:
-        risorse = risorse.offset(skip)
-    if limit is not None:
-        risorse = risorse.limit(limit)
-
-    if len(risorse) == 0 :
-        # Se non trova alcuna risorsa, ritorna uno status code 404
-        return jsonify({'error': True, 'errormessage': 'Nessuna risorsa del corso disponibile'}), 404
-    else:
-        return jsonify(risorse_corso_schema.dump(risorse)), 200
+    return jsonify(risorse_corso_schema.dump(risorse)), 200
 
 
 #aggiunge risorse a un corso
@@ -78,7 +79,7 @@ def get_risorse(user, id):
 def add_risorsa(user, id):
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo l'aggiunta di risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id)):
+    if('docente' in user['roles'] and 'amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id)):
         return jsonify({'error': True, 'errormessage': 'Non puoi aggiuntere la/e risorsa/e a questo corso'}), 401
 
     #controllo che i dati obbligatori siano stati inseriti nel form
@@ -107,7 +108,7 @@ def add_risorsa(user, id):
 def delete_risorsa(user, id_corso, id_risorsa):
     
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la rimozione delle risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
+    if('docente' in user['roles'] and 'amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
         return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere la/e risorsa/e per questo corso'}), 401
 
     try:
@@ -119,7 +120,7 @@ def delete_risorsa(user, id_corso, id_risorsa):
         sessionDocenti.commit()
     except Exception as e:
         sessionDocenti.rollback()
-        return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione della risorsa'}), 500
+        return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione della risorsa: ' + str(e)}), 500
 
     return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -129,7 +130,7 @@ def delete_risorsa(user, id_corso, id_risorsa):
 def modify_risorsa(user, id_corso, id_risorsa):
 
     # Controlliamo che il docente sia proprietario del corso, altrimento non permettiamo la modifica delle risorse
-    if('docente' in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
+    if('docente' in user['roles'] and 'amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id_corso)):
         return jsonify({'error': True, 'errormessage': 'Non puoi modificare la/e risorsa/e di questo corso'}), 401
 
     # Recupera la risorsa da modificare
