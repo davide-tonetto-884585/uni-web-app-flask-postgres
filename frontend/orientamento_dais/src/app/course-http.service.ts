@@ -107,4 +107,11 @@ export class CourseHttpService {
       this.createOptions()
     ).pipe(catchError(this.handleError));
   }
+
+  unsubscribeStudent(id_corso: number, id_prog_corso: number, id_stud: number): Observable<any> {
+    return this.http.delete(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/iscrizioni/${id_stud}`,
+      this.createOptions()
+    ).pipe(catchError(this.handleError));
+  }
 }

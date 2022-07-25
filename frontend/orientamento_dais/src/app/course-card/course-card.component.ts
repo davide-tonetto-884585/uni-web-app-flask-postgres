@@ -7,7 +7,7 @@ import { BACKEND_URL } from '../globals';
 @Component({
   selector: 'app-course-card',
   templateUrl: './course-card.component.html',
-  host: {class: 'mb-3 ms-3 me-3'},
+  host: { class: 'mb-3 ms-3 me-3' },
   styleUrls: ['./course-card.component.css']
 })
 export class CourseCardComponent implements OnInit {
@@ -17,7 +17,7 @@ export class CourseCardComponent implements OnInit {
   BACKEND_URL: string = BACKEND_URL;
 
   constructor(
-    private router: Router
+    private router: Router,
   ) { }
 
   ngOnInit(): void {

@@ -9,6 +9,7 @@
                 <h5 class="card-title">{{ course?.titolo }}</h5>
                 <p class="descr card-text">{{ (course?.descrizione | slice:0:250) + '...' }}</p>
                 <p class="card-text"><small class="text-muted">Language: {{ course?.lingua }}</small></p>
+                <ng-content></ng-content>
             </div>
         </div>
     </div>

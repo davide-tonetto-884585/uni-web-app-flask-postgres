@@ -29,7 +29,7 @@ def get_corsi():
     lingua = request.args.get('lingua')
 
     # Query per reperire tutti i corsi
-    corsi = preLoginSession.query(Corso).order_by(Corso.titolo).all()
+    corsi = preLoginSession.query(Corso).order_by(Corso.titolo)
 
     # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
     if name is not None:
@@ -41,11 +41,7 @@ def get_corsi():
     if lingua is not None:
         corsi = corsi.filter(Corso.lingua.like('%' + lingua + '%'))
 
-    if len(corsi) == 0 :
-        # Se non trova alcuna risorsa, ritorna uno status code 404
-        return jsonify({'error': True, 'errormessage': 'Nessun corso presente'}), 404
-    else:
-        return jsonify(corsi_schemas.dump(corsi.all())), 200
+    return jsonify(corsi_schemas.dump(corsi.all())), 200
 
 
 @corsi.route('/corsi/<id>', methods=['GET'])

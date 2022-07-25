@@ -47,7 +47,7 @@ def add_prog_corso(user, id):
         return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
 
     # creazione del nuovo oggetto da inserire
-    new_prog_corso = ProgrammazioneCorso(modalità=request.form.get('modalita'),
+    new_prog_corso = ProgrammazioneCorso(modalita=request.form.get('modalita'),
                                          limite_iscrizioni=request.form.get(
                                              'limite_iscrizioni'),
                                          password_certificato=request.form.get(
@@ -81,7 +81,7 @@ def get_progs_corso(id):
     # Filtri per specializzare la ricerca e/o la visualizzazione delle programmazioni del corso
     if modality is not None:
         progs_corso = progs_corso.filter(
-            ProgrammazioneCorso.modalità == modality)
+            ProgrammazioneCorso.modalita == modality)
     if subscriptions_limit is not None:
         progs_corso = progs_corso.filter(
             ProgrammazioneCorso.limite_iscrizioni == subscriptions_limit)
@@ -94,7 +94,7 @@ def get_progs_corso(id):
 
     # Per ogni entry, aggiunge il limite di iscrizione sulla base dell'aula più piccola
     for prog_corso in progs_corso:
-        if prog_corso.modalità == 'presenza' or prog_corso.modalità == 'duale' and prog_corso.limite_iscrizioni is None:
+        if prog_corso.modalita == 'presenza' or prog_corso.modalita == 'duale' and prog_corso.limite_iscrizioni is None:
             prog_corso.limite_iscrizioni = preLoginSession.query(Aula.capienza).\
                 join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
                 filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
@@ -120,7 +120,7 @@ def get_prog_corso(id_corso, id_prog):
         return jsonify({'error': True, 'errormessage': 'Programmazione del corso inesistente'}), 404
     else:
         # Per ogni entry, aggiunge il limite di iscrizione sulla base dell'aula più piccola
-        if prog_corso.modalità == 'presenza' or prog_corso.modalità == 'duale' and prog_corso.limite_iscrizioni is None:
+        if prog_corso.modalita == 'presenza' or prog_corso.modalita == 'duale' and prog_corso.limite_iscrizioni is None:
             prog_corso.limite_iscrizioni = preLoginSession.query(Aula.capienza).\
                 join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
                 filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
@@ -205,7 +205,7 @@ def add_lezione_prog_corso(user, id_corso, id_prog):
     # controllo che i link e la password siano necessari nel caso siano online o duale
     prog_corso = preLoginSession.query(ProgrammazioneCorso).filter(
         ProgrammazioneCorso.id == id_prog).first()
-    if prog_corso.modalità == 'online' or prog_corso.modalità == 'duale':
+    if prog_corso.modalita == 'online' or prog_corso.modalita == 'duale':
         if link_virtual_class is None:
             return jsonify({'error': True, 'errormessage': 'Link stanza virtuale mancante'}), 400
 
@@ -358,12 +358,12 @@ def add_iscrizione(user, id_corso, id_prog):
     in_presenza = None
 
     # Se lo studente ha scelto "duale" e non sceglie se in presenza od online, allora lo setta a True di default
-    if prog_corso.modalità == 'duale':
+    if prog_corso.modalita == 'duale':
         if request.form.get('inPresenza') is not None:
             in_presenza = request.form.get('inPresenza')
         else:
             in_presenza = True
-    elif prog_corso.modalità == 'presenza':
+    elif prog_corso.modalita == 'presenza':
         in_presenza = True
 
     # Recupera il numero di iscritti
@@ -378,7 +378,7 @@ def add_iscrizione(user, id_corso, id_prog):
 
     # Si puo' indicare un limite di iscrizioni, se non e' indicato viene scelto come limite la capienza dell'aula piu' piccola
     # Nota: ogni lezione ha una sola aula
-    if prog_corso.modalità == 'duale' or prog_corso.modalità == 'presenza':
+    if prog_corso.modalita == 'duale' or prog_corso.modalita == 'presenza':
         if (prog_corso.limite_iscrizioni is not None and num_iscritti >= prog_corso.limite_iscrizioni) \
                 or (num_iscritti >= capienza_aula_piu_piccola):
             return jsonify({'error': True, 'errormessage': 'Limite iscrizioni raggiunto.'}), 401
@@ -436,7 +436,6 @@ def get_iscrizioni(id_corso, id_prog):
 @prog_corsi.route('/corso/<id_corso>/programmazione_corso/<id_prog>/iscrizioni/<id_studente>', methods=['DELETE'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def remove_subscription(user, id_corso, id_prog, id_studente):
-
     # Controlla che lo studente non stia cercando di eliminare altri studenti al di fuori di sé stesso
     if ('studente' in user['roles'] and user['id'] != int(id_studente)):
         return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a eliminare uno studente dal corso al di fuori di te stesso'}), 400

@@ -20,6 +20,23 @@ export class MyCoursesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.refresh();
+  }
+
+  isStudent(): boolean {
+    return this.user_http.isStudent();
+  }
+
+  isTeacher(): boolean {
+    return this.user_http.isTeacher();
+  }
+
+  unsubscribeStudent(id_corso: number, id_prog: number, id_studente: number) {
+    this.course_http.unsubscribeStudent(id_corso, id_prog, id_studente);
+    this.refresh();
+  }
+
+  refresh(): void {
     if (!this.user_http.isLogged()) {
       this.router.navigate(['/login']);
     } else {
@@ -40,5 +57,4 @@ export class MyCoursesComponent implements OnInit {
       }
     }
   }
-
 }
