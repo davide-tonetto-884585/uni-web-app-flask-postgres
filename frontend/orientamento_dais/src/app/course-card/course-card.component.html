@@ -1,4 +1,4 @@
-<div class="card" *ngIf="!card" (click)="navigateToCourseDetail()">
+<div class="card" *ngIf="!card">
     <div class="row g-0">
         <div class="col-md-4">
             <img [src]="course?.immagine_copertina ? this.BACKEND_URL + course?.immagine_copertina : '/assets/images/copertina_corso_default.jpg'"
@@ -9,6 +9,7 @@
                 <h5 class="card-title">{{ course?.titolo }}</h5>
                 <p class="descr card-text">{{ (course?.descrizione | slice:0:250) + '...' }}</p>
                 <p class="card-text"><small class="text-muted">Language: {{ course?.lingua }}</small></p>
+                <button (click)="navigateToCourseDetail()" type="button" class="btn btn-outline-danger">Details</button>
                 <ng-content></ng-content>
             </div>
         </div>

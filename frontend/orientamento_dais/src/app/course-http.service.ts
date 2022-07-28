@@ -78,12 +78,6 @@ export class CourseHttpService {
     ).pipe(catchError(this.handleError));
   }
 
-  getAula(id_aula: number): Observable<Aula> {
-    return this.http.get<Aula>(
-      `${BACKEND_URL}/aule/${id_aula}`
-    ).pipe(catchError(this.handleError));
-  }
-
   enrollStudent(id_corso: number, id_prog_corso: number, id_stud: number): Observable<any> {
     const form_data = new FormData();
     form_data.append('id_studente', id_stud.toString())
@@ -111,6 +105,96 @@ export class CourseHttpService {
   unsubscribeStudent(id_corso: number, id_prog_corso: number, id_stud: number): Observable<any> {
     return this.http.delete(
       `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/iscrizioni/${id_stud}`,
+      this.createOptions()
+    ).pipe(catchError(this.handleError));
+  }
+
+  addCourse(course: Course | any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(course).forEach((key) => {
+      form_data.append(key, course[key]);
+    });
+
+    return this.http.post(BACKEND_URL + '/corsi', form_data, this.createOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  updateCourse(course: Course | any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(course).forEach((key) => {
+      form_data.append(key, course[key]);
+    });
+
+    return this.http.put(BACKEND_URL + '/corsi/' + course.id, form_data, this.createOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  addDocentiCorso(id_corso: number, id_docenti: number[]): Observable<any> {
+    const form_data = new FormData();
+
+    id_docenti.forEach((id) => {
+      form_data.append('id_docenti[]', id.toString());
+    })
+
+    return this.http.post(
+      `${BACKEND_URL}/corsi/${id_corso}/docenti`,
+      form_data,
+      this.createOptions()
+    ).pipe(catchError(this.handleError))
+  }
+
+  addProgCorso(id_corso: number, prog_corso: ProgCourse | any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(prog_corso).forEach((key) => {
+      form_data.append(key, prog_corso[key]);
+    });
+
+    return this.http.post(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso`,
+      form_data,
+      this.createOptions()
+    ).pipe(catchError(this.handleError));
+  }
+
+  updateProgCorso(id_corso: number, prog_corso: ProgCourse | any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(prog_corso).forEach((key) => {
+      form_data.append(key, prog_corso[key]);
+    });
+
+    return this.http.put(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${prog_corso.id}`,
+      form_data,
+      this.createOptions()
+    ).pipe(catchError(this.handleError));    
+  }
+
+  addLezioneProg(id_corso: number, id_prog_corso: number, lezione: Lesson | any): Observable<any> {
+    console.log(lezione)
+    const form_data = new FormData();
+    Object.keys(lezione).forEach((key) => {
+      form_data.append(key, lezione[key]);
+    });
+
+    return this.http.post(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/lezioni`,
+      form_data,
+      this.createOptions()
+    ).pipe(catchError(this.handleError));
+  }
+
+  updateLezioneProg(id_corso: number, id_prog_corso: number, lezione: Lesson | any): Observable<any> {
+    console.log(lezione)
+    const form_data = new FormData();
+    Object.keys(lezione).forEach((key) => {
+      form_data.append(key, lezione[key]);
+    });
+
+    return this.http.put(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/lezioni/${lezione.id}`,
+      form_data,
       this.createOptions()
     ).pipe(catchError(this.handleError));
   }

@@ -27,8 +27,8 @@ export interface Course {
     titolo: string;
     descrizione: string | null;
     lingua: string | null;
-    immagine_copertina: string | null;
-    file_certificato: string | null;
+    immagine_copertina: any | null;
+    file_certificato: any | null;
     abilitato: boolean;
 }
 

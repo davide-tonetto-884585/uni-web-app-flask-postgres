@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 
 import { Course, ProgCourse, Lesson, Aula } from '../models';
 import { CourseHttpService } from '../course-http.service';
+import { AulaHttpService } from '../aula-http.service';
 import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { CourseModalComponent } from '../course-modal/course-modal.component';
 
 @Component({
   selector: 'app-my-courses',
@@ -11,12 +14,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./my-courses.component.css']
 })
 export class MyCoursesComponent implements OnInit {
-  courses: Course[] = [];
+  courses: any[] = [];
 
   constructor(
     private user_http: UserHttpService,
     private course_http: CourseHttpService,
-    private router: Router
+    private aula_http: AulaHttpService,
+    private router: Router,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -31,9 +36,18 @@ export class MyCoursesComponent implements OnInit {
     return this.user_http.isTeacher();
   }
 
+  getId(): number {
+    let id = this.user_http.getId();
+    if (id) return id;
+    else return -1;
+  }
+
   unsubscribeStudent(id_corso: number, id_prog: number, id_studente: number) {
-    this.course_http.unsubscribeStudent(id_corso, id_prog, id_studente);
-    this.refresh();
+    this.course_http.unsubscribeStudent(id_corso, id_prog, id_studente).subscribe({
+      next: () => {
+        this.refresh();
+      }
+    })
   }
 
   refresh(): void {
@@ -44,8 +58,26 @@ export class MyCoursesComponent implements OnInit {
 
       if (this.user_http.isStudent() && id) {
         this.course_http.getInscriptionsStudent(id).subscribe({
-          next: (corsi: Course[]) => {
+          next: (corsi: any[]) => {
             this.courses = corsi;
+
+            this.courses.forEach((corso) => {
+              this.course_http.getLezioniProgCorso(corso.id, corso.id_programmazione_corso).subscribe({
+                next: (lezioni: Lesson[]) => {
+                  corso.lezioni = lezioni
+
+                  corso.lezioni.forEach((les: Lesson) => {
+                    if (les.id_aula) {
+                      this.aula_http.getAula(les.id_aula).subscribe({
+                        next: (aula: Aula) => {
+                          les.aula = aula;
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            })
           }
         })
       } else if (this.user_http.isTeacher() && id) {
@@ -56,5 +88,16 @@ export class MyCoursesComponent implements OnInit {
         })
       }
     }
+  }
+
+  openCourseModal(course: Course) {
+    const dialog = this.dialog.open(CourseModalComponent, {
+      data: {
+        isNew: course.id == -1 ? true : false,
+        course: course
+      }
+    });
+
+    dialog.afterClosed().subscribe(() => this.refresh());
   }
 }

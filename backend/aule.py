@@ -45,7 +45,7 @@ def get_aule():
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Errore nel reperire le aule: ' + str(e)}), 500
 
-    return jsonify(aule_schema.dump(aule.all())), 200
+    return jsonify(aule_schema.dump(aule)), 200
 
 
 @aule.route('/aule', methods=['POST'])

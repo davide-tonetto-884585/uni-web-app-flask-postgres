@@ -23,6 +23,12 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MessageDialogComponent } from './message-dialog/message-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MyCoursesComponent } from './my-courses/my-courses.component';
+import { CourseModalComponent } from './course-modal/course-modal.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -38,7 +44,8 @@ import { MyCoursesComponent } from './my-courses/my-courses.component';
     CoursesComponent,
     CourseDetailComponent,
     MessageDialogComponent,
-    MyCoursesComponent
+    MyCoursesComponent,
+    CourseModalComponent
   ],
   imports: [
     FormsModule,
@@ -49,6 +56,11 @@ import { MyCoursesComponent } from './my-courses/my-courses.component';
     BrowserAnimationsModule,
     MatTabsModule,
     MatDialogModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatExpansionModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService }

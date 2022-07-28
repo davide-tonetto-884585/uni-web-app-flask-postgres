@@ -1,7 +1,7 @@
 SET check_function_bodies = false;
 
-/* Enum 'enum_modalità_lezioni' */
-CREATE TYPE enum_modalità_lezioni AS ENUM('online', 'presenza', 'duale');
+/* Enum 'enum_modalita_lezioni' */
+CREATE TYPE enum_modalita_lezioni AS ENUM('online', 'presenza', 'duale');
 
 /* Enum 'enum_indirizzi_scuole' */
 CREATE TYPE enum_indirizzi_scuole AS ENUM
@@ -124,7 +124,7 @@ add constraint "check_orari" check ( orario_inizio < orario_fine )
 /* Table 'programmazione_corso' */
 CREATE TABLE programmazione_corso(
   id integer NOT NULL GENERATED ALWAYS AS IDENTITY,
-  modalità enum_modalità_lezioni NOT NULL,
+  modalita enum_modalita_lezioni NOT NULL,
   limite_iscrizioni integer,
   password_certificato varchar(25) NOT NULL,
   id_corso integer NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -402,7 +402,7 @@ begin
     from programmazione_corso pc
     where pc.id = new.id_programmazione_corso;
 
-    if prog_corso.modalità = 'duale' or prog_corso.modalità = 'presenza' and prog_corso.limite_iscrizioni is not null then
+    if prog_corso.modalita = 'duale' or prog_corso.modalita = 'presenza' and prog_corso.limite_iscrizioni is not null then
         if (select a.capienza from aule a where a.id = new.id_aula) < prog_corso.limite_iscrizioni then
             raise exception 'classroom too small for the registration limit of the course';
         end if;

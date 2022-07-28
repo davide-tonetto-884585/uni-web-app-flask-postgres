@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { CourseHttpService } from '../course-http.service';
 import { UserHttpService } from '../user-http.service';
+import { AulaHttpService } from '../aula-http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Course, ProgCourse, Lesson, Aula } from '../models';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
@@ -24,6 +25,7 @@ export class CourseDetailComponent implements OnInit {
     private course_http: CourseHttpService,
     private activatedRoute: ActivatedRoute,
     private user_http: UserHttpService,
+    private aula_http: AulaHttpService,
     public dialog: MatDialog
   ) { }
 
@@ -55,7 +57,7 @@ export class CourseDetailComponent implements OnInit {
 
               el.lezioni.forEach((les: Lesson) => {
                 if (les.id_aula) {
-                  this.course_http.getAula(les.id_aula).subscribe({
+                  this.aula_http.getAula(les.id_aula).subscribe({
                     next: (aula: Aula) => {
                       les.aula = aula;
                     }

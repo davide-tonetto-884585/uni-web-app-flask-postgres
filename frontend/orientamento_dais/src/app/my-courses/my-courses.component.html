@@ -1,11 +1,40 @@
 <app-top-bar></app-top-bar>
 <div class="container">
-    <h3 class="mt-3">My Courses</h3>
+    <div class="row">
+        <div class="col">
+            <h3 class="mt-3">My Courses</h3>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <button *ngIf="isTeacher()" type="button" class="btn btn-outline-danger m-3" (click)="openCourseModal({
+                id: -1,
+                titolo: '',
+                descrizione: '',
+                lingua: '',
+                immagine_copertina: '',
+                file_certificato: '',
+                abilitato: true
+            })">Create new course</button>
+        </div>
+    </div>
+
+    <p *ngIf="courses.length == 0">No courses found</p>
     <app-course-card *ngFor="let course of courses" [course]="course" [card]="false">
         <div>
-            <button *ngIf="isTeacher()" type="button" class="btn btn-outline-warning">Edit</button>
-            <button *ngIf="isTeacher()" type="button" class="btn btn-outline-danger">Delete</button>
-            <button *ngIf="isStudent()" type="button" class="btn btn-outline-danger">Unsubscribe</button>
+            <hr>
+            <div *ngIf="isStudent()">
+                <p><b>Lessons:</b></p>
+                <p *ngFor="let les of course.lezioni">
+                    {{ les.data | date:'EEEE, d MMMM, y' }}
+                    from {{ les.orario_inizio.substring(0, les.orario_inizio.length - 3) }}
+                    to {{ les.orario_fine.substring(0, les.orario_fine.length - 3) }}
+                    <a *ngIf="les.aula" href="#"> ({{ les.aula.nome }}) </a>
+                </p>
+            </div>
+
+            <button *ngIf="isTeacher()" type="button" class="btn btn-outline-warning"
+                (click)="openCourseModal(course)">Edit</button>
+            <button *ngIf="isStudent()" type="button" class="btn btn-outline-danger"
+                (click)="unsubscribeStudent(course.id, course.id_programmazione_corso, this.getId())">Unsubscribe</button>
         </div>
     </app-course-card>
 </div>

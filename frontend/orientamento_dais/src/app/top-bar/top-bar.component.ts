@@ -32,6 +32,7 @@ export class TopBarComponent implements OnInit {
 
   logout(): void {
     this.user_http.logout();
+    this.router.navigate(['/home']);
   }
 
   isStudent(): boolean {

@@ -46,7 +46,7 @@ def get_corsi():
     except Exception as e:
         return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento dei corsi: ' + str(e)}), 500
 
-    return jsonify(corsi_schemas.dump(corsi.all())), 200
+    return jsonify(corsi_schemas.dump(corsi)), 200
 
 
 @corsi.route('/corsi/<id>', methods=['GET'])
@@ -84,6 +84,7 @@ def add_corso(user):  # su tutte token_required bisogna mettere user (per reperi
     path_to_file_certificato = load_file('file_certificato')
 
     abilitato = request.form.get('abilitato') if not None else True
+    abilitato = 1 if abilitato else 0
 
     # Crea l'oggetto Corso da aggiungere
     new_corso = Corso(titolo=request.form.get('titolo'),
@@ -101,7 +102,7 @@ def add_corso(user):  # su tutte token_required bisogna mettere user (per reperi
         sessionDocenti.rollback()
         return jsonify({'error': True, 'errormessage': 'Errore inserimento corso' + str(e)}), 500
 
-    return jsonify({'error': False, 'errormessage': ''}), 200
+    return jsonify({'error': False, 'errormessage': '', 'id_corso': new_corso.id}), 200
 
 
 @corsi.route('/corsi/<id>', methods=['PUT'])
@@ -121,6 +122,7 @@ def modify_corso(user, id):
     descrizione = request.form.get('descrizione')
     lingua = request.form.get('lingua')
     abilitato = request.form.get('abilitato')
+    abilitato = 1 if abilitato else 0
 
     corso.immagine_copertina = load_file('immagine_copertina')
     corso.file_certificato = load_file('file_certificato')
@@ -162,12 +164,12 @@ def get_docenti_corsi(id):
 
 
 @corsi.route('/corsi/<id>/docenti', methods=['POST'])
-@token_required(restrict_to_roles=['amministratore'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])
 def add_docente_corso(user, id):
     # TODO: CAPIRE SE è GIà UN ARRAY?   (Assumiamo che lo sia)
     # Crea un set per eliminare i duplicati
-    id_docenti_to_add = set(request.form.get('id_docenti'))
-
+    id_docenti_to_add = set(request.form.get('id_docenti[]'))
+    
     try:
         # Aggiunge ogni docente nel set
         for id_docente in id_docenti_to_add:
