@@ -1,0 +1,29 @@
+<mat-expansion-panel class="mt-2" (opened)="loadReplies()">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            {{ question?.nome + ' ' + question?.cognome }}
+        </mat-panel-title>
+        <mat-panel-description>
+            {{ question?.timestamp | date:'EEEE, d MMMM y' }} - {{ question?.total_likes + ' likes' }} {{ question?.chiusa ? '- closed' : '' }}
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+    <p class="mb-1"><b>Question:</b></p>
+    <p>{{ question?.testo }}</p>
+    <p *ngIf="replies.length > 0" class="mb-1"><b>Answers:</b></p>
+    <p *ngFor="let reply of replies">{{ reply.nome + ' ' + reply.cognome + ': ' + reply.testo }}</p>
+    <div class="text-center">
+        <button *ngIf="canAnswer() && !question?.chiusa" (click)="chiudiDomanda()" type="button" class="btn btn-warning m-1">
+            Close question
+        </button>
+        <button *ngIf="isLogged() && !alreadyLiked()" (click)="addLikeDomanda()" type="button" class="btn btn-danger m-1">
+            Add like
+        </button>
+    </div>
+    <div *ngIf="canAnswer()" class="row mt-2">
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>Reply</mat-label>
+            <textarea matInput placeholder="Text..." name="answare_text" [(ngModel)]="answer_text"></textarea>
+        </mat-form-field>
+        <button type="button" class="btn btn-outline-danger" (click)="postAnsware()">Post</button>
+    </div>
+</mat-expansion-panel>

@@ -104,22 +104,21 @@
                         </mat-expansion-panel-header>
                         <mat-form-field appearance="fill" class="fw mb-1">
                             <mat-label>Choose a date</mat-label>
-                            <input matInput [matDatepicker]="picker" placeholder="Choose a date..." [value]="les.data"
-                                [name]="'data' + il + '_' + i" [(ngModel)]="les.data" (change)="adjustDate(i, il)">
-                            <mat-hint>MM/DD/YYYY</mat-hint>
+                            <input matInput [matDatepicker]="picker" placeholder="Choose a date..." value="{{ les.data }}"
+                                [name]="'data' + il + '_' + i" (dateChange)="adjustDate(les, $event)">
                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
 
                         <mat-form-field class="fw" appearance="fill">
                             <mat-label>Start time</mat-label>
-                            <input matInput placeholder="Time (format 24h)" [value]="les.orario_inizio"
+                            <input matInput placeholder="00:00:00 (format 24h)" [value]="les.orario_inizio"
                                 [name]="'orario_inizio' + il + '_' + i" [(ngModel)]="les.orario_inizio">
                         </mat-form-field>
 
                         <mat-form-field class="fw" appearance="fill">
                             <mat-label>End time</mat-label>
-                            <input matInput placeholder="Time (format 24h)" [value]="les.orario_fine"
+                            <input matInput placeholder="00:00:00 (format 24h)" [value]="les.orario_fine"
                                 [name]="'orario_fine' + il + '_' + i" [(ngModel)]="les.orario_fine">
                         </mat-form-field>
 

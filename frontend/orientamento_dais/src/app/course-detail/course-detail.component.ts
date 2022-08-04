@@ -5,9 +5,11 @@ import { CourseHttpService } from '../course-http.service';
 import { UserHttpService } from '../user-http.service';
 import { AulaHttpService } from '../aula-http.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Course, ProgCourse, Lesson, Aula } from '../models';
+import { Course, ProgCourse, Lesson, Aula, Question } from '../models';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
 import { BACKEND_URL } from '../globals';
+import { QuestionsHttpService } from '../questions-http.service';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-course-detail',
@@ -19,13 +21,24 @@ export class CourseDetailComponent implements OnInit {
   course: Course | undefined;
   docenti: any[] = [];
   prog_corso: ProgCourse[] = [];
+  questions: Question[] = [];
   BACKEND_URL: string = BACKEND_URL;
+
+  question_text: string = '';
+  search_text: string | null = '';
+  chiusa: string | null = null;
+  order_by: string = 'like';
+
+  limit: number = 10;
+  skip: number = 0;
+  count: number = 0;  
 
   constructor(
     private course_http: CourseHttpService,
     private activatedRoute: ActivatedRoute,
     private user_http: UserHttpService,
     private aula_http: AulaHttpService,
+    private question_http: QuestionsHttpService,
     public dialog: MatDialog
   ) { }
 
@@ -46,7 +59,18 @@ export class CourseDetailComponent implements OnInit {
       }
     });
 
-    this.course_http.getProgrammazioniCorso(this.course_id).subscribe({
+    this.loadProgs(true);
+
+    this.question_http.getDomandeCorso(this.course_id, null, null, this.skip, this.limit, 'like').subscribe({
+      next: (res) => {
+        this.questions = res.domande;
+        this.count = res.count;
+      }
+    })
+  }
+
+  loadProgs(in_corso: boolean): void {
+    this.course_http.getProgrammazioniCorso(this.course_id, in_corso).subscribe({
       next: (prog_corso: ProgCourse[]) => {
         this.prog_corso = prog_corso;
 
@@ -115,9 +139,52 @@ export class CourseDetailComponent implements OnInit {
     }
   }
 
-  isAlreadyInscripted(): boolean {
-    //TODO: completare
+  filter(): void {
+    if (this.search_text == '') this.search_text = null;
 
-    return false;
+    let chiusa = null;
+    if (this.chiusa == '1') chiusa = true;
+    else if (this.chiusa == '0') chiusa = false;
+
+    this.question_http.getDomandeCorso(this.course_id, this.search_text, chiusa, this.skip, this.limit, this.order_by).subscribe({
+      next: (res) => {
+        this.questions = res.domande;
+        this.count = res.count;
+      }
+    })
+  }
+
+  postQuestion(): void {
+    if (this.question_text == '') return;
+    
+    this.question_http.addDomandaCorso({
+      id_corso: this.course_id, 
+      id_utente: this.user_http.getId(),
+      testo: this.question_text,
+    }).subscribe({
+      next: (res) => {
+        this.question_text = '';
+        this.filter();
+      },
+      error: (err) => {
+        this.dialog.open(MessageDialogComponent, {
+          data: {
+            text: err,
+            title: 'Failed!',
+            error: true
+          },
+        });
+      }
+    })
+  }
+
+  onPageChange(pageEvent: PageEvent): void {
+    this.limit = pageEvent.pageSize
+    this.skip = pageEvent.pageIndex * this.limit;
+    this.filter();
+  }
+
+  isProgInCorso(prog: ProgCourse): boolean {
+    return prog.lezioni != undefined && prog.lezioni.length > 0 && prog.lezioni.every(les => new Date(les.data) >= new Date());
   }
 }

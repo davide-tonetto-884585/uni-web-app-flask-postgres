@@ -8,7 +8,8 @@ from .marshmallow_models import ScuolaSchema
 
 main = Blueprint('main', __name__)
 
-preLoginSession = PreLoginSession()
+# preLoginSession = PreLoginSession()
+
 scuola_schemas = ScuolaSchema(many=True) #istanzia un oggetto che è scuola_schemas che serve a convertire gli oggetti Scuola in JSON
 
 
@@ -21,25 +22,27 @@ def index():
 # Accedere da utenti loggati oppure no?  Quali ruoli possono accedervi (da loggati)?
 @main.route('/scuole', methods=['GET'])
 def get_scuole():
-    # Campi del form
-    name = request.args.get('name')
-    skip = request.args.get('skip')
-    limit = request.args.get('limit')
-    
-    try:
-        # Query per reperire tutte le scuole
-        scuole = preLoginSession.query(Scuola).order_by(Scuola.denominazione)
+    with PreLoginSession() as preLoginSession, preLoginSession.begin():
 
-        # Filtri per specializzare la ricerca delle scuole o la loro visualizzazione
-        if name is not None:
-            scuole = scuole.filter(Scuola.denominazione.like('%' + name + '%'))
-        if skip is not None:
-            scuole = scuole.offset(skip)
-        if limit is not None:
-            scuole = scuole.limit(limit)
+        # Campi del form
+        name = request.args.get('name')
+        skip = request.args.get('skip')
+        limit = request.args.get('limit')
+        
+        try:
+            # Query per reperire tutte le scuole
+            scuole = preLoginSession.query(Scuola).order_by(Scuola.denominazione)
 
-        scuole = scuole.all()
-    except Exception as e:
-        return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle scuole: ' + str(e)}), 500
+            # Filtri per specializzare la ricerca delle scuole o la loro visualizzazione
+            if name is not None:
+                scuole = scuole.filter(Scuola.denominazione.like('%' + name + '%'))
+            if skip is not None:
+                scuole = scuole.offset(skip)
+            if limit is not None:
+                scuole = scuole.limit(limit)
 
-    return jsonify(scuola_schemas.dump(scuole)), 200
+            scuole = scuole.all()
+        except Exception as e:
+            return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle scuole: ' + str(e)}), 500
+
+        return jsonify(scuola_schemas.dump(scuole)), 200

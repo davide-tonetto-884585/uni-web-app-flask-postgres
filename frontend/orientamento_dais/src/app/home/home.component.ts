@@ -28,9 +28,9 @@ export class HomeComponent implements OnInit {
 
   getCourses(): void {
     this.course_http.getCourses(this.limit, this.skip).subscribe({
-      next: (courses: Course[]) => {
+      next: (res: any) => {
         this.skip += this.limit;
-        this.courses = courses;
+        this.courses = res.corsi;
       }
     })
   }

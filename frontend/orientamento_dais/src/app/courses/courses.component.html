@@ -6,53 +6,30 @@
             <form class="mt-4" id="searchForm">
                 <div class="input-group">
                     <input class="form-control" type="search" placeholder="Search title" aria-label="Search"
-                        aria-describedby="button-search">
-                    <button class="btn btn-outline-danger" type="button" id="button-search"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
+                        aria-describedby="button-search" name="search_title" [(ngModel)]="search_title">
+                    <button title="Search" class="btn btn-outline-danger" type="button" id="button-search"
+                        (click)="filter()"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
-                <h5 class="mt-2">Lecture number:</h5>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        1
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        2
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        3
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        More...
-                    </label>
-                </div>
+                <h5 class="mt-2">Scheduling:</h5>
+                <mat-radio-group aria-label="Select an option" name="scheduled" [(ngModel)]="scheduled">
+                    <mat-radio-button value="1">Scheduled</mat-radio-button><br>
+                    <mat-radio-button (value)="null">All</mat-radio-button>
+                </mat-radio-group>
                 <h5 class="mt-2">Language:</h5>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        English
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        Italian
-                    </label>
-                </div>
+                <mat-radio-group aria-label="Select an option" name="language" [(ngModel)]="language">
+                    <mat-radio-button value="eng">English</mat-radio-button><br>
+                    <mat-radio-button value="it">Italian</mat-radio-button><br>
+                    <mat-radio-button value="fren">French</mat-radio-button><br>
+                    <mat-radio-button (value)="null">All</mat-radio-button><br>
+                </mat-radio-group>
+                <button type="button" class="btn btn-outline-danger mt-3 mb-3" (click)="filter()">Filter</button>
             </form>
         </div>
 
         <div id="courses" class="col-sm-8">
             <h3 class="mt-3">Courses</h3>
+            <mat-paginator [length]="count" [pageSize]="limit" [pageSizeOptions]="[5, 10, 25]" (page)="onPageChange($event)">
+            </mat-paginator>
             <app-course-card *ngFor="let course of courses" [course]="course" [card]="false"></app-course-card>
         </div>
     </div>

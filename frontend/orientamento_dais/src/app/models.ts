@@ -62,3 +62,16 @@ export interface Aula {
     campus: string;
     capienza: string;
 }
+
+export interface Question {
+    id: number;
+    id_utente: number;
+    id_corso: number;
+    testo: string;
+    chiusa: boolean;
+    id_domanda_corso: number | null;
+    timestamp: string;
+    nome: string | null;
+    cognome: string | null;
+    total_likes: number | null;
+}

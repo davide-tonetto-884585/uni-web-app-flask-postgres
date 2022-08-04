@@ -29,6 +29,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { QuestionItemComponent } from './question-item/question-item.component';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -45,7 +48,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     CourseDetailComponent,
     MessageDialogComponent,
     MyCoursesComponent,
-    CourseModalComponent
+    CourseModalComponent,
+    QuestionItemComponent
   ],
   imports: [
     FormsModule,
@@ -60,7 +64,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatRadioModule,
+    MatPaginatorModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService }

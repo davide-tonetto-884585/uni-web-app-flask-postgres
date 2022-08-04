@@ -21,7 +21,7 @@
     <br>
 </div>
 <div class="container">
-    <mat-tab-group>
+    <mat-tab-group mat-align-tabs="center">
         <mat-tab label="Description">
             <br>
             <div class="container">
@@ -30,7 +30,10 @@
         </mat-tab>
         <mat-tab label="Scheduling">
             <br>
-            <div *ngIf="this.prog_corso && this.prog_corso.length > 0" class="container">
+            <div class="container">
+                <div class="text-center mb-2">
+                    <button type="button" class="btn btn-danger" (click)="loadProgs(false)">Show past schedules</button>
+                </div>
                 <div *ngFor="let prog of this.prog_corso">
                     <p><strong>Modality:</strong> {{ prog.modalita }} </p>
                     <p *ngIf="prog.limite_iscrizioni"><strong>Limit:</strong> {{ prog.limite_iscrizioni }} students</p>
@@ -38,7 +41,7 @@
                     <ol>
                         <li *ngFor="let les of prog.lezioni">
                             <p>
-                                {{ les.data | date:'EEEE, d MMMM, y' }}
+                                {{ les.data | date:'EEEE, d MMMM y' }}
                                 from {{ les.orario_inizio.substring(0, les.orario_inizio.length - 3) }}
                                 to {{ les.orario_fine.substring(0, les.orario_fine.length - 3) }}
                                 <a *ngIf="les.aula" href="#"> ({{ les.aula.nome }}) </a>
@@ -46,7 +49,7 @@
                         </li>
                     </ol>
                     <div *ngIf="!prog.limite_iscrizioni || prog.iscritti && prog.iscritti.length < prog.limite_iscrizioni
-                               ">
+                               && isProgInCorso(prog)">
                         <button *ngIf="this.isLogged() && this.isStudent()" type="button" class="btn btn-danger"
                             (click)="enrollStudent(prog.id)">Enroll</button>
                         <button *ngIf="!this.isLogged()" type="button" class="btn btn-danger" routerLink="/login">
@@ -66,8 +69,60 @@
         </mat-tab>
         <mat-tab label="Q&A">
             <br>
-            <div class="container">
-                domande...
+            <div class="container mb-3">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h3 class="mt-3">Filter by</h3>
+                        <form class="mt-4" id="searchForm">
+                            <div class="input-group">
+                                <input class="form-control" type="search" placeholder="Search text..."
+                                    aria-label="Search" aria-describedby="button-search" name="testo"
+                                    [(ngModel)]="search_text">
+                                <button title="Search" class="btn btn-outline-danger" type="button" id="button-search"
+                                    (click)="filter()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            </div>
+                            <h5 class="mt-2">Question status:</h5>
+                            <mat-radio-group aria-label="Select an option" name="status" [(ngModel)]="chiusa">
+                                <mat-radio-button value="0">Opened</mat-radio-button><br>
+                                <mat-radio-button value="1">Closed</mat-radio-button><br>
+                                <mat-radio-button (value)="null">All</mat-radio-button>
+                            </mat-radio-group>
+                            <h5 class="mt-2">Order by:</h5>
+                            <mat-radio-group aria-label="Select an option" name="order_by" [(ngModel)]="order_by">
+                                <mat-radio-button value="like">Like</mat-radio-button><br>
+                                <mat-radio-button value="time">Date</mat-radio-button><br>
+                            </mat-radio-group>
+                            <button type="button" class="btn btn-outline-danger mt-3 mb-3"
+                                (click)="filter()">Filter</button>
+                        </form>
+
+                        <div *ngIf="isLogged()">
+                            <h3 class="mt-3">New question</h3>
+                            <form class="mt-4" id="searchForm">
+                                <mat-form-field class="w-100" appearance="fill">
+                                    <mat-label>Text...</mat-label>
+                                    <textarea matInput placeholder="Text..." name="answare_text"
+                                        [(ngModel)]="question_text"></textarea>
+                                </mat-form-field>
+                                <button type="button" class="btn btn-outline-danger mb-3"
+                                    (click)="postQuestion()">Post</button>
+                            </form>
+                        </div>
+                        <button *ngIf="!this.isLogged()" type="button" class="btn btn-danger" routerLink="/login">
+                            Login to post a question
+                        </button>
+                    </div>
+
+                    <div id="courses" class="col-sm-8">
+                        <h3 class="mt-3">Questions</h3>
+                        <mat-paginator [length]="count" [pageSize]="limit" [pageSizeOptions]="[5, 10, 25]"
+                            (page)="onPageChange($event)">
+                        </mat-paginator>
+                        <app-question-item *ngFor="let question of questions" [question]="question"
+                            [docenti_corso]="docenti">
+                        </app-question-item>
+                    </div>
+                </div>
             </div>
         </mat-tab>
     </mat-tab-group>

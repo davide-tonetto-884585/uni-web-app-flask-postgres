@@ -40,10 +40,18 @@ export class CourseHttpService {
     }
   }
 
-  getCourses(limit = 10, skip = 0): Observable<Course[]> {
+  getCourses(limit = 10, skip = 0, title: string | null = null, lingua: string | null = null, scheduled: boolean | null = null): Observable<Course[]> {
+    let params = {
+      limit: limit,
+      skip: skip, 
+      title: title,
+      lingua: lingua,
+      scheduled: scheduled
+    }
+    
     return this.http.get<Course[]>(
       `${BACKEND_URL}/corsi`,
-      this.createOptions({ limit: limit, skip: skip })
+      this.createOptions(Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null)))
     ).pipe(catchError(this.handleError));
   }
 
@@ -72,9 +80,10 @@ export class CourseHttpService {
     ).pipe(catchError(this.handleError));
   }
 
-  getProgrammazioniCorso(id: number): Observable<ProgCourse[]> {
+  getProgrammazioniCorso(id_corso: number, in_corso: boolean | null): Observable<ProgCourse[]> {
     return this.http.get<ProgCourse[]>(
-      `${BACKEND_URL}/corsi/${id}/programmazione_corso`
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso`,
+      this.createOptions({ in_corso: in_corso })
     ).pipe(catchError(this.handleError));
   }
 
@@ -172,7 +181,6 @@ export class CourseHttpService {
   }
 
   addLezioneProg(id_corso: number, id_prog_corso: number, lezione: Lesson | any): Observable<any> {
-    console.log(lezione)
     const form_data = new FormData();
     Object.keys(lezione).forEach((key) => {
       form_data.append(key, lezione[key]);
@@ -186,7 +194,6 @@ export class CourseHttpService {
   }
 
   updateLezioneProg(id_corso: number, id_prog_corso: number, lezione: Lesson | any): Observable<any> {
-    console.log(lezione)
     const form_data = new FormData();
     Object.keys(lezione).forEach((key) => {
       form_data.append(key, lezione[key]);

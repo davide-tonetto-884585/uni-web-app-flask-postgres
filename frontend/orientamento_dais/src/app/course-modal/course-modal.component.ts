@@ -7,11 +7,28 @@ import { Course, ProgCourse, Lesson, Aula } from '../models';
 import { Router } from '@angular/router';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
 import { UserHttpService } from '../user-http.service';
+import { MatDateFormats, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS } from '@angular/material/core';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+
+export const GRI_DATE_FORMATS: MatDateFormats = {
+  ...MAT_NATIVE_DATE_FORMATS,
+  display: {
+    ...MAT_NATIVE_DATE_FORMATS.display,
+    dateInput: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    } as Intl.DateTimeFormatOptions,
+  }
+};
 
 @Component({
   selector: 'app-course-modal',
   templateUrl: './course-modal.component.html',
-  styleUrls: ['./course-modal.component.css']
+  styleUrls: ['./course-modal.component.css'],
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: GRI_DATE_FORMATS },
+  ]
 })
 export class CourseModalComponent implements OnInit {
   progs: ProgCourse[] = [];
@@ -35,7 +52,7 @@ export class CourseModalComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.course) {
-      this.course_http.getProgrammazioniCorso(this.course.id).subscribe({
+      this.course_http.getProgrammazioniCorso(this.course.id, true).subscribe({
         next: (prog_corso: ProgCourse[]) => {
           this.progs = prog_corso;
 
@@ -171,6 +188,8 @@ export class CourseModalComponent implements OnInit {
               next: (d) => {
                 if (prog.lezioni)
                   this.addLezioni(this.course.id, prog.id, prog.lezioni);
+                else
+                  this.dialog.closeAll()
               },
               error: (err) => {
                 this.dialog.open(MessageDialogComponent, {
@@ -187,6 +206,8 @@ export class CourseModalComponent implements OnInit {
               next: (d) => {
                 if (prog.lezioni)
                   this.addLezioni(this.course.id, d.id, prog.lezioni);
+                else
+                  this.dialog.closeAll()
               },
               error: (err) => {
                 this.dialog.open(MessageDialogComponent, {
@@ -218,7 +239,7 @@ export class CourseModalComponent implements OnInit {
       if (l.id == -1) {
         this.course_http.addLezioneProg(id_corso, id_prog, l).subscribe({
           next: (d) => {
-            this.dialog.closeAll();
+            this.dialog.closeAll()
           },
           error: (err) => {
             this.dialog.open(MessageDialogComponent, {
@@ -233,7 +254,7 @@ export class CourseModalComponent implements OnInit {
       } else {
         this.course_http.updateLezioneProg(id_corso, id_prog, l).subscribe({
           next: (d) => {
-            this.dialog.closeAll();
+            this.dialog.closeAll()
           },
           error: (err) => {
             this.dialog.open(MessageDialogComponent, {
@@ -265,7 +286,26 @@ export class CourseModalComponent implements OnInit {
     }
   }
 
-  adjustDate(i: number, il: number): void {
-    
+  private padTo2Digits(num: number): string {
+    return num.toString().padStart(2, '0');
+  }
+
+  formatDate(date: Date): string {
+    return [
+      date.getFullYear(),
+      this.padTo2Digits(date.getMonth() + 1),
+      this.padTo2Digits(date.getDate()),
+    ].join('-');
+  }
+
+  convertDate(date: string): Date {
+    const [month, day, year] = date.split('/');
+    console.log(new Date(+year, +month - 1, +day))
+    return new Date(+year, +month - 1, +day);
+  }
+
+  adjustDate(lezione: Lesson, event: MatDatepickerInputEvent<Date>): void {
+    if (event.value)
+      lezione.data = this.formatDate(event.value);
   }
 }
