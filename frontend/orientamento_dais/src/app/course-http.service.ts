@@ -40,16 +40,17 @@ export class CourseHttpService {
     }
   }
 
-  getCourses(limit = 10, skip = 0, title: string | null = null, lingua: string | null = null, scheduled: boolean | null = null): Observable<Course[]> {
+  getCourses(limit = 10, skip = 0, title: string | null = null, lingua: string | null = null, scheduled: boolean | null = null)
+    : Observable<{ corsi: Course[], count: number }> {
     let params = {
       limit: limit,
-      skip: skip, 
+      skip: skip,
       title: title,
       lingua: lingua,
       scheduled: scheduled
     }
-    
-    return this.http.get<Course[]>(
+
+    return this.http.get<{ corsi: Course[], count: number }>(
       `${BACKEND_URL}/corsi`,
       this.createOptions(Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null)))
     ).pipe(catchError(this.handleError));
@@ -80,10 +81,10 @@ export class CourseHttpService {
     ).pipe(catchError(this.handleError));
   }
 
-  getProgrammazioniCorso(id_corso: number, in_corso: boolean | null): Observable<ProgCourse[]> {
+  getProgrammazioniCorso(id_corso: number, in_corso: boolean | null = null): Observable<ProgCourse[]> {
     return this.http.get<ProgCourse[]>(
       `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso`,
-      this.createOptions({ in_corso: in_corso })
+      this.createOptions(Object.fromEntries(Object.entries({ in_corso: in_corso }).filter(([_, v]) => v != null)))
     ).pipe(catchError(this.handleError));
   }
 
@@ -132,7 +133,8 @@ export class CourseHttpService {
   updateCourse(course: Course | any): Observable<any> {
     const form_data = new FormData();
     Object.keys(course).forEach((key) => {
-      form_data.append(key, course[key]);
+      if (course[key] != null)
+        form_data.append(key, course[key]);
     });
 
     return this.http.put(BACKEND_URL + '/corsi/' + course.id, form_data, this.createOptions()).pipe(
@@ -177,7 +179,7 @@ export class CourseHttpService {
       `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${prog_corso.id}`,
       form_data,
       this.createOptions()
-    ).pipe(catchError(this.handleError));    
+    ).pipe(catchError(this.handleError));
   }
 
   addLezioneProg(id_corso: number, id_prog_corso: number, lezione: Lesson | any): Observable<any> {
@@ -204,5 +206,17 @@ export class CourseHttpService {
       form_data,
       this.createOptions()
     ).pipe(catchError(this.handleError));
+  }
+
+  addPresenzaCorso(id_corso: number, id_prog_corso: number, id_lezione: number, id_studente: number, passcode: string): Observable<any> {
+    const form_data = new FormData();
+    form_data.append('id_studente', id_studente.toString())
+    form_data.append('codice_verifica_presenza', passcode)
+
+    return this.http.post(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/lezioni/${id_lezione}/presenze`,
+      form_data,
+      this.createOptions()
+    )
   }
 }

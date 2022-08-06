@@ -32,6 +32,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { QuestionItemComponent } from './question-item/question-item.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { CourseScheduleItemComponent } from './course-schedule-item/course-schedule-item.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { QRCodeModule } from 'angular2-qrcode';
 
 @NgModule({
   declarations: [
@@ -49,7 +52,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MessageDialogComponent,
     MyCoursesComponent,
     CourseModalComponent,
-    QuestionItemComponent
+    QuestionItemComponent,
+    CourseScheduleItemComponent,
   ],
   imports: [
     FormsModule,
@@ -66,7 +70,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatNativeDateModule,
     MatExpansionModule,
     MatRadioModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatTooltipModule,
+    QRCodeModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService }

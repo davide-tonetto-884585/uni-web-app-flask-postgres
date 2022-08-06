@@ -58,12 +58,25 @@
             Birthdate is required
         </div>
 
+        <div class="mb-3">
+            <label for="genderSelect" class="form-label">Gender</label>
+            <select id="genderSelect" class="form-select" required name="gender" #gender="ngModel" [(ngModel)]="user.sesso">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option (value)="null">Other</option>
+            </select>
+        </div>
+
+        <div [hidden]="gender.valid || gender.pristine" class="alert alert-danger">
+            Gender is required
+        </div>
+
         <div *ngIf="errmessage" class="alert alert-danger" role="alert">
             Login error: {{errmessage}}
         </div>
 
         <button type="button" class="btn btn-lg btn-primary btn-block"
-            [disabled]="!mail.valid || !password.valid || !nome.valid || !cognome.valid || !data_nascita.valid"
+            [disabled]="!mail.valid || !password.valid || !nome.valid || !cognome.valid || !data_nascita.valid || !gender.valid"
             (click)="signup();">
             Sign up
         </button>

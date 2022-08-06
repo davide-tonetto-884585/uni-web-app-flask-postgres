@@ -11,7 +11,7 @@
                         <p>Ca'Foscari</p>
                     </blockquote>
                     <figcaption class="blockquote-footer">
-                        <cite>Orientamento</cite>
+                        <cite>Educational guidance</cite>
                     </figcaption>
                 </figure>
             </div>
@@ -38,7 +38,7 @@
                         <div class="input-group">
                             <input class="form-control" type="search" placeholder="Search" aria-label="Search"
                                 aria-describedby="button-search">
-                            <button class="btn btn-outline-danger" type="button" id="button-search"><i
+                            <button title="Search" class="btn btn-outline-danger" type="button" id="button-search"><i
                                     class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
@@ -53,6 +53,7 @@
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li *ngIf="isTeacher()"><a class="dropdown-item" routerLink="/myCourses">My courses</a></li>
                         <li *ngIf="isStudent()"><a class="dropdown-item" routerLink="/myCourses">My inscriptions</a></li>
+                        <li *ngIf="isAdmin()"><a class="dropdown-item">Add new teacher</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

@@ -1,5 +1,11 @@
 <app-top-bar></app-top-bar>
 <div class="container-fluid">
+    <div *ngIf="error != undefined && error == true" class="alert alert-danger text-center mt-5" role="alert">
+        <p>{{ message }}</p>
+    </div>
+    <div *ngIf="error != undefined && error == false" class="alert alert-success text-center" role="alert">
+        <p>{{ message }}</p>
+    </div>
     <div>
         <div class="bg-image"></div>
 
@@ -9,6 +15,13 @@
         </div>
     </div>
 
+    <div class="container text-center mt-5">
+        <h2>About this site</h2>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro unde quae sapiente consectetur tempore non
+            illum veniam sed deleniti inventore dolorem dolore, voluptatibus dolor aliquid nostrum doloribus commodi
+            molestias eos?</p>
+    </div>
+
     <app-carousel [title]="'Some courses...'" [exploreLink]="'/courses'">
         <app-carousel-item [active]="i == 0 ? true : false" *ngFor="let i of counter(courses.length / 3 | ceil)">
             <app-course-card *ngIf="courses[i * 3]" [course]="courses[i * 3]"></app-course-card>
@@ -16,5 +29,16 @@
             <app-course-card *ngIf="courses[i * 3 + 2]" [course]="courses[i * 3 + 2]"></app-course-card>
         </app-carousel-item>
     </app-carousel>
-    
+
+    <app-carousel [title]="'Courses that will start shortly'" [exploreLink]="'/courses'">
+        <app-carousel-item [active]="i == 0 ? true : false"
+            *ngFor="let i of counter(scheduled_courses.length / 3 | ceil)">
+            <app-course-card *ngIf="scheduled_courses[i * 3]" [course]="scheduled_courses[i * 3]"></app-course-card>
+            <app-course-card *ngIf="scheduled_courses[i * 3 + 1]" [course]="scheduled_courses[i * 3 + 1]">
+            </app-course-card>
+            <app-course-card *ngIf="scheduled_courses[i * 3 + 2]" [course]="scheduled_courses[i * 3 + 2]">
+            </app-course-card>
+        </app-carousel-item>
+    </app-carousel>
+
 </div>

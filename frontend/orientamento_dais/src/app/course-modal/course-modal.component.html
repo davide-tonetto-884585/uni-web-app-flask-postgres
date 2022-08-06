@@ -78,7 +78,7 @@
 
                 <mat-form-field class="fw" appearance="fill">
                     <mat-label>Certficate password</mat-label>
-                    <input matInput type="password" placeholder="Certficate password..."
+                    <input matInput type="text" placeholder="Certficate password..."
                         [value]="prog.password_certificato" [name]="course.id + 'password_certificato' + i"
                         [(ngModel)]="prog.password_certificato">
                 </mat-form-field>
@@ -130,14 +130,14 @@
 
                         <mat-form-field class="fw" appearance="fill">
                             <mat-label>Online classroom passcode</mat-label>
-                            <input matInput type="password" placeholder="Passcode..."
+                            <input matInput type="text" placeholder="Passcode..."
                                 [value]="les.passcode_stanza_virtuale" [name]="'passcode_stanza_virtuale' + il + '_' + i"
                                 [(ngModel)]="les.passcode_stanza_virtuale">
                         </mat-form-field>
 
                         <mat-form-field class="fw" appearance="fill">
                             <mat-label>Attendance validation passcode</mat-label>
-                            <input matInput type="password" placeholder="Passcode..."
+                            <input matInput type="text" placeholder="Passcode..."
                                 [value]="les.codice_verifica_presenza" [name]="'codice_verifica_presenza' + il + '_' + i"
                                 [(ngModel)]="les.codice_verifica_presenza">
                         </mat-form-field>

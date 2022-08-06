@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { CourseHttpService } from '../course-http.service';
 import { UserHttpService } from '../user-http.service';
-import { AulaHttpService } from '../aula-http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Course, ProgCourse, Lesson, Aula, Question } from '../models';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
@@ -37,7 +36,6 @@ export class CourseDetailComponent implements OnInit {
     private course_http: CourseHttpService,
     private activatedRoute: ActivatedRoute,
     private user_http: UserHttpService,
-    private aula_http: AulaHttpService,
     private question_http: QuestionsHttpService,
     public dialog: MatDialog
   ) { }
@@ -69,34 +67,10 @@ export class CourseDetailComponent implements OnInit {
     })
   }
 
-  loadProgs(in_corso: boolean): void {
+  loadProgs(in_corso: boolean | null): void {
     this.course_http.getProgrammazioniCorso(this.course_id, in_corso).subscribe({
       next: (prog_corso: ProgCourse[]) => {
         this.prog_corso = prog_corso;
-
-        this.prog_corso.forEach((el: ProgCourse) => {
-          this.course_http.getLezioniProgCorso(this.course_id, el.id).subscribe({
-            next: (lezioni: Lesson[]) => {
-              el.lezioni = lezioni;
-
-              el.lezioni.forEach((les: Lesson) => {
-                if (les.id_aula) {
-                  this.aula_http.getAula(les.id_aula).subscribe({
-                    next: (aula: Aula) => {
-                      les.aula = aula;
-                    }
-                  });
-                }
-              });
-            }
-          });
-
-          this.course_http.getIscrittiProgCorso(this.course_id, el.id).subscribe({
-            next: (iscritti) => {
-              el.iscritti = iscritti;
-            }
-          })
-        });
       }
     });
   }
@@ -111,32 +85,6 @@ export class CourseDetailComponent implements OnInit {
 
   isStudent(): boolean {
     return this.user_http.isStudent();
-  }
-
-  enrollStudent(id_prog_corso: number) {
-    let id_stud = this.user_http.getId()
-    if (id_stud) {
-      this.course_http.enrollStudent(this.course_id, id_prog_corso, id_stud).subscribe({
-        next: (d) => {
-          this.dialog.open(MessageDialogComponent, {
-            data: {
-              text: 'Successful registration',
-              title: 'Done!',
-              error: false
-            },
-          });
-        },
-        error: (err) => {
-          this.dialog.open(MessageDialogComponent, {
-            data: {
-              text: err,
-              title: 'Failed!',
-              error: true
-            },
-          });
-        }
-      })
-    }
   }
 
   filter(): void {
@@ -182,9 +130,5 @@ export class CourseDetailComponent implements OnInit {
     this.limit = pageEvent.pageSize
     this.skip = pageEvent.pageIndex * this.limit;
     this.filter();
-  }
-
-  isProgInCorso(prog: ProgCourse): boolean {
-    return prog.lezioni != undefined && prog.lezioni.length > 0 && prog.lezioni.every(les => new Date(les.data) >= new Date());
   }
 }

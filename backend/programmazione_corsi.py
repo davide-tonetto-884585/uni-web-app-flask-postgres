@@ -1,7 +1,7 @@
 from datetime import date
 import json
 from flask import Blueprint, jsonify, request
-from sqlalchemy import Date, Time, cast
+from sqlalchemy import Date, Time, cast, or_
 
 from . import PreLoginSession, SessionDocenti, SessionAmministratori, SessionStudenti
 from .marshmallow_models import ProgrammazioneCorsoSchema, ProgrammazioneLezioniSchema, CorsoSchema
@@ -126,6 +126,7 @@ def get_progs_corso(id):
         modality = request.args.get('modalita')
         subscriptions_limit = request.args.get('limite_iscrizioni')
         current = request.args.get('in_corso')
+        print(current)
 
         try:
             # Query per recuperare tutte le programmazioni del corso
@@ -139,10 +140,15 @@ def get_progs_corso(id):
             if subscriptions_limit is not None:
                 progs_corso = progs_corso.filter(
                     ProgrammazioneCorso.limite_iscrizioni == subscriptions_limit)
-            if current is not None and current != 'false':
-                progs_corso = progs_corso.join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_programmazione_corso == ProgrammazioneCorso.id).\
-                    filter(ProgrammazioneLezioni.data >= date.today()).\
-                    group_by(ProgrammazioneCorso.id)
+            if current is not None:
+                if current == 'false':
+                    progs_corso = progs_corso.outerjoin(ProgrammazioneLezioni, ProgrammazioneCorso.id == ProgrammazioneLezioni.id_programmazione_corso).\
+                        filter((ProgrammazioneLezioni.data >= date.today()) | (ProgrammazioneLezioni.data == None)).\
+                        group_by(ProgrammazioneCorso.id)
+                else:
+                    progs_corso = progs_corso.join(ProgrammazioneLezioni, ProgrammazioneCorso.id == ProgrammazioneLezioni.id_programmazione_corso).\
+                        filter(ProgrammazioneLezioni.data >= date.today()).\
+                        group_by(ProgrammazioneCorso.id)
             if skip is not None:
                 progs_corso = progs_corso.offset(skip)
             if limit is not None:
@@ -460,7 +466,7 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
 
         # Controlla che lo studente esista
         studente = sessionStudenti.query(Studente).filter(
-            studente.id == request.form.get('id_studente')).first()
+            Studente.id == request.form.get('id_studente')).first()
         if studente is None:
             return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 404
 
@@ -471,8 +477,11 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
         if sessionStudenti.query(IscrizioniCorso).\
                 join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
                 filter(IscrizioniCorso.id_studente == studente.id and ProgrammazioneCorso.id == id_prog).count() == 0:
-
             return jsonify({'error': True, 'errormessage': 'Studente non iscritto al corso'}), 404
+        
+        if sessionStudenti.query(PresenzeLezione).\
+            filter(PresenzeLezione.id_studente == studente.id and PresenzeLezione.id_programmazione_lezioni == id_lezione).count() > 0:
+            return jsonify({'error': True, 'errormessage': 'Presenza già segnata'}), 404
 
         # Controlla che il codice di verifica (per la presenza) sia valido
         lezione = sessionStudenti.query(ProgrammazioneLezioni).filter(

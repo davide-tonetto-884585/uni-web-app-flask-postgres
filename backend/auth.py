@@ -110,6 +110,7 @@ def signup_student():
                           nome=request.form.get('nome'),
                           cognome=request.form.get('cognome'),
                           data_nascita=request.form.get('data_nascita'),
+                          sesso=request.form.get('sesso'),
                           token_verifica=token)
 
         # inserisco i dati nel database
@@ -212,6 +213,7 @@ def signup_teacher(user):
                           nome=request.form.get('nome'),
                           cognome=request.form.get('cognome'),
                           data_nascita=request.form.get('data_nascita'),
+                          sesso=request.form.get('sesso'),
                           token_verifica=token)
 
         # creo nuovo docente per evitare che uno studente possa attivarsi come docente cambiando la url di attivazione

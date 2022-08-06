@@ -52,7 +52,7 @@ export class CourseModalComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.course) {
-      this.course_http.getProgrammazioniCorso(this.course.id, true).subscribe({
+      this.course_http.getProgrammazioniCorso(this.course.id, false).subscribe({
         next: (prog_corso: ProgCourse[]) => {
           this.progs = prog_corso;
 

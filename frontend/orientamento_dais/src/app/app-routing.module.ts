@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'activate/:category/:token/:user_id', component: ActivateProfileComponent },
   { path: 'courses', component: CoursesComponent },
   { path: 'course/:id', component: CourseDetailComponent },
-  { path: 'myCourses', component: MyCoursesComponent }
+  { path: 'myCourses', component: MyCoursesComponent },
 ];
 
 @NgModule({

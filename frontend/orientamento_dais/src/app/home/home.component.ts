@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { CourseHttpService } from '../course-http.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Course } from '../models';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -16,23 +17,40 @@ export class HomeComponent implements OnInit {
   private limit: number = 9;
   private skip: number = 0;
   courses: Course[] = [];
+  scheduled_courses: Course[] = [];
+
+  error: boolean | null = null;
+  message: string | null = null;
 
   constructor(
     private course_http: CourseHttpService,
-    private router: Router
+    private router: Router,
+    private activated_route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.getCourses();
-  }
-
-  getCourses(): void {
-    this.course_http.getCourses(this.limit, this.skip).subscribe({
-      next: (res: any) => {
-        this.skip += this.limit;
+    this.getCourses().subscribe({
+      next: (res) => {
         this.courses = res.corsi;
       }
-    })
+    });
+    
+    this.getCourses(true).subscribe({
+      next: (res) => {
+        this.scheduled_courses = res.corsi
+      }
+    });
+
+    this.activated_route.queryParams.subscribe((params: any) => {
+      if (params.error && params.message) {
+        this.error = params.error;
+        this.message = params.message;
+      }
+    });
+  }
+
+  getCourses(scheduled: boolean | null = null): Observable<{ corsi: Course[], count: number }> {
+    return this.course_http.getCourses(this.limit, this.skip, null, null, scheduled)
   }
 
   counter(i: number) {

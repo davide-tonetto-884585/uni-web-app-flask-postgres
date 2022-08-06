@@ -4,6 +4,7 @@ export interface User {
     nome: string;
     cognome: string;
     data_nascita: string;
+    sesso: string | null;
 }
 
 export interface UserData {

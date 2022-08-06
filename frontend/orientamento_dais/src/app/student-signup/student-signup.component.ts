@@ -12,7 +12,7 @@ import { User } from '../models'
 })
 export class StudentSignupComponent implements OnInit {
   errmessage: string | undefined;
-  user: User = { email: '', password: null, nome: '', cognome: '', data_nascita: '' };
+  user: User = { email: '', password: null, nome: '', cognome: '', data_nascita: '', sesso: '' };
 
   constructor(private user_http: UserHttpService, private router: Router) { }
 

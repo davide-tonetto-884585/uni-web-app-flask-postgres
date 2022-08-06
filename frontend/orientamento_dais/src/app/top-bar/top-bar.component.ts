@@ -42,4 +42,8 @@ export class TopBarComponent implements OnInit {
   isTeacher(): boolean {
     return this.user_http.isTeacher();
   }
+
+  isAdmin(): boolean {
+    return this.user_http.isAdmin();
+  }
 }

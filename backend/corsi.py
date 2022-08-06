@@ -139,16 +139,20 @@ def modify_corso(user, id):
         lingua = request.form.get('lingua')
         abilitato = request.form.get('abilitato')
         abilitato = 1 if abilitato else 0
-
-        corso.immagine_copertina = load_file('immagine_copertina')
-        corso.file_certificato = load_file('file_certificato')
+        immagine_copertina = load_file('immagine_copertina')
+        file_certificato = load_file('file_certificato')
+        
+        if immagine_copertina is not None:
+            corso.immagine_copertina = immagine_copertina
+        if file_certificato is not None:
+            corso.file_certificato = file_certificato 
 
         # Controlla che le variabili necessarie siano settate, altrimenti le lascia ai vecchi valori
         if titolo is not None:
             corso.titolo = titolo
 
         if abilitato is not None:
-            corso.abilitato = abilitato
+            corso.abilitato = abilitato 
 
         # Questi campi invece possono essere messi a None e sono a discrezione dell'utente
         corso.descrizione = descrizione
