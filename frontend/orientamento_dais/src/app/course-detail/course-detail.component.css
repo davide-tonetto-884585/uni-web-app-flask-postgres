@@ -5,3 +5,10 @@
 #descr {
     white-space: pre-wrap;
 }
+
+.chart-wrapper {
+    height: 400px;
+    width: 100%;
+    min-width: 500px;
+    overflow: auto;
+}

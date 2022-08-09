@@ -1,0 +1,77 @@
+<app-top-bar></app-top-bar>
+<div id="form-signup-div" class="container">
+
+    <form class="form-signin text-center">
+
+        <div class="text-center">
+            <i class="fas fa-envelope loginlogo"></i>
+            <h1 class="h3 mb-3 font-weight-normal">Teacher sign-up</h1>
+        </div>
+
+        <div class="mb-3">
+            <label for="inputEmail" class="sr-only">Email address</label>
+            <input type="email" #mail="ngModel" name="mail" [(ngModel)]="user.email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                class="form-control" required id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+
+        <div [hidden]="mail.valid || mail.pristine" class="alert alert-danger">
+            Mail is not valid
+        </div>
+
+        <div class="mb-3">
+            <label for="inputName" class="sr-only">Name</label>
+            <input type="text" #nome="ngModel" required name="nome" [(ngModel)]="user.nome" class="form-control"
+                id="inputName" placeholder="Enter name">
+        </div>
+
+        <div [hidden]="nome.valid || nome.pristine" class="alert alert-danger">
+            Name is required
+        </div>
+
+        <div class="mb-3">
+            <label for="inputSurname" class="sr-only">Surname</label>
+            <input type="text" #cognome="ngModel" required name="surname" [(ngModel)]="user.cognome"
+                class="form-control" id="inputSurname" placeholder="Enter surname">
+        </div>
+
+        <div [hidden]="cognome.valid || cognome.pristine" class="alert alert-danger">
+            Surname is required
+        </div>
+
+        <div class="mb-3">
+            <label for="inputBirthdate" class="sr-only">Birthdate</label>
+            <input type="text" #data_nascita="ngModel" required name="birthdate" [(ngModel)]="user.data_nascita"
+                class="form-control" id="inputBirthdate" placeholder="Enter birthdate (gg/mm/yyyy)">
+        </div>
+
+        <div [hidden]="data_nascita.valid || data_nascita.pristine" class="alert alert-danger">
+            Birthdate is required
+        </div>
+
+        <div class="mb-3">
+            <label for="genderSelect" class="form-label">Gender</label>
+            <select id="genderSelect" class="form-select" required name="gender" #gender="ngModel" [(ngModel)]="user.sesso">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option (value)="null">Other</option>
+            </select>
+        </div>
+
+        <div [hidden]="gender.valid || gender.pristine" class="alert alert-danger">
+            Gender is required
+        </div>
+
+        <div *ngIf="errmessage" class="alert alert-danger" role="alert">
+            Login error: {{errmessage}}
+        </div>
+
+        <button type="button" class="btn btn-lg btn-primary btn-block"
+            [disabled]="!mail.valid || !nome.valid || !cognome.valid || !data_nascita.valid || !gender.valid"
+            (click)="signup();">
+            Sign up
+        </button>
+
+        <p class="mt-5 mb-3 text-muted">&copy; 2022</p>
+    </form>
+</div>

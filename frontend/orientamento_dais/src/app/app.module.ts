@@ -35,6 +35,10 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { CourseScheduleItemComponent } from './course-schedule-item/course-schedule-item.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { QRCodeModule } from 'angular2-qrcode';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { TeacherSignupComponent } from './teacher-signup/teacher-signup.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { SettingsModalComponent } from './settings-modal/settings-modal.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +58,8 @@ import { QRCodeModule } from 'angular2-qrcode';
     CourseModalComponent,
     QuestionItemComponent,
     CourseScheduleItemComponent,
+    TeacherSignupComponent,
+    SettingsModalComponent,
   ],
   imports: [
     FormsModule,
@@ -72,7 +78,9 @@ import { QRCodeModule } from 'angular2-qrcode';
     MatRadioModule,
     MatPaginatorModule,
     MatTooltipModule,
-    QRCodeModule
+    QRCodeModule,
+    MatAutocompleteModule,
+    NgxChartsModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService }

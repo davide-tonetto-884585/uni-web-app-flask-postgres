@@ -6,7 +6,7 @@ import { MessageDialogComponent } from '../message-dialog/message-dialog.compone
 import { Aula, Lesson, ProgCourse } from '../models';
 import { UserHttpService } from '../user-http.service';
 import { SECRET, FRONTEND_URL } from '../globals';
-import * as CryptoJS from 'crypto-js';  
+import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-course-schedule-item',
@@ -124,5 +124,28 @@ export class CourseScheduleItemComponent implements OnInit {
   showQR(id_corso: number, id_prog_corso: number, id_lezione: number, passcode: string): void {
     this.QRInfo = `${FRONTEND_URL}/login?pres_code=${id_corso}.${id_prog_corso}.${id_lezione}.${CryptoJS.AES.encrypt(passcode, SECRET).toString()}`;
     console.log(this.QRInfo) //TODO: togliere
+  }
+
+  getCertificate(): void {
+    if (this.prog)
+      this.course_http.getCertificate(this.prog.id_corso, this.prog.id).subscribe({
+        next: (response) => {
+          let fileName = 'certificate';
+          let blob: Blob = response.body as Blob;
+          let a = document.createElement('a');
+          a.download = fileName;
+          a.href = window.URL.createObjectURL(blob);
+          a.click();
+        },
+        error: (response) => {
+          this.dialog.open(MessageDialogComponent, {
+            data: {
+              text: response.error.errormessage,
+              title: 'Failed!',
+              error: true
+            },
+          });
+        }
+      })
   }
 }

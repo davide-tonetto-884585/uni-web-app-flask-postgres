@@ -55,7 +55,7 @@ def get_risorse(user, id):
             elif('amministratore' not in user['roles'] and not checkDocenteHasCourse(user, id)):
                 return jsonify({'error': True, 'errormessage': 'Non puoi vedere la/e risorsa/e di questo corso'}), 401
 
-            risorse = sessionStudenti.query(RisorseCorso).\
+            risorse = sessionDocenti.query(RisorseCorso).\
                 filter(RisorseCorso.id_corso == id).\
                 order_by(RisorseCorso.nome, RisorseCorso.visibile)
 

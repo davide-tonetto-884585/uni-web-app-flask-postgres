@@ -187,7 +187,7 @@ def create_app():
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 465
     app.config['MAIL_USERNAME'] = 'pigeonline.project@gmail.com'
-    app.config['MAIL_PASSWORD'] = 'Chatta_Con_Piccioni'
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PW')
     app.config['MAIL_USE_TLS'] = False
     app.config['MAIL_USE_SSL'] = True
 
@@ -226,5 +226,20 @@ def create_app():
 
     from .domande import domande as domande_corso_blueprint
     app.register_blueprint(domande_corso_blueprint)
+    
+    from .statistics import statistics as statistics_blueprint
+    app.register_blueprint(statistics_blueprint)
+    
+    from .global_settings import global_settings as global_settings_blueprint
+    app.register_blueprint(global_settings_blueprint)
+    
+    from .iscrizioni import iscrizioni as iscrizioni_blueprint
+    app.register_blueprint(iscrizioni_blueprint)
+    
+    from .presenze import presenze as presenze_blueprint
+    app.register_blueprint(presenze_blueprint)
+    
+    from .lezioni import lezioni as lezioni_blueprint
+    app.register_blueprint(lezioni_blueprint)
 
     return app

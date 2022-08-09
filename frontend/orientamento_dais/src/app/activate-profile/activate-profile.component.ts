@@ -51,8 +51,20 @@ export class ActivateProfileComponent implements OnInit {
     }
   }
 
+  complete_teacher_registration(): void {
+    this.user_http.completeTeacherRegistration(this.user_id, this.activation_token, this.user_data).subscribe({
+      next: (d) => {
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.log('Activation error: ' + JSON.stringify(err));
+        this.errormessage = err.error.errormessage;
+      }
+    })
+  }
+
   filter_schools(): void {
-    this.http.get(`${BACKEND_URL}/scuole?nome=${this.school_input.toUpperCase()}&limit=100`).subscribe({
+    this.http.get(`${BACKEND_URL}/scuole?name=${this.school_input.toUpperCase()}&limit=300`).subscribe({
       next: (d) => {
         this.schools = d;
       }
@@ -63,7 +75,7 @@ export class ActivateProfileComponent implements OnInit {
     const file: File = event.target.files[0];
 
     if (file) {
-      this.user_data.immagine_profilo = file.name;
+      this.user_data.immagine_profilo = file;
     }
   }
 }

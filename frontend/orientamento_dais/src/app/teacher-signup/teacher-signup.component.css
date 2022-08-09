@@ -1,0 +1,10 @@
+#form-signup-div {
+  margin-top: 5em;
+  width: 400px;
+}
+
+@media only screen and (max-width: 600px) {
+  #form-signup-div {
+    width: 80%;
+  }
+}

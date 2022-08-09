@@ -7,12 +7,14 @@
             <h1 class="h3 mb-3 font-weight-normal">Account activation</h1>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 text-start">
+            <label for="_id_scuola">School</label>
+
             <input list="datalistOptions" type="text" #id_scuola="ngModel" required name="denominazione_scuola"
-                [(ngModel)]="school_input" class="form-control" id="id_acuola" placeholder="Select school name"
+                [(ngModel)]="school_input" class="form-control" id="_id_scuola" placeholder="Select school name"
                 (ngModelChange)="filter_schools()" autocomplete="false">
 
-            <datalist id="datalistOptions">
+            <datalist id="datalistOptions" name="school_id">
                 <option *ngFor="let school of schools" (value)="school.id">
                     {{ school.denominazione }}</option>
             </datalist>
@@ -22,8 +24,8 @@
             School is required
         </div>
 
-        <div class="mb-3">
-            <label for="indirizzo_di_studio" class="sr-only">Field of study</label>
+        <div class="mb-3 text-start">
+            <label for="indirizzo_di_studio">Field of study</label>
 
             <select class="form-select" #indirizzo_di_studio="ngModel" required name="indirizzo_di_studio"
                 [(ngModel)]="user_data['indirizzo_di_studio']" id="indirizzo_di_studio"
@@ -87,7 +89,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="formFile" class="form-label">Default file input example</label>
+            <label for="formFile" class="form-label">Picture profile</label>
             <input class="form-control" type="file" id="formFile" name="immagine_profilo" (change)="onFileSelected($event)">
         </div>
 
@@ -96,7 +98,7 @@
         </div>
 
         <button type="button" class="btn btn-lg btn-primary btn-block" [disabled]="!password.valid"
-            (click)="complete_registration();">
+            (click)="complete_teacher_registration();">
             Complete registration
         </button>
 

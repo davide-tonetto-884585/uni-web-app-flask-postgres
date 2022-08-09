@@ -16,8 +16,9 @@ import { Observable } from 'rxjs';
 export class HomeComponent implements OnInit {
   private limit: number = 9;
   private skip: number = 0;
-  courses: Course[] = [];
+  new_courses: Course[] = [];
   scheduled_courses: Course[] = [];
+  popular_courses: Course[] = [];
 
   error: boolean | null = null;
   message: string | null = null;
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.getCourses().subscribe({
       next: (res) => {
-        this.courses = res.corsi;
+        this.new_courses = res.corsi;
       }
     });
     
@@ -41,16 +42,25 @@ export class HomeComponent implements OnInit {
       }
     });
 
+    this.getCourses(null, true).subscribe({
+      next: (res) => {
+        this.popular_courses = res.corsi;
+      }
+    })
+
     this.activated_route.queryParams.subscribe((params: any) => {
       if (params.error && params.message) {
         this.error = params.error;
         this.message = params.message;
+
+        console.log(this.error);
+        console.log(this.message);
       }
     });
   }
 
-  getCourses(scheduled: boolean | null = null): Observable<{ corsi: Course[], count: number }> {
-    return this.course_http.getCourses(this.limit, this.skip, null, null, scheduled)
+  getCourses(scheduled: boolean | null = null, popular: boolean | null = null): Observable<{ corsi: Course[], count: number }> {
+    return this.course_http.getCourses(this.limit, this.skip, null, null, scheduled, popular)
   }
 
   counter(i: number) {

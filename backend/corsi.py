@@ -1,7 +1,9 @@
+import configparser
 from datetime import date
 import json
 from telnetlib import DO
 from flask import Blueprint, jsonify, request
+from sqlalchemy import func, desc
 
 from . import PreLoginSession, SessionDocenti, SessionAmministratori
 from .marshmallow_models import CorsoSchema, DocenteSchema
@@ -31,6 +33,7 @@ def get_corsi():
         limit = request.args.get('limit')
         lingua = request.args.get('lingua')
         scheduled = request.args.get('scheduled')
+        popular = request.args.get('popular')
         
         try:
             # Query per reperire tutti i corsi
@@ -46,8 +49,16 @@ def get_corsi():
                     join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_programmazione_corso == ProgrammazioneCorso.id).\
                     filter(ProgrammazioneLezioni.data >= date.today()).\
                     group_by(Corso.id)
-            
-            count = corsi.count()        
+            elif popular is not None:
+                inscriptions = preLoginSession.query(ProgrammazioneCorso.id_corso, func.count().label('num_iscrizioni')).\
+                    join(IscrizioniCorso, IscrizioniCorso.id_programmazione_corso == ProgrammazioneCorso.id).\
+                    group_by(ProgrammazioneCorso.id_corso).subquery()
+                
+                corsi = corsi.join(inscriptions, inscriptions.c.id_corso == Corso.id).order_by(desc(inscriptions.c.num_iscrizioni)) 
+            else:
+                corsi = corsi.order_by(desc(Corso.id))     
+                
+            count = corsi.count()  
             
             if skip is not None:
                 corsi = corsi.offset(skip)
@@ -86,9 +97,17 @@ def get_corso(id):
 def add_corso(user):  # su tutte token_required bisogna mettere user (per reperire i dati di chi è loggato)
     with SessionDocenti() as sessionDocenti:
         sessionDocenti.begin()
+        config = configparser.ConfigParser()
+        config.read('global_settings.ini')
+        
         # Controlla se ci sono i campi necessari
         if request.form.get('titolo') is None:
             return jsonify({'error': True, 'errormessage': 'Titolo mancante'}), 400
+        
+        if sessionDocenti.query(DocenteCorso).\
+            join(Corso, DocenteCorso.id_corso == Corso.id).\
+            filter(DocenteCorso.id_docente == user['id']).count() >= int(config['SETTINGS']['limite_corsi_docente']):
+                return jsonify({'error': True, 'errormessage': 'Course limit reached'}), 400
 
         # Controlla che il corso non abbia un titolo già esistente
         if sessionDocenti.query(Corso).filter(Corso.titolo == request.form.get('titolo')).first():
@@ -283,4 +302,4 @@ def get_studenti_corso(id):
         except Exception as e:
             return jsonify({'error': True, 'errormessage': 'Errore nel reperire gli studenti del corso: ' + str(e)}), 500
 
-        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
+        return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti])))

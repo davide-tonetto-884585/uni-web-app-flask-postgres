@@ -99,5 +99,82 @@
                 </div>
             </div>
         </mat-tab>
+        <mat-tab *ngIf="(isAdmin() || isCourseTeacher()) && statistics" label="Statistics">
+            <div #div_stat class="container">
+                <h3 class="mt-3">General</h3>
+                <h6 class="text-center">Students distribution</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-advanced-pie-chart [results]="statistics.distribuzione_studenti">
+                    </ngx-charts-advanced-pie-chart>
+                </div>
+                <hr>
+                <h6 class="text-center">Students origin</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-advanced-pie-chart [results]="statistics.provenienza_studenti">
+                    </ngx-charts-advanced-pie-chart>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col">
+                        <h6>Average age</h6>
+                        <p>{{ statistics.eta_media_iscritti | number : '1.2-2' }}</p>
+                    </div>
+                    <div class="col">
+                        <h6>Total registrations</h6>
+                        <p>{{ statistics.totale_iscrizioni }}</p>
+                    </div>
+                    <div class="col">
+                        <h6>Total attendance</h6>
+                        <p>{{ statistics.totale_presenze }} ({{ (statistics.totale_presenze * 100) /
+                            statistics.totale_iscrizioni | number : '1.2-2' }}%)</p>
+                    </div>
+                </div>
+                <hr>
+                <h6 class="text-center">Registrations gender comparison</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-gauge [results]="[
+                        {name: 'Male', value: statistics.totale_iscrizioni_maschi},
+                        {name: 'Female', value: statistics.totale_iscrizioni_femmine},
+                        {name: 'Other', value: statistics.totale_iscrizioni_altri_sessi}
+                    ]" [legend]="true" [max]="statistics.totale_iscrizioni" [units]="'students'"
+                        [bigSegments]="statistics.totale_iscrizioni" [legendTitle]="'Gender'">
+                    </ngx-charts-gauge>
+                </div>
+                <hr>
+                <h6 class="text-center">Lesson modality comparison</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-gauge [results]="[
+                        {name: 'Online lessons', value: statistics.totale_lezioni_online},
+                        {name: 'In place lessons', value: statistics.totale_lezioni_presenza},
+                        {name: 'Dual lessons', value: statistics.totale_lezioni_duale},
+                    ]" [legend]="true" [max]="statistics.totale_lezioni" [units]="'lessons'"
+                        [bigSegments]="statistics.totale_lezioni" [legendTitle]="'Gender'">
+                    </ngx-charts-gauge>
+                </div>
+                <hr>
+                <h6 class="text-center">Registrations/attendance modality comparison</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-gauge [results]="[
+                        {name: 'Online registrations', value: statistics.totale_iscrizioni_online},
+                        {name: 'In place registrations', value: statistics.totale_iscrizioni_presenza},
+                        {name: 'Dual registrations', value: statistics.totale_iscrizioni_duale},
+
+                        {name: 'Online attendance', value: statistics.totale_presenze_online},
+                        {name: 'In place attendance', value: statistics.totale_presenze_presenza},
+                        {name: 'Dual attendance', value: statistics.totale_presenze_duale},
+                    ]" [legend]="true" [max]="statistics.totale_iscrizioni" [units]="'students'"
+                        [bigSegments]="statistics.totale_iscrizioni" [legendTitle]="'Modality'">
+                    </ngx-charts-gauge>
+                </div>
+                <hr>
+                <h6 class="text-center">Schedulings comparison</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-bar-vertical-2d [results]="statistics.confronto_programmazioni_corso" [xAxis]="true"
+                        [yAxis]="true" [legend]="true" [showXAxisLabel]="true" [showYAxisLabel]="true"
+                        [xAxisLabel]="'Course schedules'" [yAxisLabel]="'Students'" [legendTitle]="'Legend'">
+                    </ngx-charts-bar-vertical-2d>
+                </div>
+            </div>
+        </mat-tab>
     </mat-tab-group>
 </div>

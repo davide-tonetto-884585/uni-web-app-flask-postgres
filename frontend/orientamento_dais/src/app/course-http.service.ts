@@ -40,14 +40,15 @@ export class CourseHttpService {
     }
   }
 
-  getCourses(limit = 10, skip = 0, title: string | null = null, lingua: string | null = null, scheduled: boolean | null = null)
+  getCourses(limit = 10, skip = 0, title: string | null = null, lingua: string | null = null, scheduled: boolean | null = null, popular: boolean | null = null)
     : Observable<{ corsi: Course[], count: number }> {
     let params = {
       limit: limit,
       skip: skip,
       title: title,
       lingua: lingua,
-      scheduled: scheduled
+      scheduled: scheduled,
+      popular: popular
     }
 
     return this.http.get<{ corsi: Course[], count: number }>(
@@ -217,6 +218,18 @@ export class CourseHttpService {
       `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/lezioni/${id_lezione}/presenze`,
       form_data,
       this.createOptions()
-    )
+    ).pipe(catchError(this.handleError))
+  }
+
+  getCertificate(id_corso: number, id_prog_corso: number): Observable<any> {
+    return this.http.get(
+      `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/certificato`,
+      { observe: 'response', responseType: 'blob', ...this.createOptions() }
+    ).pipe(catchError(() => {
+      return this.http.get(
+        `${BACKEND_URL}/corsi/${id_corso}/programmazione_corso/${id_prog_corso}/certificato`,
+        this.createOptions()
+      )
+    }))
   }
 }

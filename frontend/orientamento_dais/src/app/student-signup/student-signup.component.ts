@@ -24,7 +24,7 @@ export class StudentSignupComponent implements OnInit {
       next: (d) => {
         console.log('Registration ok: ' + JSON.stringify(d));
         this.errmessage = undefined;
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], { queryParams: { errmessage: 'You will soon receive a confirmation email with an activation link to access the site' } });
       },
       error: (err) => {
         console.log('Signup error: ' + JSON.stringify(err.error.errormessage));

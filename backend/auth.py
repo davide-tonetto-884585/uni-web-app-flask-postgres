@@ -216,11 +216,15 @@ def signup_teacher(user):
                           sesso=request.form.get('sesso'),
                           token_verifica=token)
 
-        # creo nuovo docente per evitare che uno studente possa attivarsi come docente cambiando la url di attivazione
-        new_teacher = Docente(id=new_user.id)
-
         try:
-            sessionAmministratori.add_all([new_user, new_teacher])
+            sessionAmministratori.add(new_user)
+            sessionAmministratori.flush()
+
+            # creo nuovo docente per evitare che uno studente possa attivarsi come docente cambiando la url di attivazione
+            sessionAmministratori.refresh(new_user)
+            new_teacher = Docente(id=new_user.id)
+            sessionAmministratori.add(new_teacher)
+
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()

@@ -1,0 +1,24 @@
+<h4 mat-dialog-title>Application settings</h4>
+<div mat-dialog-content>
+    <form *ngIf="settings">
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>student active enrolment limit</mat-label>
+            <input matInput type="number" placeholder="Enter limit..." [value]="settings.limite_iscrizioni_attive_studente"
+            [(ngModel)]="settings.limite_iscrizioni_attive_studente" name="regisration_limit">
+        </mat-form-field>
+
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>Courses per teacher limit</mat-label>
+            <input matInput type="number" placeholder="Enter limit..." [value]="settings.limite_corsi_docente"
+            [(ngModel)]="settings.limite_corsi_docente" name="course_per_teacher_limit">
+        </mat-form-field>
+
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>Minimum attendance percentage</mat-label>
+            <input matInput type="number" placeholder="Enter limit..." [value]="settings.percentuale_presenze_minima"
+            [(ngModel)]="settings.percentuale_presenze_minima" name="presenza_minima" min="0" max="100">
+        </mat-form-field>
+
+        <button type="button" class="btn btn-outline-success" (click)="updateSettings()">Save</button>
+    </form>
+</div>

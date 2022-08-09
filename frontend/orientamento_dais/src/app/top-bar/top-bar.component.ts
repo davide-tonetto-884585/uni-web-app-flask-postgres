@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { SettingsModalComponent } from '../settings-modal/settings-modal.component';
 
 @Component({
   selector: 'app-top-bar',
@@ -12,7 +14,8 @@ export class TopBarComponent implements OnInit {
 
   constructor(
     private user_http: UserHttpService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -45,5 +48,9 @@ export class TopBarComponent implements OnInit {
 
   isAdmin(): boolean {
     return this.user_http.isAdmin();
+  }
+
+  openSettings(): void {
+    const dialog = this.dialog.open(SettingsModalComponent);
   }
 }

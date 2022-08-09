@@ -23,7 +23,8 @@
                     students" }}) </i>.
                 <button matTooltip="Students have to scan this QR to mark attendance at the lesson"
                     *ngIf="isCourseTeacher()" class="btn btn-outline-warning"
-                    (click)="showQR(prog?.id_corso ?? -1, les.id_programmazione_corso, les.id, les.codice_verifica_presenza)">Show QR</button>
+                    (click)="showQR(prog?.id_corso ?? -1, les.id_programmazione_corso, les.id, les.codice_verifica_presenza)">Show
+                    QR</button>
             </p>
         </li>
     </ol>
@@ -31,8 +32,10 @@
         <qr-code [value]="QRInfo" [size]="200"></qr-code>
     </div>
     <div *ngIf="checkInscriptionLimit() && isProgInCorso()">
-        <button *ngIf="this.isLogged() && this.isStudent()" type="button" class="btn btn-danger"
+        <button *ngIf="this.isLogged() && this.isStudent()" type="button" class="btn btn-danger m-1"
             (click)="enrollStudent()">Enroll</button>
+        <button *ngIf="this.isLogged() && this.isStudent()" type="button" class="btn btn-success m-1"
+            (click)="getCertificate()">Download certificate</button>
         <button *ngIf="!this.isLogged()" type="button" class="btn btn-danger" routerLink="/login">
             Login to enroll
         </button>

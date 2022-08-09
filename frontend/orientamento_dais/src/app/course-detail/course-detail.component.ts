@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { CourseHttpService } from '../course-http.service';
@@ -9,6 +9,7 @@ import { MessageDialogComponent } from '../message-dialog/message-dialog.compone
 import { BACKEND_URL } from '../globals';
 import { QuestionsHttpService } from '../questions-http.service';
 import { PageEvent } from '@angular/material/paginator';
+import { StatisticsHttpService } from '../statistics-http.service';
 
 @Component({
   selector: 'app-course-detail',
@@ -30,14 +31,17 @@ export class CourseDetailComponent implements OnInit {
 
   limit: number = 10;
   skip: number = 0;
-  count: number = 0;  
+  count: number = 0;
+
+  statistics: any;
 
   constructor(
     private course_http: CourseHttpService,
     private activatedRoute: ActivatedRoute,
     private user_http: UserHttpService,
     private question_http: QuestionsHttpService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private statistics_http: StatisticsHttpService
   ) { }
 
   ngOnInit(): void {
@@ -65,6 +69,32 @@ export class CourseDetailComponent implements OnInit {
         this.count = res.count;
       }
     })
+
+    if (this.isAdmin() || this.isCourseTeacher()) {
+      this.statistics_http.getCourseStatistics(this.course_id).subscribe({
+        next: (res) => {
+          this.statistics = res;
+          let conf = Array();
+          res.confronto_programmazioni_corso.forEach((prog: any, index: number) => {
+            conf.push({
+              name: `Schedule ${index + 1} (${prog.modalita})`,
+              series: [
+                { 
+                  name: 'Registrations',
+                  value: prog.num_iscrizioni
+                },
+                { 
+                  name: 'Attendance',
+                  value: prog.num_presenze
+                }
+              ]
+            })
+          })
+
+          this.statistics.confronto_programmazioni_corso = conf;
+        }
+      })
+    }
   }
 
   loadProgs(in_corso: boolean | null): void {
@@ -87,6 +117,10 @@ export class CourseDetailComponent implements OnInit {
     return this.user_http.isStudent();
   }
 
+  isAdmin(): boolean {
+    return this.user_http.isAdmin();
+  }
+
   filter(): void {
     if (this.search_text == '') this.search_text = null;
 
@@ -104,9 +138,9 @@ export class CourseDetailComponent implements OnInit {
 
   postQuestion(): void {
     if (this.question_text == '') return;
-    
+
     this.question_http.addDomandaCorso({
-      id_corso: this.course_id, 
+      id_corso: this.course_id,
       id_utente: this.user_http.getId(),
       testo: this.question_text,
     }).subscribe({
@@ -124,6 +158,11 @@ export class CourseDetailComponent implements OnInit {
         });
       }
     })
+  }
+
+  isCourseTeacher(): boolean {
+    if (this.getId() == undefined) return false;
+    else return this.docenti.some(doc => doc.id === this.getId());
   }
 
   onPageChange(pageEvent: PageEvent): void {

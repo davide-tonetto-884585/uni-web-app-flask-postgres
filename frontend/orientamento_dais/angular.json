@@ -107,5 +107,7 @@
       }
     }
   },
-  "defaultProject": "orientamento_dais"
+  "cli": {
+    "analytics": "f9cb2cf4-5da6-4ad3-b200-2533fd12a9de"
+  }
 }

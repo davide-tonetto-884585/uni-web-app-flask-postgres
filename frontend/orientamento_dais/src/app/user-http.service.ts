@@ -84,6 +84,21 @@ export class UserHttpService {
     );
   }
 
+  registerTeacher(user: User | any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(user).forEach((key) => {
+      form_data.append(key, user[key]);
+    });
+
+    form_data.append('frontend_activation_link', `${FRONTEND_URL}/activate`);
+
+    return this.http.post(BACKEND_URL + '/utenti/docenti', form_data, this.createOptions()).pipe(
+      tap((data: any) => {
+        console.log(JSON.stringify(data));
+      })
+    );
+  }
+
   completeRegistration(id: number, token: string, informations: any): Observable<any> {
     const form_data = new FormData();
     Object.keys(informations).forEach((key) => {
@@ -93,6 +108,21 @@ export class UserHttpService {
     form_data.append('token_verifica', token);
 
     return this.http.post(BACKEND_URL + '/utenti/studenti/' + id, form_data).pipe(
+      tap((data: any) => {
+        console.log(JSON.stringify(data));
+      })
+    );
+  }
+
+  completeTeacherRegistration(id: number, token: string, informations: any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(informations).forEach((key) => {
+      form_data.append(key, informations[key]);
+    });
+
+    form_data.append('token_verifica', token);
+
+    return this.http.post(BACKEND_URL + '/utenti/docenti/' + id, form_data).pipe(
       tap((data: any) => {
         console.log(JSON.stringify(data));
       })
