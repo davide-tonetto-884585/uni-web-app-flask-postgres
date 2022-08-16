@@ -4,13 +4,9 @@
     <div class="container">
         <div class="constainer row">
             <div class="col">
-                <h1>{{ this.course?.titolo }}</h1>
-                <p>Language: <strong>{{ this.course?.lingua }}</strong></p>
-                <p>Teachers:
-                    <strong *ngFor="let docente of this.docenti">
-                        {{ docente.cognome }} {{ docente.nome }}<br>
-                    </strong>
-                </p>
+                <h1 class="text-white">{{ this.course?.titolo }}</h1>
+                <p class="text-white">Language: <strong>{{ this.course?.lingua }}</strong></p>
+                <app-teacher-card *ngFor="let docente of this.docenti" [teacher]="docente"></app-teacher-card>
             </div>
             <div *ngIf="this.course?.immagine_copertina" class="col">
                 <img class="img-fluid h-100 w-100" title="img"

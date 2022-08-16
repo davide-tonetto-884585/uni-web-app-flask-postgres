@@ -9,6 +9,7 @@ export class CarouselComponent implements OnInit {
   @Input() title: string = "";
   @Input() exploreLink: string | undefined;
   static id: number = 0;
+  personal_id: number = CarouselComponent.id;
 
   constructor() {
     CarouselComponent.id += 1;
@@ -18,7 +19,7 @@ export class CarouselComponent implements OnInit {
   }
 
   getId(): number {
-    return CarouselComponent.id;
+    return this.personal_id;
   }
 
 }

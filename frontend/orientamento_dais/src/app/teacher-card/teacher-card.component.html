@@ -1,0 +1,5 @@
+<div (click)="openTeacherPage()">
+    <img id="picture" title="profile pic"
+        [src]="teacher.immagine_profilo ? this.BACKEND_URL + teacher.immagine_profilo : '/assets/images/custom-logo.png'">
+    <mat-card-subtitle class="text-white mb-0">{{ teacher.cognome }} {{ teacher.nome }}</mat-card-subtitle>
+</div>

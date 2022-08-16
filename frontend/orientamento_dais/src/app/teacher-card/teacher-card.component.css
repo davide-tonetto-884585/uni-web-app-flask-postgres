@@ -1,0 +1,6 @@
+#picture {
+  max-width: 36px;
+  margin-right: 8px;
+  border-radius: 50%;
+  object-fit: cover;
+}

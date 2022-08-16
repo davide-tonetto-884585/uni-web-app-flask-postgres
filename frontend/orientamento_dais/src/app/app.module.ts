@@ -39,6 +39,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { TeacherSignupComponent } from './teacher-signup/teacher-signup.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { SettingsModalComponent } from './settings-modal/settings-modal.component';
+import { TeacherCardComponent } from './teacher-card/teacher-card.component';
+import { MatCardModule } from '@angular/material/card';
+import { TeacherPageComponent } from './teacher-page/teacher-page.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +63,8 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
     CourseScheduleItemComponent,
     TeacherSignupComponent,
     SettingsModalComponent,
+    TeacherCardComponent,
+    TeacherPageComponent,
   ],
   imports: [
     FormsModule,
@@ -80,7 +85,8 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
     MatTooltipModule,
     QRCodeModule,
     MatAutocompleteModule,
-    NgxChartsModule
+    NgxChartsModule,
+    MatCardModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService }

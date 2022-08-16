@@ -1,0 +1,27 @@
+<app-top-bar></app-top-bar>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-4">
+            <img id="picture" title="profile pic"
+                [src]="teacher?.immagine_profilo ? this.BACKEND_URL + teacher.immagine_profilo : '/assets/images/custom-logo.png'">
+        </div>
+        <div class="col-4">
+            <h1>{{ teacher?.nome }} {{ teacher?.cognome }}</h1>
+            <a [href]="teacher?.link_pagina_docente">Lecturer page link</a>
+        </div>
+    </div>
+    <hr>
+    <div class="container">
+        <h1>Bio</h1>
+        <p>{{ teacher?.descrizione_docente }}</p>
+    </div>
+    <hr>
+    <div *ngIf="teacher_courses.length > 0" class="container">
+        <h1>Courses</h1>
+        <div class="row" *ngFor="let i of counter(teacher_courses.length / 3 | ceil)">
+            <app-course-card *ngIf="teacher_courses[i * 3]" [course]="teacher_courses[i * 3]"></app-course-card>
+            <app-course-card *ngIf="teacher_courses[i * 3 + 1]" [course]="teacher_courses[i * 3 + 1]"></app-course-card>
+            <app-course-card *ngIf="teacher_courses[i * 3 + 2]" [course]="teacher_courses[i * 3 + 2]"></app-course-card>
+        </div>
+    </div>
+</div>

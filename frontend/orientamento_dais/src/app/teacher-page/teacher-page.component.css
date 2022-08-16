@@ -1,0 +1,5 @@
+#picture {
+  max-width: 200px;
+  max-height: 200px;
+  width: -webkit-fill-available;
+}

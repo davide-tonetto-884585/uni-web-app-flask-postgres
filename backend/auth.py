@@ -549,7 +549,7 @@ def get_user(user, id):
     with SessionDocenti() as sessionDocenti, sessionDocenti.begin():
 
         # Query per recuperare l'utente
-        utente = SessionDocenti.query(Utente).filter(Utente.id == id)
+        utente = sessionDocenti.query(Utente).filter(Utente.id == id)
 
         # prova a reperire l'utente dalla query
         try:
