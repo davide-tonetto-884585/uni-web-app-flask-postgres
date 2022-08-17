@@ -12,7 +12,7 @@ from flask import Blueprint, jsonify, request, current_app
 from .marshmallow_models import StudenteSchema, DocenteSchema, UtenteSchema
 from .models import Utente, Studente, Docente, Amministratore
 from .utils import send_mail, load_file
-from . import PreLoginSession, SessionAmministratori, SessionDocenti
+from . import PreLoginSession, SessionAmministratori, SessionDocenti, SessionStudenti
 
 """ preLoginSession = PreLoginSession()
 sessionAmministratori = SessionAmministratori()
@@ -425,9 +425,12 @@ def get_students(user):
 # ritorna uno specifico studente in base al suo id
 @auth.route('/utenti/studenti/<id>', methods=['GET'])
 # ruoli che possono eseguire questa funzione
-@token_required(restrict_to_roles=['amministratore', 'docente'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def get_student(user, id):
     with SessionDocenti() as sessionDocenti, sessionDocenti.begin():
+        if 'studente' in user['roles'] and user['id'] != int(id):
+            return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
+        
         # Query per recuperare lo studente
         studente = sessionDocenti.query(Studente).filter(Studente.id == id)
 
@@ -544,10 +547,9 @@ def get_users(user):
 # ritorna un utente specifico in base al suo id
 @auth.route('/utenti/<id>', methods=['GET'])
 # ruoli che possono eseguire questa funzione
-@token_required(restrict_to_roles=['amministratore', 'docente'])
+@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
 def get_user(user, id):
     with SessionDocenti() as sessionDocenti, sessionDocenti.begin():
-
         # Query per recuperare l'utente
         utente = sessionDocenti.query(Utente).filter(Utente.id == id)
 
@@ -562,3 +564,71 @@ def get_user(user, id):
             return jsonify({'error': True, 'errormessage': 'Utente inesistente'}), 404
         else:
             return jsonify(utente_schema.dump(utente)), 200
+
+
+# update studente
+@auth.route('/utenti/studenti/<id>', methods=['PUT'])
+@token_required(restrict_to_roles=['amministratore', 'studente'])
+def update_studente(user, id):
+    with SessionStudenti() as sessionStudenti:
+        if 'studente' in user['roles'] and user['id'] != int(id):
+            return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
+        
+        utente = sessionStudenti.query(Utente).filter(Utente.id == id).first()
+        studente = sessionStudenti.query(Studente).filter(Studente.id == id).first()
+        
+        if request.form.get('nome') is not None:
+            utente.nome = request.form.get('nome')
+            
+        if request.form.get('cognome') is not None:
+            utente.cognome = request.form.get('cognome')
+            
+        if request.form.get('indirizzo_di_studio') is not None:
+            studente.indirizzo_di_studio = request.form.get('indirizzo_di_studio')
+            
+        if request.form.get('id_scuola') is not None:
+            studente.id_scuola = request.form.get('id_scuola')
+            
+        try: 
+            sessionStudenti.commit()
+        except Exception as e:
+            sessionStudenti.rollback()
+            return jsonify({'error': True, 'errormessage': 'Errore aggiornamento informazioni dello studente: ' + str(e)}), 500
+
+        return jsonify({'error': False, 'errormessage': ''}), 200
+            
+            
+# update docente
+@auth.route('/utenti/docenti/<id>', methods=['PUT'])
+@token_required(restrict_to_roles=['amministratore', 'docente'])
+def update_docente(user, id):
+    with SessionDocenti() as sessionDocenti:
+        if 'docente' in user['roles'] and user['id'] != int(id):
+            return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
+        
+        utente = sessionDocenti.query(Utente).filter(Utente.id == id).first()
+        docente = sessionDocenti.query(Docente).filter(Docente.id == id).first()
+        
+        if request.form.get('nome') is not None:
+            utente.nome = request.form.get('nome')
+            
+        if request.form.get('cognome') is not None:
+            utente.cognome = request.form.get('cognome')
+            
+        if request.form.get('descrizione_docente') is not None:
+            docente.descrizione_docente = request.form.get('descrizione_docente')
+            
+        if request.form.get('link_pagina_docente') is not None:
+            docente.link_pagina_docente = request.form.get('link_pagina_docente')
+            
+        immagine_profilo = load_file('immagine_profilo')
+        if immagine_profilo is not None:
+            docente.immagine_profilo = immagine_profilo
+            
+        try: 
+            sessionDocenti.commit()
+        except Exception as e:
+            sessionDocenti.rollback()
+            return jsonify({'error': True, 'errormessage': 'Errore aggiornamento informazioni del docente: ' + str(e)}), 500
+
+        return jsonify({'error': False, 'errormessage': ''}), 200

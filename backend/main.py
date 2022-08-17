@@ -25,6 +25,7 @@ def get_scuole():
     with PreLoginSession() as preLoginSession, preLoginSession.begin():
 
         # Campi del form
+        id = request.args.get('id')
         name = request.args.get('name')
         skip = request.args.get('skip')
         limit = request.args.get('limit')
@@ -34,6 +35,8 @@ def get_scuole():
             scuole = preLoginSession.query(Scuola).order_by(Scuola.denominazione)
 
             # Filtri per specializzare la ricerca delle scuole o la loro visualizzazione
+            if id is not None:
+                scuole = scuole.filter(Scuola.id == id)
             if name is not None:
                 scuole = scuole.filter(Scuola.denominazione.like('%' + name + '%'))
             if skip is not None:

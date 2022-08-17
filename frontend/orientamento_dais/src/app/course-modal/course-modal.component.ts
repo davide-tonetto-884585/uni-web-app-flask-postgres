@@ -182,6 +182,8 @@ export class CourseModalComponent implements OnInit {
   updateCourse(): void {
     this.course_http.updateCourse(this.course).subscribe({
       next: (d) => {
+        if (this.progs.length === 0) this.dialog.closeAll();
+        
         this.progs.forEach((prog) => {
           if (prog.id != -1) {
             this.course_http.updateProgCorso(this.course.id, prog).subscribe({

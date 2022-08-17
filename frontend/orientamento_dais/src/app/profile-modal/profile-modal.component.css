@@ -1,0 +1,9 @@
+#form-signup-div {
+  width: 450px;
+}
+
+@media only screen and (max-width: 600px) {
+  #form-signup-div {
+    width: 100%;
+  }
+}

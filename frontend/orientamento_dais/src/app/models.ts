@@ -7,6 +7,17 @@ export interface User {
     sesso: string | null;
 }
 
+export interface Student {
+    indirizzo_di_studio: string | null;
+    id_scuola: string | null;
+}
+
+export interface Teacher {
+    descrizione_docente: string | null;
+    link_pagina_docente: string | null;
+    immagine_profilo: any | null;
+}
+
 export interface UserData {
     id: number;
     email: string;

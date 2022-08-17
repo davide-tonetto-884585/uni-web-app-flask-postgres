@@ -1,0 +1,97 @@
+<h4 mat-dialog-title>Edit pofile</h4>
+<div mat-dialog-content>
+    <div id="form-signup-div" class="container">
+        <form class="form-signin mt-3">
+            <div class="mb-3">
+                <label for="inputName" class="form-label">Name</label>
+                <input type="text" #nome="ngModel" required name="nome" [(ngModel)]="user.nome" class="form-control"
+                    id="inputName" placeholder="Enter name">
+            </div>
+
+            <div [hidden]="nome.valid || nome.pristine" class="alert alert-danger">
+                Name is required
+            </div>
+
+            <div class="mb-3">
+                <label for="inputSurname" class="form-label">Surname</label>
+                <input type="text" #cognome="ngModel" required name="surname" [(ngModel)]="user.cognome"
+                    class="form-control" id="inputSurname" placeholder="Enter surname">
+            </div>
+
+            <div [hidden]="cognome.valid || cognome.pristine" class="alert alert-danger">
+                Surname is required
+            </div>
+
+            <div *ngIf="isStudent() && student_data">
+                <div class="mb-3 text-start">
+                    <label for="_id_scuola">School</label>
+
+                    <input list="datalistOptions" type="text" #id_scuola="ngModel" required name="denominazione_scuola"
+                        [(ngModel)]="school_input" class="form-control" id="_id_scuola" placeholder="Select school name"
+                        (ngModelChange)="filter_schools()" autocomplete="false">
+
+                    <datalist id="datalistOptions" name="school_id">
+                        <option *ngFor="let school of schools" (value)="school.id">
+                            {{ school.denominazione }}</option>
+                    </datalist>
+                </div>
+
+                <div [hidden]="id_scuola.valid || id_scuola.pristine" class="alert alert-danger">
+                    School is required
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label for="indirizzo_di_studio">Field of study</label>
+
+                    <select class="form-select" #indirizzo_di_studio="ngModel" required name="indirizzo_di_studio"
+                        [(ngModel)]="student_data.indirizzo_di_studio" id="indirizzo_di_studio"
+                        placeholder="Select field of study">
+                        <option value="informatico">Computer science</option>
+                        <option value="elettronica">Electronics</option>
+                        <option value="elettrotecnica">Electrotechnics</option>
+                        <option value="meccatronica">Mechatronics</option>
+                        <option value="altro indirizzo tecnico">Another technical address</option>
+                        <option value="scientifico tradizionale">Science high school</option>
+                        <option value="scientifico scienze applicate">Applied sciences high school</option>
+                        <option value="altro indirizzo liceale">Another high school address</option>
+                    </select>
+                </div>
+
+                <div [hidden]="indirizzo_di_studio.valid || indirizzo_di_studio.pristine" class="alert alert-danger">
+                    Field of study is required
+                </div>
+            </div>
+
+            <div *ngIf="isTeacher() && teacher_data">
+                <div class="mb-3">
+                    <label for="descrizione_docente" class="form-label">Description</label>
+                    <textarea #descrizione_docente="ngModel" name="descrizione_docente"
+                        [(ngModel)]="teacher_data.descrizione_docente" class="form-control" id="descrizione_docente"
+                        placeholder="Enter description..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="link_pagina_docente" class="form-label">Lecturer page link</label>
+                    <input type="text" #citta="ngModel" required name="link_pagina_docente"
+                        [(ngModel)]="teacher_data.link_pagina_docente" class="form-control" id="link_pagina_docente"
+                        placeholder="Enter link">
+                </div>
+
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">Picture profile</label>
+                    <input class="form-control" type="file" id="formFile" name="immagine_profilo"
+                        (change)="onFileSelected($event)">
+                </div>
+            </div>
+
+            <div *ngIf="errormessage" class="alert alert-danger" role="alert">
+                Error: {{errormessage}}
+            </div>
+
+            <button type="button" class="btn btn-lg btn-primary btn-block"
+                [disabled]="!nome.valid || !cognome.valid" (click)="update();">
+                Save
+            </button>
+        </form>
+    </div>
+</div>

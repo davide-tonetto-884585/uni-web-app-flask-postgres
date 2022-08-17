@@ -3,3 +3,4 @@
 .env
 /frontend/orientamento_dais/.vscode
 /backend/static
+.idea

@@ -4,6 +4,7 @@ import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { SettingsModalComponent } from '../settings-modal/settings-modal.component';
+import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
 
 @Component({
   selector: 'app-top-bar',
@@ -52,5 +53,9 @@ export class TopBarComponent implements OnInit {
 
   openSettings(): void {
     const dialog = this.dialog.open(SettingsModalComponent);
+  }
+
+  openProfileModal() {
+    const dialog = this.dialog.open(ProfileModalComponent);
   }
 }

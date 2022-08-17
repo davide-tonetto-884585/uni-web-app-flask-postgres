@@ -40,7 +40,7 @@
                         {{ getName() }}
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" (click)="openProfileModal()">Profile</a></li>
                         <li *ngIf="isTeacher()"><a class="dropdown-item" routerLink="/myCourses">My courses</a></li>
                         <li *ngIf="isStudent()"><a class="dropdown-item" routerLink="/myCourses">My inscriptions</a></li>
                         <li *ngIf="isAdmin()"><a class="dropdown-item" routerLink="/teacherSignup">Add new teacher</a></li>
