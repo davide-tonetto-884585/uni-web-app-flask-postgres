@@ -1,7 +1,6 @@
 import configparser
 from datetime import date
 import json
-from telnetlib import DO
 from flask import Blueprint, jsonify, request
 from sqlalchemy import func, desc
 
