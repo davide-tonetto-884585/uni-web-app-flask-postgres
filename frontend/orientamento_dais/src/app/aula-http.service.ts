@@ -39,15 +39,31 @@ export class AulaHttpService {
     }
   }
 
+  // restituisce un'aula
   getAula(id_aula: number): Observable<Aula> {
     return this.http.get<Aula>(
       `${BACKEND_URL}/aule/${id_aula}`
     ).pipe(catchError(this.handleError));
   }
 
+  // restituisce tutte le aule presenti nel database
   getAule(): Observable<Aula[]> {
     return this.http.get<Aula[]>(
       `${BACKEND_URL}/aule`
+    ).pipe(catchError(this.handleError));
+  }
+
+  // aggiunge un'aula con le informazioni passate
+  addAula(aula: Aula | any): Observable<any> {
+    const form_data = new FormData();
+    Object.keys(aula).forEach((key) => {
+      form_data.append(key, aula[key]);
+    });
+
+    return this.http.post(
+      `${BACKEND_URL}/aule`,
+      form_data, 
+      this.createOptions()
     ).pipe(catchError(this.handleError));
   }
 }

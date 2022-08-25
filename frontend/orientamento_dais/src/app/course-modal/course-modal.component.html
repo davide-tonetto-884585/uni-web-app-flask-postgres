@@ -122,13 +122,13 @@
                                 [name]="'orario_fine' + il + '_' + i" [(ngModel)]="les.orario_fine">
                         </mat-form-field>
 
-                        <mat-form-field class="fw" appearance="fill">
+                        <mat-form-field *ngIf="prog.modalita != 'presenza'" class="fw" appearance="fill">
                             <mat-label>Online classroom link</mat-label>
                             <input matInput placeholder="Link..." [value]="les.link_stanza_virtuale"
                                 [name]="'link_stanza_virtuale' + il + '_' + i" [(ngModel)]="les.link_stanza_virtuale">
                         </mat-form-field>
 
-                        <mat-form-field class="fw" appearance="fill">
+                        <mat-form-field *ngIf="prog.modalita != 'presenza'" class="fw" appearance="fill">
                             <mat-label>Online classroom passcode</mat-label>
                             <input matInput type="text" placeholder="Passcode..."
                                 [value]="les.passcode_stanza_virtuale" [name]="'passcode_stanza_virtuale' + il + '_' + i"
@@ -142,7 +142,7 @@
                                 [(ngModel)]="les.codice_verifica_presenza">
                         </mat-form-field>
 
-                        <mat-form-field appearance="fill" class="fw">
+                        <mat-form-field *ngIf="prog.modalita != 'online'" appearance="fill" class="fw">
                             <mat-label>Classroom</mat-label>
                             <mat-select [(value)]="les.id_aula" [name]="'id_aula' + il + '_' + i" [(ngModel)]="les.id_aula">
                                 <mat-option *ngFor="let aula of aule" [value]="aula.id">

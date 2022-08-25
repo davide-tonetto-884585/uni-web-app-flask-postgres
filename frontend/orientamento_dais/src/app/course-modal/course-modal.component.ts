@@ -302,7 +302,6 @@ export class CourseModalComponent implements OnInit {
 
   convertDate(date: string): Date {
     const [month, day, year] = date.split('/');
-    console.log(new Date(+year, +month - 1, +day))
     return new Date(+year, +month - 1, +day);
   }
 

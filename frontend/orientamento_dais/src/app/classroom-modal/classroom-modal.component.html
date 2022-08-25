@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col">
+        <h4 class="mt-3" mat-dialog-title>Classrooms:</h4>
+    </div>
+    <div class="col d-flex justify-content-end">
+        <button type="button" class="btn btn-outline-danger mt-3 mb-3" (click)="addAula()">Add</button>
+    </div>
+</div>
+<div mat-dialog-content>
+    <ul>
+        <li *ngFor="let aula of aule">
+            {{ aula.nome + ", edifice " + aula.edificio + " campus " +
+            aula.campus + " - " + aula.capienza + "
+            students" }}
+        </li>
+    </ul>
+    <hr>
+    <mat-expansion-panel class="mb-1" *ngFor="let aula of new_aule; index as i">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                New aula {{ i + 1 }}
+            </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput type="text" placeholder="Classroom name..."
+                [name]="'nome_' + i"
+                [(ngModel)]="aula.nome">
+        </mat-form-field>
+
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>Edifice</mat-label>
+            <input matInput type="text" placeholder="Edifice name..."
+                [name]="'edificio_' + i"
+                [(ngModel)]="aula.edificio">
+        </mat-form-field>
+
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>Campus</mat-label>
+            <input matInput type="text" placeholder="Campus name..."
+                [name]="'campus_' + i"
+                [(ngModel)]="aula.campus">
+        </mat-form-field>
+
+        <mat-form-field class="w-100" appearance="fill">
+            <mat-label>Capacity</mat-label>
+            <input matInput type="number" placeholder="Capacity..."
+                [name]="'capienza_' + i"
+                [(ngModel)]="aula.capienza">
+        </mat-form-field>
+    </mat-expansion-panel>
+
+    <button *ngIf="new_aule.length > 0" type="button" class="btn btn-outline-success mt-2" (click)="save()">Save</button>
+</div>

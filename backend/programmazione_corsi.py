@@ -39,15 +39,15 @@ def add_prog_corso(user, id):
                     join(DocenteCorso, DocenteCorso.id_docente == Docente.id).\
                     filter(DocenteCorso.id_corso == id).all()
             except Exception as e:
-                return jsonify({'error': True, 'errormessage': 'Errore nel reperire docenti del corso: ' + str(e)}), 500
+                return jsonify({'error': True, 'errormessage': 'Error in finding course teachers: ' + str(e)}), 500
 
             # controllo che il docente sia nei docenti che detiene il corso
             if ((user['id'],) not in docenti):
-                return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a programmare un corso a te non appartenente.'}), 401
+                return jsonify({'error': True, 'errormessage': 'You are not authorized to schedule a course that does not belong to you.'}), 401
 
         # controllo che i campi obbligatori siano stati inseriti nel form
         if request.form.get('modalita') is None or request.form.get('password_certificato') is None:
-            return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing information'}), 400
 
         limite_iscrizioni = None if request.form.get(
             'limite_iscrizioni') == 'null' else request.form.get('limite_iscrizioni')
@@ -65,7 +65,7 @@ def add_prog_corso(user, id):
             sessionDocenti.commit()
         except Exception as e:
             sessionDocenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore inserimento programmazione corso' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Course schedule entry error' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': '', 'id': new_prog_corso.id}), 200
 
@@ -86,11 +86,11 @@ def modify_prog_corso(user, id_corso, id_prog_corso):
                     join(DocenteCorso, DocenteCorso.id_docente == Docente.id).\
                     filter(DocenteCorso.id_corso == id_corso).all()
             except Exception as e:
-                return jsonify({'error': True, 'errormessage': 'Errore nel reperire docenti del corso: ' + str(e)}), 500
+                return jsonify({'error': True, 'errormessage': 'Error in finding course teachers: ' + str(e)}), 500
 
             # controllo che il docente sia nei docenti che detiene il corso
             if ((user['id'],) not in docenti):
-                return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a programmare un corso a te non appartenente.'}), 401
+                return jsonify({'error': True, 'errormessage': 'You are not authorized to schedule a course that does not belong to you.'}), 401
 
         prog_corso = sessionAmministratori.query(ProgrammazioneCorso).filter(
             ProgrammazioneCorso.id == id_prog_corso).first()
@@ -110,7 +110,7 @@ def modify_prog_corso(user, id_corso, id_prog_corso):
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore aggiornamento programmazione corso' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Course schedule update error' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -157,7 +157,7 @@ def get_progs_corso(id):
             progs_corso = progs_corso.all()
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire programmazione corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error finding course schedule: ' + str(e)}), 500
 
         return jsonify(programmazione_corsi_schema.dump(progs_corso)), 200
 
@@ -174,11 +174,11 @@ def get_prog_corso(id_corso, id_prog):
                        ProgrammazioneCorso.id == id_prog).first()
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire il corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error finding the course: ' + str(e)}), 500
 
         if prog_corso is None:
             # Se non trova alcuna programmazione, ritorna uno status code 404
-            return jsonify({'error': True, 'errormessage': 'Programmazione del corso inesistente'}), 404
+            return jsonify({'error': True, 'errormessage': 'Course schedule not found'}), 404
         else:
             # Per ogni entry, aggiunge il limite di iscrizione sulla base dell'aula più piccola
             if prog_corso.modalita == 'presenza' or prog_corso.modalita == 'duale' and prog_corso.limite_iscrizioni is None:
@@ -209,6 +209,9 @@ def downloadFile(user, id_corso, id_prog):
             filter(ProgrammazioneLezioni.id_programmazione_corso == id_prog).count()
             
         if (num_presenze * 100) / num_lezioni < int(config['SETTINGS']['percentuale_presenze_minima']):
-            return jsonify({'error': True, 'errormessage': 'minimum attendance requirement not met'}), 409
+            return jsonify({'error': True, 'errormessage': 'Minimum attendance requirement not met'}), 409
+        
+        if corso.file_certificato is None:
+            return jsonify({'error': True, 'errormessage': 'Certificate not found, please contact course teacher'}), 404
 
         return send_file('.' + corso.file_certificato, as_attachment=True, mimetype='application/pdf', attachment_filename=corso.titolo + 'certificate')

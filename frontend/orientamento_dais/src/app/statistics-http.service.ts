@@ -17,6 +17,7 @@ export class StatisticsHttpService {
     private user_http: UserHttpService,
   ) { }
 
+  // crea le informazioni di base per le richieste http
   private createOptions(params = {}) {
     return {
       headers: new HttpHeaders({
@@ -27,6 +28,7 @@ export class StatisticsHttpService {
     };
   }
 
+  // da informazioni sugli errori delle richieste HTTP 
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
       console.error('An error occurred:', error.error.message);
@@ -40,6 +42,7 @@ export class StatisticsHttpService {
     }
   }
 
+  // ritorna un Observable con le statistiche del corso indicato
   getCourseStatistics(id_corso: number): Observable<any> {
     return this.http.get<any>(
       `${BACKEND_URL}/corsi/${id_corso}/statistiche`,

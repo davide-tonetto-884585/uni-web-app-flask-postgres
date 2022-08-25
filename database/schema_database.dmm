@@ -1124,7 +1124,7 @@
 				},
 				{
 					"id": "e29d7a74-a7a5-4600-bb3d-6f88de3c6389",
-					"name": "modalita",
+					"name": "modalità",
 					"datatype": "0cb8bbdd-acd2-4060-84f9-618488e07025",
 					"param": "",
 					"pk": false,
@@ -2322,7 +2322,7 @@
 		"de77aa3a-2bbe-4684-99b2-24c12bba4bd6": {
 			"id": "de77aa3a-2bbe-4684-99b2-24c12bba4bd6",
 			"visible": true,
-			"name": "enum_modalita_lezioni-programmazione_corso",
+			"name": "enum_modalità_lezioni-programmazione_corso",
 			"desc": "",
 			"style": "solid",
 			"parent": "0cb8bbdd-acd2-4060-84f9-618488e07025",
@@ -2414,7 +2414,7 @@
 		"0cb8bbdd-acd2-4060-84f9-618488e07025": {
 			"id": "0cb8bbdd-acd2-4060-84f9-618488e07025",
 			"visible": true,
-			"name": "enum_modalita_lezioni",
+			"name": "enum_modalità_lezioni",
 			"desc": "",
 			"type": "Enum",
 			"code": "",
@@ -2549,7 +2549,7 @@
 			"name": "check_limite_iscrizioni",
 			"desc": "",
 			"type": "Function",
-			"code": "CREATE FUNCTION public.check_limite_iscrizioni()\n    RETURNS trigger\n    LANGUAGE 'plpgsql'\n     NOT LEAKPROOF\nAS $BODY$\ndeclare\n    prog_corso programmazione_corso;\nbegin\n    select pc.*\n    into prog_corso\n    from programmazione_corso pc\n    where pc.id = new.id_programmazione_corso;\n\n    if prog_corso.modalita = 'duale' or prog_corso.modalita = 'presenza' and prog_corso.limite_iscrizioni is not null then\n        if (select a.capienza from aule a where a.id = new.id_aula) < prog_corso.limite_iscrizioni then\n            raise exception 'classroom too small for the registration limit of the course';\n        end if;\n    end if;\n\n    return new;\nend;\n$BODY$;",
+			"code": "CREATE FUNCTION public.check_limite_iscrizioni()\n    RETURNS trigger\n    LANGUAGE 'plpgsql'\n     NOT LEAKPROOF\nAS $BODY$\ndeclare\n    prog_corso programmazione_corso;\nbegin\n    select pc.*\n    into prog_corso\n    from programmazione_corso pc\n    where pc.id = new.id_programmazione_corso;\n\n    if prog_corso.modalità = 'duale' or prog_corso.modalità = 'presenza' and prog_corso.limite_iscrizioni is not null then\n        if (select a.capienza from aule a where a.id = new.id_aula) < prog_corso.limite_iscrizioni then\n            raise exception 'classroom too small for the registration limit of the course';\n        end if;\n    end if;\n\n    return new;\nend;\n$BODY$;",
 			"lines": [],
 			"generate": true,
 			"generateCustomCode": true,

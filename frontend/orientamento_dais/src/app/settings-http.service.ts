@@ -40,6 +40,7 @@ export class SettingsHttpService {
     }
   }
 
+  // richiede le attuali impostazioni globali dell'applicativo
   getCurrentSettings(): Observable<any> {
     return this.http.get<any>(
       `${BACKEND_URL}/impostazioni`,
@@ -47,6 +48,7 @@ export class SettingsHttpService {
     ).pipe(catchError(this.handleError))
   }
 
+  // aggiorna le impostazioni globali del'applicativo
   updateSettings(settings: any): Observable<any> {
     const form_data = new FormData();
     Object.keys(settings).forEach((key) => {

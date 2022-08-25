@@ -56,7 +56,9 @@ def get_corsi():
                 
                 corsi = corsi.join(inscriptions, inscriptions.c.id_corso == Corso.id).order_by(desc(inscriptions.c.num_iscrizioni)) 
             else:
-                corsi = corsi.order_by(desc(Corso.id))     
+                corsi = corsi.order_by(desc(Corso.id))
+                
+            corsi = corsi.filter(Corso.abilitato == True)
                 
             count = corsi.count()  
             
@@ -67,7 +69,7 @@ def get_corsi():
 
             corsi = corsi.all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento dei corsi: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error while retrieving courses: ' + str(e)}), 500
 
         return jsonify({ 'corsi': corsi_schemas.dump(corsi), 'count': count }), 200
 
@@ -83,11 +85,11 @@ def get_corso(id):
             corso = corso.first()      # Prende il primo risultato
         except Exception as e:
             # Eccezione lanciata in caso di errore interno del server
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire il corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Cannot get course: ' + str(e)}), 500
 
         if corso is None:
             # Errore lanciato nel caso non ci sia alcun risultato
-            return jsonify({'error': True, 'errormessage': 'Corso inesistente'}), 404
+            return jsonify({'error': True, 'errormessage': 'Course not found'}), 404
         else:
             return jsonify(corsi_schema.dump(corso)), 200
 
@@ -102,7 +104,7 @@ def add_corso(user):  # su tutte token_required bisogna mettere user (per reperi
         
         # Controlla se ci sono i campi necessari
         if request.form.get('titolo') is None:
-            return jsonify({'error': True, 'errormessage': 'Titolo mancante'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing title'}), 400
         
         if sessionDocenti.query(DocenteCorso).\
             join(Corso, DocenteCorso.id_corso == Corso.id).\
@@ -111,7 +113,7 @@ def add_corso(user):  # su tutte token_required bisogna mettere user (per reperi
 
         # Controlla che il corso non abbia un titolo già esistente
         if sessionDocenti.query(Corso).filter(Corso.titolo == request.form.get('titolo')).first():
-            return jsonify({'error': True, 'errormessage': 'Corso gia\' esistente con lo stesso titolo'}), 409
+            return jsonify({'error': True, 'errormessage': 'Course with same title already existing'}), 409
 
         # Carica l'immagine di copertina e il file certificato, e ne recupera i path (se già presenti non carica niente e recupera solo i path)
         path_to_immagine_copertina = load_file('immagine_copertina')
@@ -134,7 +136,7 @@ def add_corso(user):  # su tutte token_required bisogna mettere user (per reperi
             sessionDocenti.commit()
         except Exception as e:
             sessionDocenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore inserimento corso' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Cannot insert course:' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': '', 'id_corso': new_corso.id}), 200
 
@@ -147,7 +149,7 @@ def modify_corso(user, id):
         # Controlla che l'utente sia il docente che deteiene il corso
         if(sessionDocenti.query(DocenteCorso).
                 filter(DocenteCorso.id_docente == user['id'], DocenteCorso.id_corso == id).count() == 0):
-            return jsonify({'error': True, 'errormessage': 'Non puoi modificare un corso che non ti appartiene'}), 401
+            return jsonify({'error': True, 'errormessage': 'You cannot edit a course that does not belong to you'}), 401
 
         # Recupera il corso tramite l'id
         corso = sessionDocenti.query(Corso).filter(Corso.id == id).first()
@@ -157,7 +159,7 @@ def modify_corso(user, id):
         descrizione = request.form.get('descrizione')
         lingua = request.form.get('lingua')
         abilitato = request.form.get('abilitato')
-        abilitato = 1 if abilitato else 0
+        abilitato = 1 if abilitato == 'true' else 0
         immagine_copertina = load_file('immagine_copertina')
         file_certificato = load_file('file_certificato')
         
@@ -182,7 +184,7 @@ def modify_corso(user, id):
             sessionDocenti.commit()
         except Exception as e:
             sessionDocenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore aggiornamento informazioni del corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error updating course information: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -199,7 +201,7 @@ def get_docenti_corsi(id):
                 join(DocenteCorso, DocenteCorso.id_docente == Docente.id).\
                 filter(DocenteCorso.id_corso == id).all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire i docenti del corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding the teachers of the course: ' + str(e)}), 500
 
         return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
 
@@ -223,7 +225,7 @@ def add_docente_corso(user, id):
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento di uno (o più) docenti al corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in adding one (or more) teachers to the course: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -238,7 +240,7 @@ def get_corsi_docente(id):
                 join(DocenteCorso, DocenteCorso.id_corso == Corso.id).\
                 filter(DocenteCorso.id_docente == id).all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire i corsi del docente: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding the teacher\'s courses: ' + str(e)}), 500
 
         return jsonify(corsi_schemas.dump(corsi)), 200
 
@@ -263,7 +265,7 @@ def remove_docente(user, id):
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione di uno (o più) docenti dal corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in deleting one (or more) teachers from the course: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -281,7 +283,7 @@ def remove_course(user, id):
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione del corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error deleting the course: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -300,6 +302,6 @@ def get_studenti_corso(id):
                 filter(ProgrammazioneCorso.id_corso == id).all()
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire gli studenti del corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding the students of the course: ' + str(e)}), 500
 
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti])))

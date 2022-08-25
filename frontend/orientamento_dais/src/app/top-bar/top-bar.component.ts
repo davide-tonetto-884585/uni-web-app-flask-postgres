@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { SettingsModalComponent } from '../settings-modal/settings-modal.component';
 import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
+import { ClassroomModalComponent } from '../classroom-modal/classroom-modal.component';
 
 @Component({
   selector: 'app-top-bar',
@@ -57,5 +58,9 @@ export class TopBarComponent implements OnInit {
 
   openProfileModal() {
     const dialog = this.dialog.open(ProfileModalComponent);
+  }
+
+  openClassroomsModal() {
+    const dialog = this.dialog.open(ClassroomModalComponent);
   }
 }

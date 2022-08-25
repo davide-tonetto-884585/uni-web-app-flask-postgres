@@ -1,9 +1,9 @@
 <app-top-bar></app-top-bar>
 <div class="container-fluid">
-    <div *ngIf="error != null && !error" class="alert alert-danger text-center" role="alert">
+    <div *ngIf="error === 'true'" class="alert alert-danger text-center" role="alert">
         <p>{{ message }}</p>
     </div>
-    <div *ngIf="error != null && error" class="alert alert-success text-center" role="alert">
+    <div *ngIf="error === 'false'" class="alert alert-success text-center" role="alert">
         <p>{{ message }}</p>
     </div>
     <div>

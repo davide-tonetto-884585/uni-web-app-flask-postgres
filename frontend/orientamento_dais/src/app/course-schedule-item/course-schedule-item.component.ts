@@ -42,10 +42,10 @@ export class CourseScheduleItemComponent implements OnInit {
     return this.user_http.isStudent();
   }
 
-  enrollStudent() {
+  enrollStudent(in_presenza: boolean | null = null) {
     let id_stud = this.user_http.getId()
     if (id_stud && this.prog) {
-      this.course_http.enrollStudent(this.prog.id_corso, this.prog.id, id_stud).subscribe({
+      this.course_http.enrollStudent(this.prog.id_corso, this.prog.id, id_stud, in_presenza).subscribe({
         next: (d) => {
           this.dialog.open(MessageDialogComponent, {
             data: {
@@ -124,28 +124,5 @@ export class CourseScheduleItemComponent implements OnInit {
   showQR(id_corso: number, id_prog_corso: number, id_lezione: number, passcode: string): void {
     this.QRInfo = `${FRONTEND_URL}/login?pres_code=${id_corso}.${id_prog_corso}.${id_lezione}.${CryptoJS.AES.encrypt(passcode, SECRET).toString()}`;
     console.log(this.QRInfo) //TODO: togliere
-  }
-
-  getCertificate(): void {
-    if (this.prog)
-      this.course_http.getCertificate(this.prog.id_corso, this.prog.id).subscribe({
-        next: (response) => {
-          let fileName = 'certificate';
-          let blob: Blob = response.body as Blob;
-          let a = document.createElement('a');
-          a.download = fileName;
-          a.href = window.URL.createObjectURL(blob);
-          a.click();
-        },
-        error: (response) => {
-          this.dialog.open(MessageDialogComponent, {
-            data: {
-              text: response.error.errormessage,
-              title: 'Failed!',
-              error: true
-            },
-          });
-        }
-      })
   }
 }

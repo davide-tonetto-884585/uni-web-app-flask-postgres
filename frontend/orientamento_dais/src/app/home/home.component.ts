@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
   scheduled_courses: Course[] = [];
   popular_courses: Course[] = [];
 
-  error: boolean | null = null;
+  error: string | null = null;
   message: string | null = null;
 
   constructor(
@@ -52,9 +52,6 @@ export class HomeComponent implements OnInit {
       if (params.error && params.message) {
         this.error = params.error;
         this.message = params.message;
-
-        console.log(this.error);
-        console.log(this.message);
       }
     });
   }

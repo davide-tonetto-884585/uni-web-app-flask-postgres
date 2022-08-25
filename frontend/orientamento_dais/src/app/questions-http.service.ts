@@ -71,6 +71,7 @@ export class QuestionsHttpService {
     );
   }
 
+  // ritorna i like di una domanda
   getLikeDomanda(id_corso: number, id_domanda: number): Observable<any[]> {
     return this.http.get<any[]>(
       `${BACKEND_URL}/corsi/${id_corso}/domande/${id_domanda}/like`,
@@ -78,6 +79,7 @@ export class QuestionsHttpService {
     ).pipe(catchError(this.handleError))
   }
 
+  // aggiunge un like ad una domanda
   addLikeDomanda(id_corso: number, id_domanda: number): Observable<any> {
     return this.http.post(
       `${BACKEND_URL}/corsi/${id_corso}/domande/${id_domanda}/like`,
@@ -86,6 +88,7 @@ export class QuestionsHttpService {
     ).pipe(catchError(this.handleError))
   }
 
+  // chiude una domanda esistente aperta
   closeDomanda(id_corso: number, id_domanda: number): Observable<any> {
     let form_data = new FormData();
     form_data.append('chiusa', 'true');

@@ -22,19 +22,29 @@
         <div>
             <hr>
             <div *ngIf="isStudent()">
-                <p><b>Lessons:</b></p>
-                <p *ngFor="let les of course.lezioni">
-                    {{ les.data | date:'EEEE, d MMMM, y' }}
-                    from {{ les.orario_inizio.substring(0, les.orario_inizio.length - 3) }}
-                    to {{ les.orario_fine.substring(0, les.orario_fine.length - 3) }}
-                    <a *ngIf="les.aula" href="#"> ({{ les.aula.nome }}) </a>
-                </p>
+                <p><b>Inscription type:</b> {{ ((course.in_presenza == null || course.in_presenza == true) ? 'In place' : 'Online') }}<br>
+                <b>Lessons:</b></p>
+                <ul>
+                    <li *ngFor="let les of course.lezioni">
+                        <p>
+                            {{ les.data | date:'EEEE, d MMMM, y' }}
+                            from {{ les.orario_inizio.substring(0, les.orario_inizio.length - 3) }}
+                            to {{ les.orario_fine.substring(0, les.orario_fine.length - 3) }}
+                            <i *ngIf="les.link_stanza_virtuale"><br><a [href]="les.link_stanza_virtuale">Online classroom
+                                link</a> {{ les.passcode_stanza_virtuale ? '- passcode: ' + les.link_stanza_virtuale : '' }} </i>
+                            <br><i *ngIf="les.aula"> ({{ les.aula.nome + ", edifice " + les.aula.edificio + " campus "
+                                + les.aula.campus }}) </i>
+                        </p>
+                    </li>
+                </ul>
             </div>
 
             <button *ngIf="isTeacher()" type="button" class="btn btn-outline-warning"
                 (click)="openCourseModal(course)">Edit</button>
             <button *ngIf="isStudent()" type="button" class="btn btn-outline-danger"
                 (click)="unsubscribeStudent(course.id, course.id_programmazione_corso, this.getId())">Unsubscribe</button>
+            <button *ngIf="isStudent()" type="button" class="btn btn-success m-1"
+                (click)="getCertificate(course.id, course.id_programmazione_corso)">Download certificate</button>
         </div>
     </app-course-card>
 </div>

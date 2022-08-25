@@ -45,6 +45,7 @@
                         <li *ngIf="isStudent()"><a class="dropdown-item" routerLink="/myCourses">My inscriptions</a></li>
                         <li *ngIf="isAdmin()"><a class="dropdown-item" routerLink="/teacherSignup">Add new teacher</a></li>
                         <li *ngIf="isAdmin()"><a class="dropdown-item" (click)="openSettings()">Application settings</a></li>
+                        <li *ngIf="isAdmin()"><a class="dropdown-item" (click)="openClassroomsModal()">Manage classrooms</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

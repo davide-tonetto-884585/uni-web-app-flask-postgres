@@ -45,7 +45,7 @@ def get_aule():
 
             aule = aule.all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire le aule: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding the classrooms: ' + str(e)}), 500
 
         return jsonify(aule_schema.dump(aule)), 200
 
@@ -62,20 +62,20 @@ def add_aule(user):
 
         # Controlla i campi necessari per l'inserimento dell'aula
         if name is None:
-            return jsonify({'error': True, 'errormessage': 'Nome mancante'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing name'}), 400
 
         if building is None:
-            return jsonify({'error': True, 'errormessage': 'Edificio mancante'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing edifice'}), 400
         
         if campus is None:
-            return jsonify({'error': True, 'errormessage': 'Campus mancante'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing campus'}), 400
 
         if capacity is None:
-            return jsonify({'error': True, 'errormessage': 'Capienza mancante'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing capacity'}), 400
 
         # Controlla che l'aula non sia già presente nello stesso campus e nello stesso edificio
         if sessionAmministratori.query(Aula).filter(Aula.nome == name, Aula.campus == campus, Aula.edificio == building).first():
-            return jsonify({'error': True, 'errormessage': 'Aula gia\' esistente con le stesse informazioni'}), 404
+            return jsonify({'error': True, 'errormessage': 'Existing classroom with same information'}), 404
 
         # Crea un nuovo oggetto di tipo Aula da inserire
         new_aula = Aula(nome=name, edificio=building, campus=campus, capienza=capacity)
@@ -86,7 +86,7 @@ def add_aule(user):
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore inserimento aula' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Classroom insertion error: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -99,10 +99,10 @@ def get_aula(id):
             # Query per recuperare l'aula tramite id
             aula = preLoginSession.query(Aula).filter(Aula.id == id).first()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperire l\'aula: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding the classroom: ' + str(e)}), 500
 
         if aula is None:
-            return jsonify({'error': True, 'errormessage': 'Aula inesistente'}), 404
+            return jsonify({'error': True, 'errormessage': 'Classroom not find'}), 404
         else:
             return jsonify(aula_schema.dump(aula)), 200
         

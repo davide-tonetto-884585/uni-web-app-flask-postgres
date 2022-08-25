@@ -57,7 +57,7 @@ export class UserLoginComponent implements OnInit {
           this.router.navigate(['/home'], { queryParams: { error: false, message: 'Attendance registered successfully' } })
         },
         error: (err) => {
-          this.router.navigate(['/home'], { queryParams: { error: true, message: 'Attendance registered failed: ' + err.error.errormessage } })
+          this.router.navigate(['/home'], { queryParams: { error: true, message: 'Attendance registered failed: ' + err } })
         }
       })
     }

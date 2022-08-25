@@ -38,11 +38,13 @@ def token_required(restrict_to_roles=[]):
             # jwt is passed in the request header
             auth_header = request.headers.get('Authorization')
             if auth_header:
-                token = auth_header.split(" ")[1]
+                arr = auth_header.split(" ")
+                if len(arr) > 1:
+                    token = arr[1]
 
             # return 401 if token is not passed
             if not token:
-                return jsonify({'error': True, 'errormessage': 'Token mancante'}), 401
+                return jsonify({'error': True, 'errormessage': 'Missing token'}), 401
 
             try:
                 # decoding the payload to fetch the stored details
@@ -58,7 +60,7 @@ def token_required(restrict_to_roles=[]):
                         break
 
                 if not satisfied:
-                    return jsonify({'error': True, 'errormessage': 'accesso non consentito'}), 401
+                    return jsonify({'error': True, 'errormessage': 'Unauthorized'}), 401
             except Exception as e:
                 return jsonify({
                     'error': True,
@@ -85,11 +87,11 @@ def signup_student():
                 request.form.get('nome') is None or\
                 request.form.get('cognome') is None or\
                 request.form.get('data_nascita') is None:
-            return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare lo studente'}), 400
+            return jsonify({'error': True, 'errormessage': 'You must provide more information in order to create a new student'}), 400
 
         # controlle che non esista già un utente con la stessa email
         if preLoginSession.query(Utente).filter(Utente.email == request.form.get('email')).first():
-            return jsonify({'error': True, 'errormessage': 'utente gia\' esistente'}), 409
+            return jsonify({'error': True, 'errormessage': 'Already exixsting user'}), 409
 
         # genero un salt randomico per rendere la password illeggibile da database
         salt = ''.join(random.choice(string.printable) for i in range(16))
@@ -119,7 +121,7 @@ def signup_student():
             preLoginSession.commit()
         except Exception as e:
             preLoginSession.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'User insertion error: ' + str(e)}), 500
 
         # invio mail per verifica validità indirizzo se richiesta, il frontend passerà un link che sarà mostrato nella mail completato
         # con tipologia utente, token e id utente
@@ -149,11 +151,11 @@ def complete_signup_student(id):
         if request.form.get('token_verifica') is None or\
                 request.form.get('indirizzo_di_studio') is None or\
                 request.form.get('id_scuola') is None:
-            return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione dello studente'}), 404
+            return jsonify({'error': True, 'errormessage': 'You must provide more information in order to create a new student'}), 404
 
         # controllo che non esista già uno studente con lo stesso id
         if preLoginSession.query(Studente).filter(Studente.id == id).first():
-            return jsonify({'error': True, 'errormessage': 'studente gia\' esistente'}), 409
+            return jsonify({'error': True, 'errormessage': 'Already exixsting user'}), 409
 
         # controllo se esiste un utente con l'id passato
         user = preLoginSession.query(Utente).filter(Utente.id == id).first()
@@ -175,11 +177,11 @@ def complete_signup_student(id):
                     preLoginSession.commit()
                 except Exception as e:
                     preLoginSession.rollback()
-                    return jsonify({'error': True, 'errormessage': 'Errore inserimento studente: ' + str(e)}), 500
+                    return jsonify({'error': True, 'errormessage': 'user insertion error: ' + str(e)}), 500
 
                 return jsonify({'error': False, 'errormessage': ''}), 200
 
-        return jsonify({'error': True, 'errormessage': 'Impossibile completare creazione studente'}), 400
+        return jsonify({'error': True, 'errormessage': 'Cannot complete user creation'}), 400
 
 
 # route usata per inserire un nuovo docente
@@ -194,11 +196,11 @@ def signup_teacher(user):
                 request.form.get('nome') is None or\
                 request.form.get('cognome') is None or\
                 request.form.get('data_nascita') is None:
-            return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per creare il docente'}), 400
+            return jsonify({'error': True, 'errormessage': 'You must provide more information in order to create a new teacher'}), 400
 
         # controllo che non esista già un utente con la stessa mail
         if sessionAmministratori.query(Utente).filter(Utente.email == request.form.get('email')).first():
-            return jsonify({'error': True, 'errormessage': 'Utente gia\' esistente'}), 409
+            return jsonify({'error': True, 'errormessage': 'Already existing user'}), 409
 
         # genero il token per la verifica della mail
         salt = ''.join(random.choice(string.printable) for i in range(16))
@@ -228,7 +230,7 @@ def signup_teacher(user):
             sessionAmministratori.commit()
         except Exception as e:
             sessionAmministratori.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore inserimento utente: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'User insertion error: ' + str(e)}), 500
 
         # invio mail per verifica validità indirizzo se richiesta
         if request.form.get('frontend_activation_link') is not None:
@@ -254,7 +256,7 @@ def complete_signup_teacher(id):
         # controllo che la richiesta contenga tutte le informazioni obbligatorie
         if request.form.get('token_verifica') is None or\
                 request.form.get('password') is None:
-            return jsonify({'error': True, 'errormessage': 'Sono necessarie ulteriori informazioni per completare la creazione del docente'}), 400
+            return jsonify({'error': True, 'errormessage': 'You must provide more information in order to create a new teacher'}), 400
 
         # controllo che esista l'utente
         user = preLoginSession.query(Utente).filter(Utente.id == id).first()
@@ -286,11 +288,11 @@ def complete_signup_teacher(id):
                     preLoginSession.commit()
                 except Exception as e:
                     preLoginSession.rollback()
-                    return jsonify({'error': True, 'errormessage': 'Errore inserimento docente: ' + str(e)}), 500
+                    return jsonify({'error': True, 'errormessage': 'Teacher insertion error: ' + str(e)}), 500
 
                 return jsonify({'error': False, 'errormessage': ''}), 200
 
-        return jsonify({'error': True, 'errormessage': 'Impossibile completare creazione docente'}), 400
+        return jsonify({'error': True, 'errormessage': 'Cannot complete teacher creation'}), 400
 
 
 # route usata per inserire un nuovo amministratore
@@ -311,11 +313,11 @@ def add_administrator(user, id):
                 sessionAmministratori.commit()
             except Exception as e:
                 sessionAmministratori.rollback()
-                return jsonify({'error': True, 'errormessage': 'Errore inserimento amministratore: ' + str(e)}), 500
+                return jsonify({'error': True, 'errormessage': 'Admin insertion error: ' + str(e)}), 500
 
             return jsonify({'error': False, 'errormessage': ''}), 200
 
-        return jsonify({'error': True, 'errormessage': 'Docente inesistente'})
+        return jsonify({'error': True, 'errormessage': 'Teacher not find'})
 
 
 # route usata per loggare un utente
@@ -326,7 +328,7 @@ def login():
         # verifico che siano stati passati username e password (tramite basic auth)
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
-            return jsonify({'error': True, 'errormessage': 'Autenticazione richiesta'}), 401
+            return jsonify({'error': True, 'errormessage': 'Missing authentication informaion'}), 401
 
         email = auth.username
         password = auth.password
@@ -336,7 +338,7 @@ def login():
             user = preLoginSession.query(Utente).filter(
                 Utente.email == email).first()
             if not user or user.abilitato == False or user.verificato == False:
-                return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
+                return jsonify({'error': True, 'errormessage': 'Authentication failed'}), 401
 
             # definisco il token jwt (json web token)
             token_data = {
@@ -378,10 +380,10 @@ def login():
 
                 return jsonify({'error': False, 'errormessage': '', 'token': token}), 200
 
-            return jsonify({'error': True, 'errormessage': 'Autenticaione fallita'}), 401
+            return jsonify({'error': True, 'errormessage': 'Authentication failed'}), 401
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore durante l\'autenticazione: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error during authentication: ' + str(e)}), 500
 
 
 # ritorna tutti gli studenti
@@ -417,7 +419,7 @@ def get_students(user):
 
             studenti = studenti.all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento degli studenti: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding students: ' + str(e)}), 500
 
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in studenti]))), 200
 
@@ -429,7 +431,7 @@ def get_students(user):
 def get_student(user, id):
     with SessionDocenti() as sessionDocenti, sessionDocenti.begin():
         if 'studente' in user['roles'] and user['id'] != int(id):
-            return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
+            return jsonify({'error': True, 'errormessage': 'Permission denied'}), 401
         
         # Query per recuperare lo studente
         studente = sessionDocenti.query(Studente).filter(Studente.id == id)
@@ -438,11 +440,11 @@ def get_student(user, id):
         try:
             studente = studente.first()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Impossibile reperire lo studente: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding student: ' + str(e)}), 500
 
         if studente is None:
             # Se non trova lo studente, ritorna uno status code 404
-            return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 404
+            return jsonify({'error': True, 'errormessage': 'Student not found'}), 404
         else:
             return jsonify(studente_schema.dump(studente)), 200
 
@@ -479,7 +481,7 @@ def get_docenti():
             docenti = docenti.all()
         # Se non trova alcun docente, ritorna uno status code 404
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento dei docenti: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding teachers: ' + str(e)}), 500
 
         return jsonify(json.loads(json.dumps([dict(docente._mapping) for docente in docenti]))), 200
 
@@ -496,11 +498,11 @@ def get_docente(id):
         try:
             docente = docente.first()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Impossibile reperire il docente: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding teacher: ' + str(e)}), 500
 
         # Se non trova il docente, ritorna uno status code 404
         if docente is None:
-            return jsonify({'error': True, 'errormessage': 'Docente inesistente'}), 404
+            return jsonify({'error': True, 'errormessage': 'Teacher not found'}), 404
         else:
             return jsonify(docente_schema.dump(docente)), 200
 
@@ -508,7 +510,7 @@ def get_docente(id):
 # ritorna tutti gli utenti
 @auth.route('/utenti', methods=['GET'])
 # ruoli che possono eseguire questa funzione
-@token_required(restrict_to_roles=['amministratore', 'docente'])
+@token_required(restrict_to_roles=['amministratore'])
 def get_users(user):
     with SessionDocenti() as sessionDocenti, sessionDocenti.begin():
 
@@ -539,16 +541,14 @@ def get_users(user):
 
             utenti = utenti.all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento degli utenti: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Cannot get users: ' + str(e)}), 500
 
         return jsonify(utenti_schema.dump(utenti.all())), 200
 
 
 # ritorna un utente specifico in base al suo id
 @auth.route('/utenti/<id>', methods=['GET'])
-# ruoli che possono eseguire questa funzione
-@token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
-def get_user(user, id):
+def get_user(id):
     with SessionDocenti() as sessionDocenti, sessionDocenti.begin():
         # Query per recuperare l'utente
         utente = sessionDocenti.query(Utente).filter(Utente.id == id)
@@ -557,11 +557,11 @@ def get_user(user, id):
         try:
             utente = utente.first()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Impossibile reperire l\'utente: ' + str(e)}), 404
+            return jsonify({'error': True, 'errormessage': 'Error in finding user: ' + str(e)}), 404
 
         # Se non trova l'utente, ritorna uno status code 404
         if utente is None:
-            return jsonify({'error': True, 'errormessage': 'Utente inesistente'}), 404
+            return jsonify({'error': True, 'errormessage': 'User not found'}), 404
         else:
             return jsonify(utente_schema.dump(utente)), 200
 
@@ -572,7 +572,7 @@ def get_user(user, id):
 def update_studente(user, id):
     with SessionStudenti() as sessionStudenti:
         if 'studente' in user['roles'] and user['id'] != int(id):
-            return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
+            return jsonify({'error': True, 'errormessage': 'Permission denied'}), 401
         
         utente = sessionStudenti.query(Utente).filter(Utente.id == id).first()
         studente = sessionStudenti.query(Studente).filter(Studente.id == id).first()
@@ -593,7 +593,7 @@ def update_studente(user, id):
             sessionStudenti.commit()
         except Exception as e:
             sessionStudenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore aggiornamento informazioni dello studente: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Student information update error: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
             
@@ -604,7 +604,7 @@ def update_studente(user, id):
 def update_docente(user, id):
     with SessionDocenti() as sessionDocenti:
         if 'docente' in user['roles'] and user['id'] != int(id):
-            return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 401
+            return jsonify({'error': True, 'errormessage': 'Permission deny'}), 401
         
         utente = sessionDocenti.query(Utente).filter(Utente.id == id).first()
         docente = sessionDocenti.query(Docente).filter(Docente.id == id).first()
@@ -629,6 +629,6 @@ def update_docente(user, id):
             sessionDocenti.commit()
         except Exception as e:
             sessionDocenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore aggiornamento informazioni del docente: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Teacher information update error: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200

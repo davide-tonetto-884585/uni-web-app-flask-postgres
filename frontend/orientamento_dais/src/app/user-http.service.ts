@@ -12,10 +12,13 @@ import { BACKEND_URL, FRONTEND_URL } from './globals';
   providedIn: 'root'
 })
 export class UserHttpService {
+  // token usato per autenticazione
   private token: string;
+  // dati dell'utente loggato
   private user_data: UserData | null;
 
   constructor(private http: HttpClient, private router: Router) {
+    // controllo se vi è gia un token salvato dal browser, se si l'utente è gia loggato
     this.token = localStorage.getItem('token') ?? '';
     if (this.token.length < 1) {
       this.token = ""
@@ -25,6 +28,7 @@ export class UserHttpService {
     }
   }
 
+  // crea le opzioni di base per le richieste includendo il token di autenticazione
   private createOptions(params = {}) {
     return {
       headers: new HttpHeaders({
@@ -35,6 +39,7 @@ export class UserHttpService {
     };
   }
 
+  // restituisce il token di autenticazione
   getToken(): string | null {
     if (this.user_data && Date.now() > +this.user_data?.exp * 1000) {
       this.logout();
@@ -44,7 +49,9 @@ export class UserHttpService {
     return this.token;
   }
 
+  // logga un utente se mail e password corrispondono
   login(mail: string, password: string, remember: boolean): Observable<any> {
+    // creo opzioni richiesta HTTP
     const options = {
       headers: new HttpHeaders({
         "Authorization": "Basic " + btoa(mail + ":" + password),
@@ -53,23 +60,30 @@ export class UserHttpService {
       })
     };
 
+    // invio richiesta login al backend 
     return this.http.get(BACKEND_URL + '/login', options).pipe(
       tap((data: any) => {
         this.token = data.token;
+        // estrapolo dati dal token
         this.user_data = jwt_decode<UserData>(this.token);
+
+        // se ha attivato la spunta remember allora salvo la sessione
         if (remember) {
           localStorage.setItem('token', this.token);
         }
       }));
   }
 
+  // elimina dati utente loggato
   logout() {
     this.token = '';
     this.user_data = null;
     localStorage.setItem('token', this.token);
   }
 
+  // registra un nuovo studente all'applicativo
   registerStudent(user: User | any): Observable<any> {
+    // creo il body della richiesta
     const form_data = new FormData();
     Object.keys(user).forEach((key) => {
       form_data.append(key, user[key]);
@@ -77,6 +91,7 @@ export class UserHttpService {
 
     form_data.append('frontend_activation_link', `${FRONTEND_URL}/activate`);
 
+    // invio richiesta la backend
     return this.http.post(BACKEND_URL + '/utenti/studenti', form_data).pipe(
       tap((data: any) => {
         console.log(JSON.stringify(data));
@@ -84,6 +99,7 @@ export class UserHttpService {
     );
   }
 
+  // registrazione nuovo docente
   registerTeacher(user: User | any): Observable<any> {
     const form_data = new FormData();
     Object.keys(user).forEach((key) => {
@@ -99,6 +115,7 @@ export class UserHttpService {
     );
   }
 
+  // completamento registrazione nuovo studente (conferma mail)
   completeRegistration(id: number, token: string, informations: any): Observable<any> {
     const form_data = new FormData();
     Object.keys(informations).forEach((key) => {
@@ -114,6 +131,7 @@ export class UserHttpService {
     );
   }
 
+  // completamento registrazione nuovo docente (conferma mail)
   completeTeacherRegistration(id: number, token: string, informations: any): Observable<any> {
     const form_data = new FormData();
     Object.keys(informations).forEach((key) => {
@@ -129,10 +147,12 @@ export class UserHttpService {
     );
   }
 
+  // ritorna true se l'utente è loggato
   isLogged(): boolean {
     return (this.user_data && Date.now() <= +this.user_data?.exp * 1000) ? true : false;
   }
 
+  // ritorna true se l'utente è un admin
   isAdmin(): boolean {
     if (this.user_data) {
       return this.user_data.roles.includes('amministratore');
@@ -141,6 +161,7 @@ export class UserHttpService {
     return false;
   }
 
+  // ritorna true se l'utente è uno studente
   isStudent(): boolean {
     if (this.user_data) {
       return this.user_data.roles.includes('studente');
@@ -149,6 +170,7 @@ export class UserHttpService {
     return false;
   }
 
+  // ritorna true se l'utente è un docente
   isTeacher(): boolean {
     if (this.user_data) {
       return this.user_data.roles.includes('docente');
@@ -157,10 +179,12 @@ export class UserHttpService {
     return false;
   }
 
+  // ritorna il nome dell'utente loggato se presente
   getName(): string | boolean {
     return this.user_data?.nome ?? false;
   }
 
+  // ritorna l'ID dell'utente loggato se presente
   getId(): number | undefined {
     return this.user_data?.id;
   }

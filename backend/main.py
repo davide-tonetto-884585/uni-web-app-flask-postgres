@@ -46,6 +46,6 @@ def get_scuole():
 
             scuole = scuole.all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle scuole: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error when finding schools: ' + str(e)}), 500
 
         return jsonify(scuola_schemas.dump(scuole)), 200

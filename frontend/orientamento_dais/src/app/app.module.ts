@@ -43,6 +43,7 @@ import { TeacherCardComponent } from './teacher-card/teacher-card.component';
 import { MatCardModule } from '@angular/material/card';
 import { TeacherPageComponent } from './teacher-page/teacher-page.component';
 import { ProfileModalComponent } from './profile-modal/profile-modal.component';
+import { ClassroomModalComponent } from './classroom-modal/classroom-modal.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { ProfileModalComponent } from './profile-modal/profile-modal.component';
     TeacherCardComponent,
     TeacherPageComponent,
     ProfileModalComponent,
+    ClassroomModalComponent,
   ],
   imports: [
     FormsModule,

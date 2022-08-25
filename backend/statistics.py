@@ -20,7 +20,7 @@ def get_statistiche_corso(user, id):
         # controllo che il corso sia del docente che sta richiedendo i dati
         if 'amministratore' not in user['roles']:
             if sessionDocenti.query(DocenteCorso).filter(DocenteCorso.id_corso == id, DocenteCorso.id_docente == user['id']).count() == 0:
-                return jsonify({'error': True, 'errormessage': 'Non sei autorizzato a visionare le statistiche di un corso a te non appartenente.'}), 401
+                return jsonify({'error': True, 'errormessage': 'You are not authorized to view the statistics of a course that does not belong to you.'}), 401
 
         try:
             totale_iscrizioni_maschi = sessionDocenti.query(IscrizioniCorso).\
@@ -138,7 +138,7 @@ def get_statistiche_corso(user, id):
                 filter(ProgrammazioneCorso.id_corso == id).order_by(ProgrammazioneCorso.id).all()
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle statistiche: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error while retrieving statistics: ' + str(e)}), 500
 
         return jsonify(
             {

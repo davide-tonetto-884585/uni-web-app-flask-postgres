@@ -7,6 +7,7 @@ import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CourseModalComponent } from '../course-modal/course-modal.component';
+import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
 
 @Component({
   selector: 'app-my-courses',
@@ -60,7 +61,7 @@ export class MyCoursesComponent implements OnInit {
         this.course_http.getInscriptionsStudent(id).subscribe({
           next: (corsi: any[]) => {
             this.courses = corsi;
-
+            
             this.courses.forEach((corso) => {
               this.course_http.getLezioniProgCorso(corso.id, corso.id_programmazione_corso).subscribe({
                 next: (lezioni: Lesson[]) => {
@@ -99,5 +100,27 @@ export class MyCoursesComponent implements OnInit {
     });
 
     dialog.afterClosed().subscribe(() => this.refresh());
+  }
+
+  getCertificate(id_corso: number, id_prog_corso: number): void {
+    this.course_http.getCertificate(id_corso, id_prog_corso).subscribe({
+      next: (response) => {
+        let fileName = 'certificate';
+        let blob: Blob = response.body as Blob;
+        let a = document.createElement('a');
+        a.download = fileName;
+        a.href = window.URL.createObjectURL(blob);
+        a.click();
+      },
+      error: (response) => {
+        this.dialog.open(MessageDialogComponent, {
+          data: {
+            text: response.error.errormessage,
+            title: 'Failed!',
+            error: true
+          },
+        });
+      }
+    })
   }
 }

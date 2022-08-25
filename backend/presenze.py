@@ -47,7 +47,7 @@ def get_presenze_lezione(user, id_corso, id_prog, id_lezione):
 
             presenze = presenze.all()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento delle presenze: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error while retrieving attendance: ' + str(e)}), 500
 
         return jsonify(json.loads(json.dumps([dict(studente._mapping) for studente in presenze]))), 200
 
@@ -59,32 +59,32 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
         sessionStudenti.begin()
 
         if request.form.get('id_studente') is None or request.form.get('codice_verifica_presenza') is None:
-            return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing information'}), 400
 
         # Controlla che lo studente esista
         studente = sessionStudenti.query(Studente).filter(
             Studente.id == request.form.get('id_studente')).first()
         if studente is None:
-            return jsonify({'error': True, 'errormessage': 'Studente inesistente'}), 404
+            return jsonify({'error': True, 'errormessage': 'Student not found'}), 404
 
         if ('studente' in user['roles'] and user['id'] != int(request.form.get('id_studente'))):
-            return jsonify({'error': True, 'errormessage': 'Permesso negato'}), 400
+            return jsonify({'error': True, 'errormessage': 'Permission denied'}), 400
 
         # Controlla che lo studente sia iscritto al corso
         if sessionStudenti.query(IscrizioniCorso).\
                 join(ProgrammazioneCorso, ProgrammazioneCorso.id == IscrizioniCorso.id_programmazione_corso).\
                 filter(IscrizioniCorso.id_studente == studente.id, ProgrammazioneCorso.id == id_prog).count() == 0:
-            return jsonify({'error': True, 'errormessage': 'Studente non iscritto al corso'}), 404
+            return jsonify({'error': True, 'errormessage': 'Student not enrolled to the course'}), 404
         
         if sessionStudenti.query(PresenzeLezione).\
             filter(PresenzeLezione.id_studente == studente.id, PresenzeLezione.id_programmazione_lezioni == id_lezione).count() > 0:
-            return jsonify({'error': True, 'errormessage': 'Presenza già segnata'}), 404
+            return jsonify({'error': True, 'errormessage': 'Presence already inserted'}), 404
 
         # Controlla che il codice di verifica (per la presenza) sia valido
         lezione = sessionStudenti.query(ProgrammazioneLezioni).filter(
             ProgrammazioneLezioni.id == id_lezione).first()
         if lezione.codice_verifica_presenza != request.form.get('codice_verifica_presenza'):
-            return jsonify({'error': True, 'errormessage': 'Codice verifica non valido'}), 400
+            return jsonify({'error': True, 'errormessage': 'Invalid verification code'}), 400
 
         new_presenza = PresenzeLezione(id_studente=studente.id,
                                        id_programmazione_lezioni=id_lezione)
@@ -94,6 +94,6 @@ def add_presenza(user, id_corso, id_prog, id_lezione):
             sessionStudenti.commit()
         except Exception as e:
             sessionStudenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento lezione' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in entering presence' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200

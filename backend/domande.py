@@ -66,7 +66,7 @@ def get_domande(id):
             domande = domande.all()
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento delle domande: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in retrieving questions: ' + str(e)}), 500
 
         return jsonify({ 'domande': json.loads(json.dumps([dict(domanda._mapping) for domanda in domande], default=str)), 'count': count }), 200
 
@@ -86,7 +86,7 @@ def get_risposte_domanda(id, id_domanda):
             domande = domande.all()
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento delle domande: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in retrieving questions: ' + str(e)}), 500
 
         return jsonify(json.loads(json.dumps([dict(domanda._mapping) for domanda in domande], default=str))), 200
 
@@ -105,7 +105,7 @@ def add_domande(user, id):
         # Controlla che i campi obbligatori siano stati inseriti nel form
         # NOTA: Solo i docenti del corso possono "chiudere le domande"
         if testo is None:
-            return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing information'}), 400
 
         if ('docenti' in user['roles']):
             id_docenti_corso = sessionStudenti.query(
@@ -121,10 +121,10 @@ def add_domande(user, id):
                 id_domande_corso = sessionStudenti.query(DomandeCorso.id).\
                     filter(DomandeCorso.id_corso == id).all()
             except Exception as e:
-                return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento della risposta: ' + str(e)}), 500
+                return jsonify({'error': True, 'errormessage': 'Error in inserting the answer: ' + str(e)}), 500
 
             if ((int(id_domanda_corso),) not in id_domande_corso):
-                return jsonify({'error': True, 'errormessage': 'Domanda inesistente'}), 400
+                return jsonify({'error': True, 'errormessage': 'Question not found'}), 400
 
         # creazione del nuovo oggetto da inserire
         new_domanda_corso = DomandeCorso(testo=testo, chiusa=chiusa, id_corso=id,
@@ -136,7 +136,7 @@ def add_domande(user, id):
             sessionStudenti.commit()
         except Exception as e:
             sessionStudenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento della domanda: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in entering the question: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -166,10 +166,10 @@ def update_domande(user, id, id_domanda):
                 id_domande_corso = sessionStudenti.query(DomandeCorso.id).\
                     filter(DomandeCorso.id_corso == id).all()
             except Exception as e:
-                return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento della risposta: ' + str(e)}), 500
+                return jsonify({'error': True, 'errormessage': 'Error in updating the answer: ' + str(e)}), 500
 
             if ((int(id_domanda_corso),) not in id_domande_corso):
-                return jsonify({'error': True, 'errormessage': 'Domanda inesistente'}), 400
+                return jsonify({'error': True, 'errormessage': 'Question not found'}), 400
 
         # creazione del nuovo oggetto da inserire
         domanda_corso = sessionStudenti.query(DomandeCorso).filter(DomandeCorso.id == id_domanda).first()
@@ -186,7 +186,7 @@ def update_domande(user, id, id_domanda):
             sessionStudenti.commit()
         except Exception as e:
             sessionStudenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'aggiornamento della domanda: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error updating question: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -199,32 +199,32 @@ def remove_domanda(user, id):
         id_domanda = request.form.get('id_domanda')
 
         if (id_domanda is None):
-            return jsonify({'error': True, 'errormessage': 'Dati mancanti'}), 400
+            return jsonify({'error': True, 'errormessage': 'Missing information'}), 400
 
         try:
             domanda_to_remove = sessionStudenti.query(
                 DomandeCorso).filter(DomandeCorso.id == id_domanda).first()
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore durante il reperimento della domanda: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error while retrieving question: ' + str(e)}), 500
 
         # Controlliamo che lo studente che vuole eliminare la domanda sia effettivamente quello che l'ha posta
         if ('studente' in user['roles'] and domanda_to_remove.id_utente != user['id']):
-            return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere una domanda che non hai posto tu stesso'}), 401
+            return jsonify({'error': True, 'errormessage': 'You cannot remove a question that you have not asked yourself'}), 401
 
         # Controlliamo che il docente sia proprietario del corso, altrimenti non permettiamo la rimozione delle domande
         if('docente' in user['roles'] and 'amministratore' not in user['roles']):
             try:
                 if(sessionStudenti.query(DocenteCorso.id_docente).filter(DocenteCorso.id_corso == id).first() != user['id']):
-                    return jsonify({'error': True, 'errormessage': 'Non puoi rimuovere una domanda da un corso che non ti appartiene'}), 401
+                    return jsonify({'error': True, 'errormessage': 'You can\'t remove a question from a course that doesn\'t belong to you'}), 401
             except Exception as e:
-                return jsonify({'error': True, 'errormessage': 'Errore durante la verifica dei permessi: ' + str(e)}), 500
+                return jsonify({'error': True, 'errormessage': 'Error checking permissions: ' + str(e)}), 500
 
         try:
             sessionStudenti.delete(domanda_to_remove)
             sessionStudenti.commit()
         except Exception as e:
             sessionStudenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'eliminazione della domanda dal corso: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error deleting the question from the course: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -255,7 +255,7 @@ def get_likes_domanda(id_corso, id_domanda):
             likes = likes.all()
 
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento dei like: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding likes: ' + str(e)}), 500
 
         return jsonify(json.loads(json.dumps([dict(like._mapping) for like in likes]))), 200
 
@@ -269,15 +269,15 @@ def add_like_domanda(user, id_corso, id_domanda):
             if (sessionStudenti.query(DomandeCorso.id).filter(DomandeCorso.id == id_domanda).count() == 0):
                 return jsonify({'error': True, 'errormessage': 'Domanda inesistente'}), 404
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel reperimento della domanda: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in finding question: ' + str(e)}), 500
 
         try:
             if(sessionStudenti.query(LikeDomanda.id_utente).
                     filter(LikeDomanda.id_utente == user['id'], LikeDomanda.id_domanda_corso == id_domanda).count() != 0):
 
-                return jsonify({'error': True, 'errormessage': 'Hai già messo like a questa domanda'}), 409
+                return jsonify({'error': True, 'errormessage': 'You have already liked this question'}), 409
         except Exception as e:
-            return jsonify({'error': True, 'errormessage': 'Errore nel controllo dei like duplicati: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error checking duplicate likes: ' + str(e)}), 500
 
         # creazione del nuovo oggetto da inserire
         new_like_domanda = LikeDomanda(
@@ -289,7 +289,7 @@ def add_like_domanda(user, id_corso, id_domanda):
             sessionStudenti.commit()
         except Exception as e:
             sessionStudenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore nell\'inserimento del like alla domanda: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error in inserting the like to the question: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
 
@@ -314,12 +314,12 @@ def delete_like_domanda(user, id_corso, id_domanda):
                     LikeDomanda.id_domanda_corso == id_domanda).first()
 
             if (like_to_remove is None):
-                return jsonify({'error': True, 'errormessage': 'Like inesistente'}), 404
+                return jsonify({'error': True, 'errormessage': 'Like not found'}), 404
 
             sessionStudenti.delete(like_to_remove)
             sessionStudenti.commit()
         except Exception as e:
             sessionStudenti.rollback()
-            return jsonify({'error': True, 'errormessage': 'Errore durante l\'eliminazione del like alla domanda: ' + str(e)}), 500
+            return jsonify({'error': True, 'errormessage': 'Error while deleting the question like: ' + str(e)}), 500
 
         return jsonify({'error': False, 'errormessage': ''}), 200
