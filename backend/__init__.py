@@ -201,45 +201,45 @@ def create_app():
     Base.metadata.reflect(root_engine)
 
     # blueprint che gestisce la registrazione e autenticazione degli utenti
-    from .auth import auth as auth_blueprint
+    from .routes.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
     # blueprint for non-auth parts of app
-    from .main import main as main_blueprint
+    from .routes.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
     # blueprint per i corsi
-    from .corsi import corsi as corsi_blueprint
+    from .routes.corsi import corsi as corsi_blueprint
     app.register_blueprint(corsi_blueprint)
 
     # blueprint per programmazione corsi e lezioni
-    from .programmazione_corsi import prog_corsi as prog_corsi_blueprint
+    from .routes.programmazione_corsi import prog_corsi as prog_corsi_blueprint
     app.register_blueprint(prog_corsi_blueprint)
 
     # blueprint per le aule
-    from .aule import aule as aule_blueprint
+    from .routes.aule import aule as aule_blueprint
     app.register_blueprint(aule_blueprint)
 
 	# blueprint per le risorse del corso
-    from .risorse import risorse as risorse_blueprint
+    from .routes.risorse import risorse as risorse_blueprint
     app.register_blueprint(risorse_blueprint)
 
-    from .domande import domande as domande_corso_blueprint
+    from .routes.domande import domande as domande_corso_blueprint
     app.register_blueprint(domande_corso_blueprint)
     
-    from .statistics import statistics as statistics_blueprint
+    from .routes.statistics import statistics as statistics_blueprint
     app.register_blueprint(statistics_blueprint)
     
-    from .global_settings import global_settings as global_settings_blueprint
+    from .routes.global_settings import global_settings as global_settings_blueprint
     app.register_blueprint(global_settings_blueprint)
     
-    from .iscrizioni import iscrizioni as iscrizioni_blueprint
+    from .routes.iscrizioni import iscrizioni as iscrizioni_blueprint
     app.register_blueprint(iscrizioni_blueprint)
     
-    from .presenze import presenze as presenze_blueprint
+    from .routes.presenze import presenze as presenze_blueprint
     app.register_blueprint(presenze_blueprint)
     
-    from .lezioni import lezioni as lezioni_blueprint
+    from .routes.lezioni import lezioni as lezioni_blueprint
     app.register_blueprint(lezioni_blueprint)
 
     return app
