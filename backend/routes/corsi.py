@@ -36,7 +36,7 @@ def get_corsi():
         
         try:
             # Query per reperire tutti i corsi
-            corsi = preLoginSession.query(Corso).order_by(Corso.titolo)
+            corsi = preLoginSession.query(Corso)
 
             # Filtri per la specializzazione della ricerca o visualizzazione dei corsi
             if name is not None:

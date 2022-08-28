@@ -62,7 +62,8 @@ def add_iscrizione(user, id_corso, id_prog):
         # Se lo studente ha scelto "duale" e non sceglie se in presenza od online, allora lo setta a True di default
         if prog_corso.modalita == 'duale':
             if request.form.get('in_presenza') is not None:
-                in_presenza = True if request.form.get('in_presenza') == 'true' else False
+                in_presenza = True if request.form.get(
+                    'in_presenza') == 'true' else False
             else:
                 in_presenza = True
         elif prog_corso.modalita == 'presenza':
@@ -71,16 +72,17 @@ def add_iscrizione(user, id_corso, id_prog):
         # Recupera il numero di iscritti
         num_iscritti = sessionStudenti.query(IscrizioniCorso).filter(
             IscrizioniCorso.id_programmazione_corso == id_prog).count()
-        
+
         num_iscritti_presenza = sessionStudenti.query(IscrizioniCorso).filter(
             IscrizioniCorso.id_programmazione_corso == id_prog).filter(IscrizioniCorso.in_presenza == True).count()
 
         # Recupera la capienza dell'aula più piccola
-        capienza_aula_piu_piccola = sessionStudenti.query(Aula.capienza).\
-            join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
-            filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
-            order_by(Aula.capienza).limit(1).first()[0]
-            
+        if prog_corso.modalita == 'duale' or prog_corso.modalita == 'presenza':
+            capienza_aula_piu_piccola = sessionStudenti.query(Aula.capienza).\
+                join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_aula == Aula.id).\
+                filter(ProgrammazioneLezioni.id_programmazione_corso == prog_corso.id).\
+                order_by(Aula.capienza).limit(1).first()[0]
+
         if prog_corso.modalita == 'duale':
             if (prog_corso.limite_iscrizioni is not None and num_iscritti >= prog_corso.limite_iscrizioni) \
                     or (in_presenza == True and num_iscritti_presenza >= capienza_aula_piu_piccola):
@@ -168,9 +170,9 @@ def remove_subscription(user, id_corso, id_prog, id_studente):
 
         # controllo che il corso debba ancora iniziare
         if sessionStudenti.query(ProgrammazioneCorso).\
-            join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_programmazione_corso == ProgrammazioneCorso.id).\
-            filter(ProgrammazioneCorso.id == id_prog).\
-            filter(ProgrammazioneLezioni.data <= date.today()).count() > 0:
+                join(ProgrammazioneLezioni, ProgrammazioneLezioni.id_programmazione_corso == ProgrammazioneCorso.id).\
+                filter(ProgrammazioneCorso.id == id_prog).\
+                filter(ProgrammazioneLezioni.data <= date.today()).count() > 0:
             return jsonify({'error': True, 'errormessage': 'You cannot unsubscribe from a course that has already started'}), 401
 
         try:
