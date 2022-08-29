@@ -288,6 +288,7 @@ def remove_course(user, id):
 
 
 @corsi.route('/corsi/<id>/studenti', methods=['GET'])
+@token_required(restrict_to_roles=['amministratore'])
 def get_studenti_corso(id):
     with PreLoginSession() as preLoginSession, preLoginSession.begin():
 

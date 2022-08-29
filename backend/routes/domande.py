@@ -191,15 +191,11 @@ def update_domande(user, id, id_domanda):
         return jsonify({'error': False, 'errormessage': ''}), 200
 
 
-@domande.route('/corsi/<id>/domande', methods=['DELETE'])
+@domande.route('/corsi/<id>/domande/<id_domanda>', methods=['DELETE'])
 @token_required(restrict_to_roles=['amministratore', 'docente', 'studente'])
-def remove_domanda(user, id):
+def remove_domanda(user, id, id_domanda):
     with SessionStudenti() as sessionStudenti:
         sessionStudenti.begin()
-        id_domanda = request.form.get('id_domanda')
-
-        if (id_domanda is None):
-            return jsonify({'error': True, 'errormessage': 'Missing information'}), 400
 
         try:
             domanda_to_remove = sessionStudenti.query(

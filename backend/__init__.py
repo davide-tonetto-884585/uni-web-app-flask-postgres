@@ -16,7 +16,7 @@
 	/utenti/docenti             -                                            POST          Add a new teacher
 	/utenti/docenti/:id         -                                            POST          Complete teacher registration
 	/utenti/amministratori/:id  -                                            POST          Add a new administrator
-	/login               -                                                   GET           Login an existing user, returning a JWT
+	/login                      -                                            GET           Login an existing user, returning a JWT
 	/utenti/studenti                                                         GET           List all students
 					?name=nome                  cerca per nome
 					?surname=cognome            cerca per cognome
@@ -84,13 +84,26 @@
 	/corso/:id/programmazione_corso                                          POST          Add prog corso
 	/corso/:id/programmazione_corso/                                         GET
 	/corso/:id/programmazione_corso/:id                                      GET
+    /corso/:id/programmazione_corso/:id                                      PUT
+    /corsi/:id/programmazione_corso/:id/certificato							 GET
+    
+    ------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT lezioni
 
 	/corso/:id/programmazione_corso/:id/lezioni                              POST          add lezione
 	/corso/:id/programmazione_corso/:id/lezioni                              GET
 	/corso/:id/programmazione_corso/:id/lezioni/:id                          GET
+    /corso/:id/programmazione_corso/:id/lezioni/:id                          PUT
+    
+    ------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT presenze
 
 	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 GET
 	/corso/:id/programmazione_corso/:id/lezioni/:id/presenze                 POST
+ 
+    ------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT iscrizioni
+ 
  	/corso/:id/programmazione_corso/:id/iscrizioni                           POST
 	/corso/:id/programmazione_corso/:id/iscrizioni                           GET
 	/corso/:id/programmazione_corso/:id/iscrizioni/:id_studente              DELETE
@@ -106,7 +119,7 @@
 	-------------------------------------------------------------------------------------------------------------------------------
 	BLUEPRINT domande:
 
-    /corsi/:id/domande                                                      GET           Get domande corso
+    /corsi/:id/domande                                                       GET           Get domande corso
                         ?testo=testi               cerca per il testo
                         ?chiusa=chiusa             trova le domande chiuse
                         ?skip=n                    salta i primi n doc
@@ -119,16 +132,19 @@
 	/corsi/:id/domande/:id/like                                              GET           Get likes (and who gave them) of the question
 	/corsi/:id/domande/:id/like                                              POST          Add like to question
 	/corsi/:id/domande/:id/like                                              DELETE        remove like of domanda corso
+ 
+    ------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT statistics
+ 
+	/corsi/<id>/statistiche													 GET
+ 
+	------------------------------------------------------------------------------------------------------------------------------
+	BLUEPRINT global_settings
+ 
+	/impostazioni															 GET
+	/impostazioni															 PUT
 
 	-------------------------------------------------------------------------------------------------------------------------------
-	DA CONTROLLARE
-
-	DA IMPLEMENTARE:
-
-	TODO: Fare in modo che all'eliminazione di una risorsa o di un corso vengano eliminate anche le immagini o file dal server
-	REMINDER: Potrebbe servire una data della scadenza per la riabilitazione di un account sospeso?
-
-   -------------------------------------------------------------------------------------------------------------------------------
 """
 
 import os
